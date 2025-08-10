@@ -1,0 +1,30 @@
+baseURL = "/"
+languageCode = "ja-jp"
+title = "My Portfolio"
+[pagination]
+  pagerSize = 10
+
+enableRobotsTXT = true
+
+[params]
+  tagline = "Illustration / Gamebook Portfolio"
+  author = "Your Name"
+  description = "イラストとゲームブック作品のポートフォリオ"
+  twitter = "https://x.com/your_handle"
+  youtube = "https://www.youtube.com/@your_channel"
+  skeb = "https://skeb.jp/@your_handle"
+  email = "you@example.com"
+
+[menu]
+  [[menu.main]]
+    name = "Works"
+    url = "/works/"
+    weight = 10
+  [[menu.main]]
+    name = "News"
+    url = "/news/"
+    weight = 20
+  [[menu.main]]
+    name = "Contact"
+    url = "/contact/"
+    weight = 30

@@ -1,0 +1,27 @@
+
+{{ define "main" }}
+  <article class="single">
+    <h1 class="page-title">{{ .Title }}</h1>
+    <div class="content">
+      {{ .Content }}
+      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="contact" />
+        <p class="hidden">
+          <label>Don’t fill this out: <input name="bot-field" /></label>
+        </p>
+        <p>
+          <label>お名前<br><input type="text" name="name" required></label>
+        </p>
+        <p>
+          <label>メールアドレス<br><input type="email" name="email" required></label>
+        </p>
+        <p>
+          <label>ご用件<br><textarea name="message" rows="6" required></textarea></label>
+        </p>
+        <p>
+          <button type="submit">送信</button>
+        </p>
+      </form>
+    </div>
+  </article>
+{{ end }}

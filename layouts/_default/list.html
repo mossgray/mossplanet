@@ -1,0 +1,20 @@
+{{ define "main" }}
+  <h1 class="page-title">{{ .Title }}</h1>
+  {{ if .Content }}<div class="page-intro">{{ .Content }}</div>{{ end }}
+
+  <div class="grid">
+    {{ range .Paginator.Pages }}
+      <article class="card">
+        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+        {{ with .Params.cover }}
+          <a href="{{ $.RelPermalink }}{{ . }}">
+          </a>
+        {{ end }}
+        {{ if .Summary }}<p>{{ .Summary }}</p>{{ end }}
+        <p class="meta">{{ .Date.Format "2006-01-02" }}</p>
+      </article>
+    {{ end }}
+  </div>
+
+  {{ template "_internal/pagination.html" . }}
+{{ end }}

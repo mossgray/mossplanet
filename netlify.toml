@@ -1,0 +1,12 @@
+[build]
+  command = "hugo"
+  publish = "public"
+
+[build.environment]
+  HUGO_VERSION = "0.126.1"
+
+# Redirects (optional): ensure pretty URLs
+[[redirects]]
+  from = "/*"
+  to = "/:splat"
+  status = 200

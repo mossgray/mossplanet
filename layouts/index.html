@@ -1,0 +1,40 @@
+{{ define "main" }}
+  <section class="hero-section">
+    <div class="hero-inner">
+      <h1>{{ .Site.Title }}</h1>
+      <p class="tagline">{{ .Site.Params.tagline }}</p>
+      {{ partial "social.html" . }}
+    </div>
+  </section>
+
+  <section>
+    <h2>Latest Works</h2>
+    <div class="grid">
+      {{ range first 6 ( where .Site.RegularPages "Section" "works" ) }}
+        <article class="card">
+          <a href="{{ .RelPermalink }}">
+            {{ with .Params.cover }}
+              <img src="{{ . }}" alt="{{ $.Title }} cover" />
+            {{ end }}
+            <h3>{{ .Title }}</h3>
+          </a>
+          {{ if .Summary }}<p>{{ .Summary }}</p>{{ end }}
+        </article>
+      {{ end }}
+    </div>
+    <p class="more"><a href="/works/">作品一覧へ</a></p>
+  </section>
+
+  <section>
+    <h2>News</h2>
+    <ul class="news-list">
+      {{ range first 5 ( where .Site.RegularPages "Section" "news" ) }}
+        <li>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          <time>{{ .Date.Format "2006-01-02" }}</time>
+        </li>
+      {{ end }}
+    </ul>
+    <p class="more"><a href="/news/">お知らせ一覧へ</a></p>
+  </section>
+{{ end }}
