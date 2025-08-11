@@ -123,3 +123,67 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === 'Escape') close();
   });
 })();
+
+// Netlify Forms: AJAX送信 → 成功でThanksモーダル
+(function(){
+  const forms = document.querySelectorAll('form[data-netlify="true"]');
+  if(!forms.length) return;
+
+  const encode = (data) => new URLSearchParams(data).toString();
+
+  forms.forEach(form => {
+    form.addEventListener('submit', async (e) => {
+      // 既存バリデーションを優先
+      if(!form.checkValidity()) return;
+      e.preventDefault();
+
+      const btn = form.querySelector('button[type="submit"]');
+      btn && (btn.disabled = true, btn.textContent = 'Sending…');
+
+      const thanksSel = form.getAttribute('data-thanks') || '#thanks-modal';
+      const thanksEl  = document.querySelector(thanksSel);
+
+      // Netlify用ペイロード（form-name必須）
+      const formData = new FormData(form);
+      if(!formData.get('form-name')) {
+        const name = form.getAttribute('name') || 'contact';
+        formData.set('form-name', name);
+      }
+
+      try {
+        await fetch('/', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: encode(formData)
+        });
+
+        // 成功：フォームをリセット＆モーダル開く
+        form.reset();
+        // reCAPTCHAのウィジェットはNetlify側で処理される想定
+
+        if(thanksEl){
+          thanksEl.setAttribute('aria-hidden','false');
+          const closeBtn = thanksEl.querySelector('[data-close]');
+          const esc = (ev)=>{ if(ev.key === 'Escape'){ close(); } };
+          const close = ()=> {
+            thanksEl.setAttribute('aria-hidden','true');
+            document.removeEventListener('keydown', esc);
+            closeBtn && closeBtn.removeEventListener('click', close);
+            thanksEl.removeEventListener('click', overlay);
+          };
+          const overlay = (ev)=>{ if(ev.target === thanksEl){ close(); } };
+          closeBtn && closeBtn.addEventListener('click', close);
+          thanksEl.addEventListener('click', overlay);
+          document.addEventListener('keydown', esc);
+        }
+      } catch(err){
+        alert('送信に失敗しました。通信環境を確認して、もう一度お試しください。');
+        console.error(err);
+      } finally {
+        btn && (btn.disabled = false, btn.textContent = '送信 / Send');
+      }
+    }, { passive: false });
+  });
+})();
+
+

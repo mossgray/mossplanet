@@ -84,7 +84,7 @@
       </div>
 
       <div id="tab-commission" role="tabpanel" aria-labelledby="tab-commission-btn">
-        <form name="commission" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <form name="commission" method="POST" data-netlify="true" netlify-honeypot="bot-field"data-thanks="#thanks-modal">
           <input type="hidden" name="form-name" value="commission"/>
           <p class="hidden"><label>Don’t fill this out: <input name="bot-field"></label></p>
 
@@ -111,7 +111,7 @@
       </div>
 
       <div id="tab-inquiry" role="tabpanel" aria-labelledby="tab-inquiry-btn" hidden>
-        <form name="inquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <form name="inquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field"data-thanks="#thanks-modal">
           <input type="hidden" name="form-name" value="inquiry"/>
           <p class="hidden"><label>Don’t fill this out: <input name="bot-field"></label></p>
 
@@ -138,4 +138,19 @@
       </div>
     </div>
   </div>
+
+<!-- Thanks Modal -->
+<div id="thanks-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="thanks-ttl" aria-hidden="true">
+  <div class="dialog">
+    <h3 id="thanks-ttl">ありがとうございます</h3>
+    <div class="content">
+      お問い合わせを受け付けました。<br>
+      折り返しご連絡いたします。Please allow us some time to reply.
+    </div>
+    <div class="actions">
+      <button class="btn" data-close>Close</button>
+    </div>
+  </div>
+</div>
+
 {{ end }}
