@@ -105,7 +105,7 @@
             <p><label>希望納期 / Deadline<br><input name="deadline" placeholder="YYYY-MM-DD"></label></p>
             <p><label>その他、案件内容について / Notes<br><input name="notes"></label></p>
           </div>
-          <div class="captcha" data-netlify-recaptcha="true"></div>
+          <div id="captcha-slot" class="captcha" data-netlify-recaptcha="true"></div>
           <p><button type="submit" class="btn">送信 / Send</button></p>
         </form>
       </div>
@@ -120,7 +120,6 @@
             <p><label>Email<br><input type="email" name="email" required></label></p>
           </div>
           <p><label>お問い合わせ内容 / Message<br><textarea name="message" rows="6" required></textarea></label></p>
-          <!--<div class="captcha" data-netlify-recaptcha="true"></div>-->
           <p><button type="submit" class="btn">送信 / Send</button></p>
         </form>
       </div>

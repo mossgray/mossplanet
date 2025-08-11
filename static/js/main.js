@@ -186,4 +186,29 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 })();
 
+const tabBtns = document.querySelectorAll('.tabs [role="tab"]');
+tabBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    tabBtns.forEach(b=>b.setAttribute('aria-selected','false'));
+    btn.setAttribute('aria-selected','true');
+    const panels = [document.getElementById('tab-commission'), document.getElementById('tab-inquiry')];
+    panels.forEach(p=>p.hidden = true);
+    const target = btn.getAttribute('aria-controls');
+    const activePanel = document.getElementById(target.replace('-btn',''));
+    activePanel.hidden = false;
+
+    // ★ 追加：reCAPTCHAコンテナをアクティブなフォームへ移動
+    const slot = document.getElementById('captcha-slot');
+    const form = activePanel.querySelector('form[data-netlify="true"]');
+    const submitBtn = form?.querySelector('button[type="submit"]');
+    if (slot && form) {
+      // 送信ボタンの直前に移動（既にレンダリング済みでもOK）
+      submitBtn ? form.insertBefore(slot, submitBtn.parentElement) : form.appendChild(slot);
+      // 念のため高さを確保（描画失敗の見た目崩れ対策）
+      slot.style.minHeight = '78px';
+      // 既に描画されているので通常は reset 不要。必要なら以下を解放:
+      // if (window.grecaptcha && slot.querySelector('iframe')) { grecaptcha.reset(); }
+    }
+  });
+});
 
