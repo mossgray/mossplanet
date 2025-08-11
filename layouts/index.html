@@ -120,7 +120,7 @@
             <p><label>Email<br><input type="email" name="email" required></label></p>
           </div>
           <p><label>お問い合わせ内容 / Message<br><textarea name="message" rows="6" required></textarea></label></p>
-          <div class="captcha" data-netlify-recaptcha="true"></div>
+          <!--<div class="captcha" data-netlify-recaptcha="true"></div>-->
           <p><button type="submit" class="btn">送信 / Send</button></p>
         </form>
       </div>
@@ -131,7 +131,7 @@
     <div class="dialog">
       <h3 id="profile-ttl">About</h3>
       <div class="content">
-        {{ .Site.Params.profileLong | default "ゲームブックとイラストを中心に制作しています。雨と静けさの美学をテーマに、ピクセルアートからコンセプトアートまで幅広く取り組みます。" }}
+        {{ .Site.Params.profileLong | default "作家：モスの作品ポートフォリオ。イラストとかゲームとか、いろいろ。" }}
       </div>
       <div class="actions">
         <button class="btn" data-close>Close</button>
