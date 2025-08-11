@@ -115,6 +115,7 @@ p{margin:.4em 0 1em}
   background:rgba(92,184,178,.08);
   align-items:center;justify-content:center;
   gap:4px;padding:8px;cursor:pointer;
+  margin-right: 20px;
 }
 .nav-toggle .bar{ display:block; width:18px; height:2px; background:var(--fg); }
 
