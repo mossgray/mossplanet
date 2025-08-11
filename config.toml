@@ -1,6 +1,6 @@
-baseURL = "/"
+baseURL = "https://mossplanet.com/"
 languageCode = "ja-jp"
-title = "My Portfolio"
+title = "mossplanet"
 [pagination]
   pagerSize = 10
 
@@ -8,12 +8,14 @@ enableRobotsTXT = true
 
 [params]
   tagline = "Illustration / Gamebook Portfolio"
-  author = "Your Name"
+  author = "モス / mossgray"
   description = "イラストとゲームブック作品のポートフォリオ"
   twitter = "https://x.com/your_handle"
   youtube = "https://www.youtube.com/@your_channel"
   skeb = "https://skeb.jp/@your_handle"
   email = "you@example.com"
+  logo = "/images/logo03.png"
+  googleAnalytics = "G-FYDLVHFME8"
 
 [menu]
   [[menu.main]]

@@ -1,5 +1,62 @@
+{{- /* ====== Computed meta ====== */ -}}
+{{- $siteTitle := .Site.Title -}}
+{{- $pageTitle := cond (ne .Title "") (printf "%s | %s" .Title $siteTitle) $siteTitle -}}
+{{- $desc := .Params.description | default .Site.Params.description | default "静かな世界観のイラストやゲームブック作品を公開しています。" -}}
+{{- $ogImg := .Params.ogImage | default "images/ogp.png" -}}
+{{- $ogAbs := printf "%s%s" .Site.BaseURL $ogImg -}}
+
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>{{ if .Title }}{{ .Title }} | {{ end }}{{ .Site.Title }}</title>
-<meta name="description" content="{{ .Site.Params.description }}">
-<link rel="stylesheet" href="/css/style.css" />
+<title>{{ $pageTitle }}</title>
+<meta name="description" content="{{ $desc }}">
+<meta name="theme-color" content="#0e1213">
+
+<link rel="canonical" href="{{ .Permalink }}">
+<link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
+
+<!-- Prefetch / Fonts（必要なら外してOK） -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<!-- Favicon / PWA（ファイルを static/ に置いてください） -->
+<link rel="icon" href="{{ "favicon.ico" | relURL }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ "apple-touch-icon.png" | relURL }}">
+<link rel="manifest" href="{{ "site.webmanifest" | relURL }}">
+
+<!-- Robots（ページごとに noindex 指定可能） -->
+{{- if or .Params.noindex .Site.Params.noindex -}}
+<meta name="robots" content="noindex,nofollow">
+{{- else -}}
+<meta name="robots" content="index,follow">
+{{- end }}
+
+<!-- OGP -->
+<meta property="og:title" content="{{ $pageTitle }}">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:image" content="{{ $ogAbs }}">
+<meta property="og:description" content="{{ $desc }}">
+<meta property="og:site_name" content="{{ $siteTitle }}">
+<meta property="og:locale" content="ja_JP">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@mossgray_">
+
+<!-- RSS（必要な場合） -->
+{{ with .OutputFormats.Get "RSS" -}}
+<link rel="alternate" type="application/rss+xml" title="{{ $siteTitle }}" href="{{ .Permalink }}">
+{{- end }}
+
+<!-- reCAPTCHA（Netlify Forms用） -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<!-- Google Analytics（config.toml に params.googleAnalytics を設定時のみ） -->
+{{ with .Site.Params.googleAnalytics }}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ . }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', '{{ . }}');
+</script>
+{{ end }}

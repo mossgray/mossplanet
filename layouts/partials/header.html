@@ -1,12 +1,22 @@
-<header class="site-header">
-  <div class="container header-inner">
-    <a class="logo" href="/">{{ .Site.Title }}</a>
-    <nav class="nav">
-      {{ $current := . }}
+<header class="site-header" role="banner">
+  <div class="contain">
+    <a class="brand" href="/">
+      <figure class="protect-img">
+        <img src="/images/logo/logo04.png" alt="{{ .Site.Title }} logo" width="134" height="32" />
+      </figure>
+    </a>
+
+    <!-- ハンバーガー -->
+    <button class="nav-toggle" aria-controls="primary-nav" aria-expanded="false" aria-label="Menu">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
+
+    <nav class="nav" id="primary-nav" aria-label="primary">
       <ul>
-        {{ range .Site.Menus.main }}
-          <li><a href="{{ .URL }}">{{ .Name }}</a></li>
-        {{ end }}
+        <li><a href="{{ "illustrations/" | relURL }}">Illustration</a></li>
+        <li><a href="{{ "gamebooks/" | relURL }}">Gamebook</a></li>
+        <li><a href="/news/">News</a></li>
+        <li><a href="{{ "/" | relURL }}#contact">Contact</a></li>
       </ul>
     </nav>
   </div>

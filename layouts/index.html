@@ -1,40 +1,140 @@
+
 {{ define "main" }}
-  <section class="hero-section">
+  <section class="hero" role="region" aria-label="main visual">
+    <div class="hero-bg">
+      <img src="/images/illust/hyoushi_animation.webp" alt="" aria-hidden="true" />
+    </div>
     <div class="hero-inner">
-      <h1>{{ .Site.Title }}</h1>
-      <p class="tagline">{{ .Site.Params.tagline }}</p>
+      <img src="/images/logo/logo01.png" alt="{{ .Site.Title }}" class="hero-logo" />
+      <p class="hero-tagline">Illustration / Gamebook Portfolio</p>
       {{ partial "social.html" . }}
     </div>
+    <button class="scroll-down" aria-label="scroll to contents" data-scroll-target="#works">
+      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+        <path fill="currentColor" d="M12 16.5 4.5 9l1.4-1.4L12 13.7l6.1-6.1L19.5 9z"/>
+      </svg>
+    </button>
   </section>
 
-  <section>
-    <h2>Latest Works</h2>
-    <div class="grid">
-      {{ range first 6 ( where .Site.RegularPages "Section" "works" ) }}
-        <article class="card">
-          <a href="{{ .RelPermalink }}">
-            {{ with .Params.cover }}
-              <img src="{{ . }}" alt="{{ $.Title }} cover" />
-            {{ end }}
-            <h3>{{ .Title }}</h3>
-          </a>
-          {{ if .Summary }}<p>{{ .Summary }}</p>{{ end }}
-        </article>
-      {{ end }}
+  <section id="works" class="section" aria-labelledby="works-title">
+  <div class="contain">
+    <h2 id="works-title">Works</h2>
+
+    <!-- 2枚の大きなカードボタン -->
+    <div class="work-ctas">
+      <a class="work-cta is-illust" href="{{ "illustrations/" | relURL }}">
+        <span class="work-cta__title">Illustrations</span>
+      </a>
+      <a class="work-cta is-gamebook" href="{{ "gamebooks/" | relURL }}">
+        <span class="work-cta__title">Gamebooks</span>
+      </a>
     </div>
-    <p class="more"><a href="/works/">作品一覧へ</a></p>
+  </div>
   </section>
 
-  <section>
-    <h2>News</h2>
-    <ul class="news-list">
-      {{ range first 5 ( where .Site.RegularPages "Section" "news" ) }}
-        <li>
-          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-          <time>{{ .Date.Format "2006-01-02" }}</time>
-        </li>
-      {{ end }}
-    </ul>
-    <p class="more"><a href="/news/">お知らせ一覧へ</a></p>
+  <section id="profile" class="section muted" aria-labelledby="profile-title">
+    <div class="contain profile">
+      <h2 id="profile-title">About</h2>
+      <div class="profile-min">
+        <img class="avatar" src="/images/icons/ten1.png" alt="Author icon" width="80" height="80" />
+        <div>
+          <h3>{{ .Site.Params.profileShort | default "モス/mossgray" }}</h3>
+          <p>かわいいに、わくわくをひとさじ。素敵なものと縁を探してます。
+          <br>イラストやゲームの制作など、広く活動しています。</p>
+        </div>
+      </div>
+    </div>
   </section>
+
+  <section id="news" class="section" aria-labelledby="news-title">
+    <div class="contain">
+      <h2 id="news-title">News</h2>
+      <ul class="news-list">
+        {{ range first 4 ( where .Site.RegularPages "Section" "news" ) }}
+          <li>
+            <div>
+              <a href="{{ .RelPermalink }}" class="news-title">{{ .Title }}</a>
+              <time datetime="{{ .Date }}">{{ .Date.Format "2006-08-02" }}</time>
+            </div>
+            <button class="btn small" data-open="#news-{{ .File.UniqueID }}">Quick view</button>
+            <div id="news-{{ .File.UniqueID }}" class="modal" role="dialog" aria-modal="true" aria-labelledby="n-ttl-{{ .File.UniqueID }}" aria-hidden="true">
+              <div class="dialog">
+                <h3 id="n-ttl-{{ .File.UniqueID }}">{{ .Title }}</h3>
+                <div class="content">{{ .Content }}</div>
+                <div class="actions">
+                  <a class="btn ghost" href="{{ .RelPermalink }}">Open page</a>
+                  <button class="btn" data-close>Close</button>
+                </div>
+              </div>
+            </div>
+          </li>
+        {{ end }}
+      </ul>
+      <p class="more"><a href="/news/">お知らせ一覧へ</a></p>
+    </div>
+  </section>
+
+  <section id="contact" class="section muted" aria-labelledby="contact-title">
+    <div class="contain">
+      <h2 id="contact-title">Contact</h2>
+
+      <div class="tabs" role="tablist" aria-label="contact forms">
+        <button role="tab" aria-selected="true" aria-controls="tab-commission" id="tab-commission-btn">お仕事の依頼 / Commission</button>
+        <button role="tab" aria-selected="false" aria-controls="tab-inquiry" id="tab-inquiry-btn">作品に関するお問い合わせ / General</button>
+      </div>
+
+      <div id="tab-commission" role="tabpanel" aria-labelledby="tab-commission-btn">
+        <form name="commission" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="commission"/>
+          <p class="hidden"><label>Don’t fill this out: <input name="bot-field"></label></p>
+
+          <div class="grid-2">
+            <p><label>お名前 / Name<br><input name="name" required></label></p>
+            <p><label>Email<br><input type="email" name="email" required></label></p>
+          </div>
+
+          <p><label>Your website<br><input name="website" placeholder="https://"></label></p>
+          <p><label>大本のクライアント社名 / Client<br><input name="client"></label></p>
+          <p><label>報酬の予算について / Budget<br><input name="budget" placeholder="例：¥100,000〜¥150,000"></label></p>
+          <p><label>作業内容について / Scope<br><textarea name="scope" rows="4" required></textarea></label></p>
+          <div class="grid-2">
+            <p><label>実績公開について / Portfolio use<br><input name="portfolio_use" placeholder="可 / 不可 / 条件付き"></label></p>
+            <p><label>リリース媒体 / Media<br><input name="media" placeholder="Web / App / Print など"></label></p>
+          </div>
+          <div class="grid-2">
+            <p><label>希望納期 / Deadline<br><input name="deadline" placeholder="YYYY-MM-DD"></label></p>
+            <p><label>その他、案件内容について / Notes<br><input name="notes"></label></p>
+          </div>
+          <p><button type="submit" class="btn">送信 / Send</button></p>
+        </form>
+      </div>
+
+      <div id="tab-inquiry" role="tabpanel" aria-labelledby="tab-inquiry-btn" hidden>
+        <form name="inquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="inquiry"/>
+          <p class="hidden"><label>Don’t fill this out: <input name="bot-field"></label></p>
+
+          <div class="grid-2">
+            <p><label>お名前 / Name<br><input name="name" required></label></p>
+            <p><label>Email<br><input type="email" name="email" required></label></p>
+          </div>
+          <p><label>お問い合わせ内容 / Message<br><textarea name="message" rows="6" required></textarea></label></p>
+          <div class="captcha" data-netlify-recaptcha="true"></div>
+          <p><button type="submit" class="btn">送信 / Send</button></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div id="profile-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="profile-ttl" aria-hidden="true">
+    <div class="dialog">
+      <h3 id="profile-ttl">About</h3>
+      <div class="content">
+        {{ .Site.Params.profileLong | default "ゲームブックとイラストを中心に制作しています。雨と静けさの美学をテーマに、ピクセルアートからコンセプトアートまで幅広く取り組みます。" }}
+      </div>
+      <div class="actions">
+        <button class="btn" data-close>Close</button>
+      </div>
+    </div>
+  </div>
 {{ end }}
