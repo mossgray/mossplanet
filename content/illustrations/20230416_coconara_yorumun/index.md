@@ -9,9 +9,10 @@ year: 2023
 tags:
   - original
   - character
-  - concept
 
 thumbnail: "yorumun_full.png"
+description: "ココナラ依頼のキャラクターデザイン案。北欧神話モチーフ。"
+
 ---
 
 ## 概要

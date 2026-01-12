@@ -21,7 +21,9 @@
 
           <div class="card-body">
             <h3 class="card-title">{{ .Title }}</h3>
-            {{ with .Params.description }}<p class="card-desc">{{ . }}</p>{{ end }}
+            {{ $desc := or .Params.description .Description }}
+            {{ with $desc }}<p class="card-desc">{{ . }}</p>{{ end }}
+
 
             {{ with .GetTerms "tags" }}
               <ul class="tags">

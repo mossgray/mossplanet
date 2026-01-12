@@ -84,3 +84,66 @@ main img, .content img{
 }
 .cards .tags li a { color: inherit; text-decoration: none; }
 .cards .tags li a:hover { text-decoration: underline; }
+
+/* Single illustration page layout */
+.work-head{
+  margin-bottom: 20px;
+}
+
+.work-hero{
+  margin: 20px 0 28px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.work-hero img{
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+/* Markdown content images */
+.work-content img, .content img, main img{
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+/* Single illustration */
+.work-hero, .work-figure{
+  margin: 20px 0 28px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.work-hero img, .work-figure img{
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+/* Markdown images safety */
+.work-content img, .content img, main img{
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Tags list */
+.tags{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tags a{
+  display:inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  text-decoration:none;
+}

@@ -2,22 +2,63 @@
 <section class="section">
   <div class="contain">
     <nav class="crumbs"><a href="{{ "/illustrations/" | relURL }}">← Illustrations</a></nav>
-    <h1>{{ .Title }}</h1>
-    {{ $img := .Params.image }}
-    {{ if not $img }}
-      {{ with .Resources.GetMatch "full*" }}{{ $img = .RelPermalink }}{{ end }}
+
+    <header class="work-head">
+      <h1 class="work-title">{{ .Title }}</h1>
+      {{ $desc := or .Params.description .Description }}
+      {{ with $desc }}<p class="lead">{{ . }}</p>{{ end }}
+
+    </header>
+
+    {{/* Hero: thumbnail -> *full* -> first image */}}
+    {{ $hero := or
+        (.Resources.GetMatch (.Params.thumbnail | default ""))
+        (.Resources.GetMatch "*full*")
+        (.Resources.GetMatch "{*.png,*.jpg,*.jpeg,*.webp}")
+    }}
+
+    {{ with $hero }}
+      <figure class="work-hero">
+        <a href="{{ .RelPermalink }}" target="_blank" rel="noopener">
+          <img src="{{ .RelPermalink }}" alt="{{ $.Title }}" loading="lazy">
+        </a>
+      </figure>
     {{ end }}
 
-    {{ if $img }}
-      <figure class="work-hero"><img src="{{ $img | relURL }}" alt="{{ .Title }}"></figure>
+    {{/* Optional: show structured images automatically */}}
+    {{ $full := .Resources.GetMatch "*full*" }}
+    {{ $rough := .Resources.GetMatch "*rough*" }}
+
+    {{ if or $full $rough }}
+      <section class="work-gallery">
+        {{ with $full }}
+          <h2 class="work-h2">Full</h2>
+          <figure class="work-figure">
+            <a href="{{ .RelPermalink }}" target="_blank" rel="noopener">
+              <img src="{{ .RelPermalink }}" alt="{{ $.Title }} full" loading="lazy">
+            </a>
+          </figure>
+        {{ end }}
+
+        {{ with $rough }}
+          <h2 class="work-h2">Rough</h2>
+          <figure class="work-figure">
+            <a href="{{ .RelPermalink }}" target="_blank" rel="noopener">
+              <img src="{{ .RelPermalink }}" alt="{{ $.Title }} rough" loading="lazy">
+            </a>
+          </figure>
+        {{ end }}
+      </section>
     {{ end }}
 
-    {{ with .Params.description }}<p class="lead">{{ . }}</p>{{ end }}
-    <div class="content">
+    <div class="content work-content">
       {{ .Content }}
     </div>
-    {{ with .Params.tags }}
-      <p class="tags">Tags: {{ delimit . ", " }}</p>
+
+    {{ with .GetTerms "tags" }}
+      <ul class="tags tags--links">
+        {{ range . }}<li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>{{ end }}
+      </ul>
     {{ end }}
   </div>
 </section>

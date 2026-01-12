@@ -508,3 +508,18 @@ img {
 @media (max-width: 700px){
   .cards{ grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Force show description in cards */
+.card-body{ overflow: visible; }
+
+.card-desc{
+  display: block !important;
+  margin-top: 8px;
+  line-height: 1.6;
+  opacity: 1 !important;
+  visibility: visible !important;
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+  color: inherit !important;
+}
