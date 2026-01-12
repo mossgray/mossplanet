@@ -4,16 +4,16 @@
     <h1 id="ttl">{{ .Title }}</h1>
 
     <div class="cards">
-      {{ range .Pages.ByDate.Reverse }}
+      {{ range .RegularPages.ByDate.Reverse }}
 
-        /* 1) front matter の thumbnail を優先してページバンドルから取得
-             2) 無ければ "thumb*" にマッチする最初の画像を使う */
-        {{ $thumbRes := or (.Resources.GetMatch .Params.thumbnail) (.Resources.GetMatch "thumb*") }}
+        {{/* 1) front matter の thumbnail を優先してページバンドルから取得
+              2) 無ければ "thumb*" にマッチする最初の画像を使う */}}
+        {{ $thumbRes := or (.Resources.GetMatch (.Params.thumbnail | default "")) (.Resources.GetMatch "thumb*") }}
 
         <a class="card" href="{{ .RelPermalink }}" data-tags='{{ jsonify (.Params.tags | default (slice)) }}'>
           <figure class="card-thumb" aria-hidden="true">
             {{ with $thumbRes }}
-              <img src="{{ .RelPermalink }}" alt="">
+              <img class="card-thumb-img" src="{{ .RelPermalink }}" alt="" loading="lazy">
             {{ else }}
               <div class="ph">NO IMAGE</div>
             {{ end }}
@@ -23,7 +23,6 @@
             <h3 class="card-title">{{ .Title }}</h3>
             {{ with .Params.description }}<p class="card-desc">{{ . }}</p>{{ end }}
 
-            {{/* タグを表示（リンク付き） */}}
             {{ with .GetTerms "tags" }}
               <ul class="tags">
                 {{ range . }}<li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>{{ end }}
