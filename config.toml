@@ -30,3 +30,7 @@ enableRobotsTXT = true
     name = "Contact"
     url = "/contact/"
     weight = 30
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"

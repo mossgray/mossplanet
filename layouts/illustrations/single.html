@@ -1,0 +1,24 @@
+{{ define "main" }}
+<section class="section">
+  <div class="contain">
+    <nav class="crumbs"><a href="{{ "/illustrations/" | relURL }}">← Illustrations</a></nav>
+    <h1>{{ .Title }}</h1>
+    {{ $img := .Params.image }}
+    {{ if not $img }}
+      {{ with .Resources.GetMatch "full*" }}{{ $img = .RelPermalink }}{{ end }}
+    {{ end }}
+
+    {{ if $img }}
+      <figure class="work-hero"><img src="{{ $img | relURL }}" alt="{{ .Title }}"></figure>
+    {{ end }}
+
+    {{ with .Params.description }}<p class="lead">{{ . }}</p>{{ end }}
+    <div class="content">
+      {{ .Content }}
+    </div>
+    {{ with .Params.tags }}
+      <p class="tags">Tags: {{ delimit . ", " }}</p>
+    {{ end }}
+  </div>
+</section>
+{{ end }}
