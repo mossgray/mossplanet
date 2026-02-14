@@ -1,0 +1,97 @@
+{{ define "main" }}
+  {{- $pages := .Pages.ByDate.Reverse -}}
+  {{- $tagCounts := dict -}}
+  {{- $tagLabels := dict -}}
+  {{- $allTags := slice -}}
+  {{- range $pages -}}
+    {{- range .Params.tags -}}
+      {{- $label := . -}}
+      {{- $tag := lower $label -}}
+      {{- if not (in $allTags $tag) -}}
+        {{- $allTags = $allTags | append $tag -}}
+        {{- $tagLabels = merge $tagLabels (dict $tag $label) -}}
+      {{- end -}}
+      {{- $count := index $tagCounts $tag | default 0 -}}
+      {{- $tagCounts = merge $tagCounts (dict $tag (add $count 1)) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $allTags = sort $allTags -}}
+
+  <section class="works" data-reveal>
+    <header class="works-header" data-reveal>
+      <h1 class="works-title">{{ .Title }}</h1>
+      {{ with .Params.description }}<p class="works-lead">{{ . }}</p>{{ end }}
+    </header>
+
+    <div class="works-filter" data-works-filter data-reveal>
+      <h2 class="works-filter-title">タグで絞り込み</h2>
+      <p class="works-filter-note">複数選択でAND検索になります。</p>
+      <fieldset class="works-filter-options" data-works-options>
+        <legend class="sr-only">タグ一覧</legend>
+        {{ range $allTags }}
+          <label class="works-filter-option">
+            <input type="checkbox" name="tag" value="{{ . }}" />
+            <span>{{ index $tagLabels . }}</span>
+            <span class="works-filter-count">({{ index $tagCounts . }})</span>
+          </label>
+        {{ end }}
+      </fieldset>
+      <button class="works-filter-toggle" type="button" data-works-toggle data-limit="8" aria-expanded="false">
+        もっと見る
+      </button>
+    </div>
+
+    <div class="works-grid" data-works-grid data-reveal>
+      {{ range $pages }}
+        {{- $tags := .Params.tags | default (slice) -}}
+        {{- $tagList := slice -}}
+        {{- range $tags -}}
+          {{- $tagList = $tagList | append (lower .) -}}
+        {{- end -}}
+        {{- $detailID := printf "work-detail-%s" .File.UniqueID -}}
+        <button class="work-tile" type="button" data-reveal
+          data-tags-json='{{ $tagList | jsonify }}'
+          data-title="{{ .Title }}"
+          data-image="{{ .Params.image | relURL }}"
+          data-alt="{{ .Params.alt | default .Title }}"
+          data-detail-id="{{ $detailID }}">
+          <span class="work-thumb">
+            <img src="{{ .Params.thumb | relURL }}" alt="{{ .Params.alt | default .Title }}" loading="lazy" data-fade />
+          </span>
+          <span class="work-meta">
+            <span class="work-name">{{ .Title }}</span>
+            {{ with .Date }}<span class="work-date">{{ .Format "2006.01.02" }}</span>{{ end }}
+            {{ with $tags }}
+              <span class="work-tags" aria-label="タグ">
+                {{- range . -}}
+                  <span class="work-tag">{{ . }}</span>
+                {{- end -}}
+              </span>
+            {{ end }}
+          </span>
+        </button>
+        <template id="{{ $detailID }}">
+          {{ .Content }}
+        </template>
+      {{ end }}
+    </div>
+
+    <p class="works-empty" data-works-empty hidden>該当する作品がありません。</p>
+  </section>
+
+  <div class="works-modal" data-works-modal role="dialog" aria-modal="true" aria-hidden="true" hidden>
+    <div class="works-modal__inner" role="document">
+      <button class="works-modal__close" type="button" data-works-close aria-label="閉じる">×</button>
+      <h3 class="works-modal__title" data-works-modal-title></h3>
+      <div class="works-modal__content" data-works-modal-content>
+        <figure class="works-modal__figure" data-works-modal-fallback>
+          <img src="" alt="" data-fade />
+          <figcaption class="works-modal__caption" data-works-caption></figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+
+  {{- $worksJS := resources.Get "js/works.js" -}}
+  <script src="{{ $worksJS.RelPermalink }}" defer></script>
+{{ end }}

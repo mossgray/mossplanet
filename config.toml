@@ -9,12 +9,14 @@ enableRobotsTXT = true
 [params]
   tagline = "Illustration / Gamebook Portfolio"
   author = "モス / mossgray"
-  description = "作家：モスの作品ポートフォリオ。イラストとかゲームとか、いろいろ。"
-  twitter = "https://x.com/your_handle"
-  youtube = "https://www.youtube.com/@your_channel"
-  skeb = "https://skeb.jp/@your_handle"
+  description = "モスの作品ポートフォリオです。"
+  twitter = "https://x.com/mossgray_"
+  youtube = "https://www.youtube.com/@mossgray_"
+  skeb = "https://skeb.jp/@mossgray_"
   email = "you@example.com"
-  logo = "/images/logo03.png"
+  logo = "/images/logo/logo01.png"
+  heroImage = "/images/illust/hyoushi_animation.webp"
+  profileImage = "/images/icons/profile.png"
   googleAnalytics = "G-FYDLVHFME8"
 
 [menu]
@@ -22,15 +24,12 @@ enableRobotsTXT = true
     name = "Works"
     url = "/works/"
     weight = 10
-  [[menu.main]]
-    name = "News"
-    url = "/news/"
-    weight = 20
-  [[menu.main]]
-    name = "Contact"
-    url = "/contact/"
-    weight = 30
 
 [taxonomies]
   tag = "tags"
   category = "categories"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

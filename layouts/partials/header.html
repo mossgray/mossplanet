@@ -2,22 +2,13 @@
   <div class="contain">
     <a class="brand" href="/">
       <figure class="protect-img">
-        <img src="/images/logo/logo04.png" alt="{{ .Site.Title }} logo" width="134" height="32" />
+        <img src="{{ .Site.Params.logo | default "/images/logo/logo04.png" }}" alt="{{ .Site.Title }} logo" width="134" height="32" data-fade />
       </figure>
+      <span class="brand-title">{{ .Site.Title }}</span>
     </a>
 
-    <!-- ハンバーガー -->
-    <button class="nav-toggle" aria-controls="primary-nav" aria-expanded="false" aria-label="Menu">
-      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
-    </button>
-
-    <nav class="nav" id="primary-nav" aria-label="primary">
-      <ul>
-        <li><a href="{{ "illustrations/" | relURL }}">Illustration</a></li>
-        <li><a href="{{ "gamebooks/" | relURL }}">Gamebook</a></li>
-        <li><a href="/news/">News</a></li>
-        <li><a href="{{ "/" | relURL }}#contact">Contact</a></li>
-      </ul>
-    </nav>
+    <div class="site-nav">
+      <a class="nav-link" href="{{ "works/" | relURL }}">Works</a>
+    </div>
   </div>
 </header>

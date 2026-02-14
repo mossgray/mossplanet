@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  {{ partial "head.html" . }}
+  {{ block "head" . }}
+    {{ partial "head.html" . }}
+  {{ end }}
 </head>
 <body class="site">
   {{ partial "header.html" . }}
@@ -11,6 +13,12 @@
   </main>
 
   {{ partial "footer.html" . }}
-  <script src="{{ "js/main.js" | relURL }}" defer></script>
+  {{- with resources.Get "js/main.js" -}}
+    <script src="{{ .RelPermalink }}" defer></script>
+  {{- else -}}
+    {{- with "js/main.js" | relURL -}}
+      <script src="{{ . }}" defer></script>
+    {{- end -}}
+  {{- end }}
 </body>
 </html>
