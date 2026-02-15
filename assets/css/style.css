@@ -104,6 +104,7 @@ img {
   gap: 20px;
 }
 
+.brand picture,
 .brand img {
   display: block;
 }
@@ -353,6 +354,17 @@ img {
 }
 
 @media (max-width: 900px) {
+  .site-header .contain {
+    padding: 12px 16px;
+  }
+
+  .brand img {
+    width: auto;
+    height: 36px;
+    max-width: min(56vw, 240px);
+    object-fit: contain;
+  }
+
   .hero {
     min-height: clamp(420px, 60vh, 640px);
   }

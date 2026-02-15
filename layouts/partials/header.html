@@ -2,7 +2,10 @@
   <div class="contain">
     <a class="brand" href="/">
       <figure class="protect-img">
-        <img src="{{ .Site.Params.logo | default "/images/logo/logo04.png" }}" alt="{{ .Site.Title }} logo" width="134" height="32" data-fade />
+         <picture>
+          <source media="(max-width: 720px)" srcset="{{ .Site.Params.logoMobile | default (.Site.Params.logo | default "/images/logo/logo04.png") }}">
+          <img src="{{ .Site.Params.logo | default "/images/logo/logo04.png" }}" alt="{{ .Site.Title }} logo" width="134" height="32" data-fade />
+        </picture>
       </figure>
       <span class="brand-title">{{ .Site.Title }}</span>
     </a>
