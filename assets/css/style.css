@@ -366,14 +366,15 @@ img {
   }
 
   .hero {
-    min-height: clamp(420px, 60vh, 640px);
+    min-height: clamp(520px, 80vh, 6400px);
   }
 
   .hero-overlay {
     max-width: 90%;
+    max-height: 50vh;
     top: auto;
     transform: none;
-    margin: clamp(80px, 140px, 30%) auto 0;
+    margin: clamp(80px, 180px, 40%) auto 0;
   }
 }
 
