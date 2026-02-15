@@ -1,9 +1,10 @@
 [build]
-  command = "hugo"
+  command = "hugo --gc --minify"
   publish = "public"
 
 [build.environment]
   HUGO_VERSION = "0.126.1"
+  HUGO_ENV = "production"
 
 # Redirects (optional): ensure pretty URLs
 [[redirects]]
