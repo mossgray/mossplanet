@@ -18,3 +18,16 @@ disableKinds = ["taxonomy", "term"]
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
+
+# Netlify の _headers を出力する（確認用URLで X-Robots-Tag: noindex を付けるため）
+[mediaTypes."text/netlify"]
+  suffixes = [""]
+
+[outputFormats.headers]
+  mediaType = "text/netlify"
+  baseName = "_headers"
+  isPlainText = true
+  notAlternative = true
+
+[outputs]
+  home = ["html", "rss", "headers"]

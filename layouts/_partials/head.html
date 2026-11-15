@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ $title }}</title>
+{{- if not hugo.IsProduction }}
+<meta name="robots" content="noindex, nofollow">
+{{- end }}
 <meta name="description" content="{{ $desc }}">
 <link rel="canonical" href="{{ .Permalink }}">
 <meta property="og:title" content="{{ $title }}">

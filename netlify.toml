@@ -4,3 +4,10 @@
 
 [build.environment]
   HUGO_VERSION = "0.170.0"
+
+# 確認用URL（ブランチ公開・デプロイプレビュー）は preview 環境でビルドし、noindex にする
+[context.branch-deploy]
+  command = "hugo --gc --minify --environment preview"
+
+[context.deploy-preview]
+  command = "hugo --gc --minify --environment preview"
