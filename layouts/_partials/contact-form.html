@@ -35,6 +35,6 @@
     <label for="cf-message">{{ T "form_message" }}<span class="required">{{ T "form_required" }}</span></label>
     <textarea id="cf-message" name="message" rows="8" required></textarea>
   </div>
-  <p class="form-privacy">{{ T "form_privacy" (dict "url" ("/privacy/" | relLangURL)) | safeHTML }}</p>
+  <p class="form-privacy">{{ T "form_privacy" (dict "url" ("/privacy/" | relURL)) | safeHTML }}</p>
   <button class="button" type="submit">{{ T "form_submit" }}</button>
 </form>

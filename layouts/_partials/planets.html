@@ -7,7 +7,9 @@
   ※ 一覧ページを作るかどうかは content/_content.gotmpl で同じ規則で決めている
 */ -}}
 {{- $min := site.Params.min_works | default 1 -}}
-{{- $works := where (where site.RegularPages "Section" "works") "Params.planets" "!=" nil -}}
+{{- /* 作品は日本語版にだけある。英語版のページからも同じ件数を数えるため、日本語版（最初のサイト）から数える */ -}}
+{{- $ja := index hugo.Sites 0 -}}
+{{- $works := where (where $ja.RegularPages "Section" "works") "Params.planets" "!=" nil -}}
 {{- $list := slice -}}
 {{- range hugo.Data.planets -}}
   {{- $id := .id -}}
@@ -16,7 +18,7 @@
   {{- $public := true -}}
   {{- if eq $id "fanart" -}}
     {{- $public = site.Params.fanart_public | default false -}}
-    {{- with site.GetPage "/fanart" -}}{{- $count = len .RegularPages -}}{{- end -}}
+    {{- with $ja.GetPage "/fanart" -}}{{- $count = len .RegularPages -}}{{- end -}}
   {{- else -}}
     {{- $count = len (where $works "Params.planets" "intersect" (slice $id)) -}}
   {{- end -}}

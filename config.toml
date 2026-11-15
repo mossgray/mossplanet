@@ -1,5 +1,4 @@
 baseURL = "https://mossplanet.com/"
-locale = "ja"
 defaultContentLanguage = "ja"
 title = "mossplanet"
 enableRobotsTXT = true
@@ -49,3 +48,18 @@ disableKinds = ["taxonomy", "term"]
 
 [outputs]
   home = ["html", "rss", "headers"]
+
+# 日本語が主、英語は海外からの依頼の受け入れ口（docs/spec.md 第6.6節）
+# 英語版はトップ・About・人工衛星だけ（ファイル名に .en を付けたもの：_index.en.md など）
+# ※ TOML では表（[...]）の後ろの項目はその表に入るので、この表は必ずファイルの最後に置く
+[languages]
+  [languages.ja]
+    weight = 1
+    label = "日本語"
+    locale = "ja"
+  [languages.en]
+    weight = 2
+    label = "English"
+    locale = "en"
+    [languages.en.params]
+      description = "Portfolio of mossgray: character illustration, pixel art, gamebooks and Live2D models."

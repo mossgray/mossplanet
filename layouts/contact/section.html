@@ -14,7 +14,8 @@
     <div>
       <h1 class="title-band-title">{{ .Title }}</h1>
       <p class="status-sign {{ if $open }}is-open{{ else }}is-closed{{ end }}">
-        {{- if $open }}{{ T "contact_open" }}<span lang="en">OPEN</span>{{ else }}{{ T "contact_closed" }}<span lang="en">CLOSED</span>{{ end -}}
+        {{- if eq site.Language.Lang "en" }}{{ if $open }}OPEN<span>{{ T "contact_open" }}</span>{{ else }}CLOSED<span>{{ T "contact_closed" }}</span>{{ end }}
+        {{- else }}{{ if $open }}{{ T "contact_open" }}<span lang="en">OPEN</span>{{ else }}{{ T "contact_closed" }}<span lang="en">CLOSED</span>{{ end }}{{ end -}}
       </p>
     </div>
   </div>

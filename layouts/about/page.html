@@ -6,6 +6,7 @@
 
 {{ define "main" }}
 {{- $planets := where (partialCached "planets.html" .) "visible" true -}}
+{{- $en := eq site.Language.Lang "en" -}}
 {{- $logo := (resources.Get "images/logo/logo-full.png").Resize "x120 webp q90" -}}
 <div class="about">
   {{- /* 冒頭：モスの星、名前、コピー */ -}}
@@ -24,18 +25,18 @@
   <div class="about-body">
     {{- /* 自己紹介 */ -}}
     <section>
-      <h2>自己紹介</h2>
+      <h2>{{ T "about_intro" }}</h2>
       <div class="prose">{{ .Content }}</div>
     </section>
 
     {{- /* 惑星の紹介 */ -}}
     <section>
-      <h2>モスの惑星</h2>
+      <h2>{{ T "about_planets" }}</h2>
       <ul class="about-planets">
         {{- range $planets }}
         <li>
-          <a href="{{ .url | relURL }}">{{ partial "pixel-icon.html" (dict "color" .color "size" 32 "scale" 2) }}<span class="about-planet-name">{{ .name }}{{ if .pending }}<small class="pending-badge">{{ T "pending" }}</small>{{ end }}</span></a>
-          <p>{{ if .todo }}{{ partial "todo-text.html" (dict "text" .tagline "page" $) }}{{ else }}{{ .tagline }}{{ end }}</p>
+          <a href="{{ .url | relURL }}">{{ partial "pixel-icon.html" (dict "color" .color "size" 32 "scale" 2) }}<span class="about-planet-name">{{ cond $en .name_en .name }}{{ if .pending }}<small class="pending-badge">{{ T "pending" }}</small>{{ end }}</span></a>
+          <p>{{ $tag := cond $en .tagline_en .tagline }}{{ if .todo }}{{ partial "todo-text.html" (dict "text" $tag "page" $) }}{{ else }}{{ $tag }}{{ end }}</p>
         </li>
         {{- end }}
       </ul>
@@ -54,13 +55,13 @@
     {{- /* 頒布物 */ -}}
     {{- with .Params.booth }}
     <section>
-      <h2>頒布物</h2>
+      <h2>{{ T "about_booth" }}</h2>
       <p><a href="{{ .url }}" rel="noopener">BOOTH（mossplanet）</a>：{{ if .todo }}{{ partial "todo-text.html" (dict "text" .items "page" $) }}{{ else }}{{ .items }}{{ end }}</p>
     </section>
     {{- end }}
 
     {{- /* 依頼への導線 */ -}}
-    <p class="about-cta"><a class="button" href="{{ "/contact/" | relLangURL }}">{{ partial "pixel-icon.html" (dict "kind" "satellite" "color" "#5b8def" "size" 16 "scale" 2) }}依頼・問い合わせ</a></p>
+    <p class="about-cta"><a class="button" href="{{ "/contact/" | relLangURL }}">{{ partial "pixel-icon.html" (dict "kind" "satellite" "color" "#5b8def" "size" 16 "scale" 2) }}{{ T "nav_contact" }}</a></p>
   </div>
 </div>
 {{ end }}

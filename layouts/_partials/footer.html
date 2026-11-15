@@ -14,7 +14,7 @@
     {{- end }}
   </ul>
   <p class="footer-meta">
-    <a href="{{ "/privacy/" | relLangURL }}">{{ T "privacy" }}</a>
+    <a href="{{ "/privacy/" | relURL }}"{{ if ne site.Language.Lang "ja" }} hreflang="ja"{{ end }}>{{ T "privacy" }}</a>
     <span class="copyright">© {{ now.Year }} mossplanet</span>
   </p>
 </footer>

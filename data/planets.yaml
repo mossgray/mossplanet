@@ -2,8 +2,8 @@
 # 色は仮。ドット絵ができたら実際の色に差し替える。
 # seed / surface / offset はフェーズ0の自動生成の仮素材用（surface: noise=まだら, bands=縞模様）。
 # offset はトップでの上下のずらし量（惑星1ドット単位、0〜6。段の間隔が8ドットなので重ならない）。
-# tagline はトップの吹き出しのひとこと（全角20字以内）、intro は一覧ページの紹介文（2〜3行）。
-# todo: true の惑星は、tagline と intro が仮の文章（本人があとで書き換える。書き換えたら todo の行を消す）。
+# tagline はトップの吹き出しのひとこと（全角20字以内）、tagline_en はその英語版、intro は一覧ページの紹介文（2〜3行）。
+# todo: true の惑星は、tagline・tagline_en・intro が仮の文章（本人があとで書き換える。書き換えたら todo の行を消す）。
 - id: illustration
   name: イラスト
   name_en: Illustration
@@ -14,6 +14,7 @@
   surface: noise
   offset: 0
   tagline: キャラクターの一枚絵の星
+  tagline_en: A planet of character illustrations
   intro: キャラクターデザイン、立ち絵、配信用ビジュアル、MV用イラストなどの一枚絵を集めた惑星です。
   todo: true
 - id: pixel-art
@@ -26,6 +27,7 @@
   surface: bands
   offset: 6
   tagline: ドットで描いた小さな世界
+  tagline_en: Tiny worlds drawn in pixels
   intro: ドット絵のイラストやアイコン、アニメーションを集めた惑星です。
   todo: true
 - id: gamebook
@@ -38,6 +40,7 @@
   surface: noise
   offset: 2
   tagline: 読んで遊ぶ物語の森
+  tagline_en: A forest of stories you play by reading
   intro: 読みながら選んで進むゲームブックの作品を集めた惑星です。
   todo: true
 - id: live2d
@@ -50,6 +53,7 @@
   surface: bands
   offset: 4
   tagline: 動いて話すキャラクターの星
+  tagline_en: Characters that move and talk
   intro: 配信用のLive2Dモデルを集めた惑星です。イラストの描き起こしから、モデリング、動き付けまで担当しています。
   todo: true
 - id: original
@@ -62,6 +66,7 @@
   surface: noise
   offset: 0
   tagline: うちの子たちが暮らす星
+  tagline_en: Home of my original characters
   intro: モスのオリジナルキャラクターたちを紹介する惑星です。
   todo: true
 - id: fanart
@@ -74,5 +79,6 @@
   surface: noise
   offset: 3
   tagline: 好きな作品へのファンアート
+  tagline_en: Fan art of works I love
   intro: 好きな作品のファンアートを、シリーズごとにまとめた惑星です。
   todo: true

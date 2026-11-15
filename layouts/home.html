@@ -1,7 +1,7 @@
 {{ define "bodyClass" }}page home{{ end }}
 
 {{ define "main" }}
-<h1 class="visually-hidden">mossplanet — モスのイラスト・ドット絵・ゲームブック</h1>
+<h1 class="visually-hidden">{{ T "home_h1" }}</h1>
 <div class="space">
   <ul class="planets">
     {{- /* 本番では作品数が min_works 未満の惑星を出さない（_partials/planets.html） */ -}}
