@@ -943,3 +943,82 @@ img.is-pixel {
   font: inherit;
   font-size: 0.875rem;
 }
+
+/* ---------- 惑星の一覧ページ（第6.1節） ---------- */
+.planet-band .title-band-inner {
+  align-items: flex-start;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+/* 回る惑星。帯の中では2倍（128px）、PC では3倍（192px）。整数倍を保つ */
+.planet-band-body {
+  --band-scale: 2;
+  display: block;
+  flex: none;
+  width: calc(64px * var(--band-scale));
+  height: calc(64px * var(--band-scale));
+}
+
+@media (min-width: 1024px) {
+  .planet-band-body {
+    --band-scale: 3;
+  }
+}
+
+.planet-band .title-band-title small {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.planet-band .todo {
+  margin-bottom: 0;
+}
+
+.planet-intro {
+  margin: 8px 0 0;
+}
+
+.section-title small {
+  margin-left: 8px;
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.pending-note {
+  margin: 0 0 24px;
+  padding: 16px;
+  border: 2px dashed #b8c9c6;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+}
+
+.pending-note p {
+  margin: 0;
+}
+
+.pending-note p + p {
+  margin-top: 8px;
+}
+
+.pending-note a {
+  margin-right: 12px;
+}
+
+/* 代表作は大きめに（PC 3列、スマートフォン 1列） */
+.featured-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 600px) {
+  .featured-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .featured-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

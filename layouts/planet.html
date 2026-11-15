@@ -1,0 +1,71 @@
+{{- /* 惑星の一覧ページ（content/_content.gotmpl が作る）。docs/spec.md 第6.1節 */ -}}
+{{ define "bodyClass" }}page planet-page{{ end }}
+
+{{ define "main" }}
+{{- $id := .Params.planet -}}
+{{- $p := index (where (partialCached "planets.html" .) "id" $id) 0 -}}
+{{- $works := (where (where site.RegularPages "Section" "works") "Params.planets" "intersect" (slice $id)).ByDate.Reverse -}}
+
+{{- /* タイトル帯：惑星の色を薄めた背景、左に回る惑星、右に名前と紹介文 */ -}}
+<header class="title-band planet-band" style="--band: {{ $p.band | safeCSS }};">
+  <div class="title-band-inner">
+    <span class="planet-band-body" data-pixel-snap aria-hidden="true">
+      <canvas class="planet-canvas" width="64" height="64"
+        data-color="{{ $p.color }}" data-seed="{{ $p.seed }}" data-surface="{{ $p.surface }}"></canvas>
+    </span>
+    <div>
+      <h1 class="title-band-title">{{ $p.name }}<small lang="en">{{ $p.name_en }}</small></h1>
+      {{- if $p.todo }}
+      {{ partial "todo-text.html" (dict "text" $p.intro "page" . "block" true) }}
+      {{- else }}
+      <p class="planet-intro">{{ $p.intro }}</p>
+      {{- end }}
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  {{- if $p.pending }}
+  <div class="pending-note">
+    <p><strong>{{ T "pending" }}</strong>：この惑星の作品はまだ{{ if $works }}{{ len $works }}件で、公開の条件（{{ site.Params.min_works }}件以上）に足りません{{ else }}ありません{{ end }}。本番のサイトでは、この惑星はトップやメニューに出ず、このページも作られません。</p>
+    <p>ほかの惑星：
+      {{- range where (where (partialCached "planets.html" .) "visible" true) "pending" false }}
+      <a href="{{ .url | relURL }}">{{ .name }}</a>
+      {{- end }}
+    </p>
+  </div>
+  {{- end }}
+
+  {{- /* 代表作：featured_in にこの惑星を書いた作品。3件未満なら新しい作品から補う（第5.4節と同じ選び方） */ -}}
+  {{- $featured := where $works "Params.featured_in" "intersect" (slice $id) -}}
+  {{- range $works -}}
+    {{- if lt (len $featured) 3 -}}
+      {{- if not (in $featured .) -}}{{- $featured = $featured | append . -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $featured = first 3 $featured -}}
+  {{- with $featured }}
+  <h2 class="section-title">代表作</h2>
+  <ul class="work-grid featured-grid">
+    {{- range . }}
+    {{ partial "work-card.html" (dict "page" . "current" $id) }}
+    {{- end }}
+  </ul>
+  {{- end }}
+
+  {{- with $works }}
+  <h2 class="section-title">すべての作品<small>{{ len . }} works</small></h2>
+  <ul class="work-grid">
+    {{- range . }}
+    {{ partial "work-card.html" (dict "page" . "current" $id) }}
+    {{- end }}
+  </ul>
+  {{- end }}
+</div>
+{{ end }}
+
+{{ define "scripts" }}
+{{- with resources.Get "js/planets.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{ end }}
