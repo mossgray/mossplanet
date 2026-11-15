@@ -1,6 +1,26 @@
+{{ define "bodyClass" }}page home{{ end }}
+
 {{ define "main" }}
-<div class="container">
-  <h1>{{ site.Title }}</h1>
-  {{ .Content }}
+<h1 class="visually-hidden">mossplanet — モスのイラスト・ドット絵・ゲームブック</h1>
+<div class="space">
+  <ul class="planets">
+    {{- range $i, $p := hugo.Data.planets }}
+    <li class="planet" style="--i: {{ $i }}; --dy: {{ $p.offset | default 0 }}; --planet: {{ $p.color | safeCSS }};">
+      <a class="planet-link" href="{{ printf "/%s/" $p.id | relURL }}">
+        <span class="planet-body" aria-hidden="true">
+          <canvas class="planet-canvas" width="64" height="64"
+            data-color="{{ $p.color }}" data-seed="{{ $p.seed }}" data-surface="{{ $p.surface }}"></canvas>
+        </span>
+        <span class="planet-name">{{ $p.name }}</span>
+      </a>
+    </li>
+    {{- end }}
+  </ul>
 </div>
+{{ end }}
+
+{{ define "scripts" }}
+{{- with resources.Get "js/planets.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
 {{ end }}

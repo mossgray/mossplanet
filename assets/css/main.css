@@ -66,9 +66,10 @@ img {
   top: 0;
   z-index: 10;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 4px 16px;
   padding: 12px 16px;
   background: var(--brand-light);
 }
@@ -119,4 +120,152 @@ img {
 .page-list time {
   margin-left: 0.5em;
   font-size: 0.875em;
+}
+
+/* ---------- トップ（宇宙） docs/spec.md 第5章 ---------- */
+
+/* ドット絵の倍率（必ず整数倍）。第5.3節の表のとおり */
+:root {
+  --scale: 2;
+}
+
+@media (min-width: 600px) {
+  :root {
+    --scale: 3;
+  }
+}
+
+@media (min-width: 1024px) and (min-height: 900px) {
+  :root {
+    --scale: 4;
+  }
+}
+
+.home {
+  --space: #e6f5f2;
+  background-color: var(--space);
+  background-image: var(--starfield, none);
+  background-size: calc(64px * var(--scale)) calc(64px * var(--scale));
+  image-rendering: pixelated;
+}
+
+.home .site-header {
+  background: transparent;
+}
+
+.space {
+  display: flex;
+  justify-content: center;
+  padding: 16px 16px 32px;
+}
+
+/* 列幅は惑星の幅で固定（長い名前は折り返す）。段の間隔は上下のずらし量（最大6ドット）より広い8ドット */
+.planets {
+  display: grid;
+  grid-template-columns: repeat(2, calc(64px * var(--scale) + 8px));
+  gap: calc(8px * var(--scale)) 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 600px) {
+  .planets {
+    grid-template-columns: repeat(3, calc(64px * var(--scale) + 8px));
+    column-gap: calc(8px * var(--scale));
+  }
+}
+
+/* 少しずつ上下にずらす（惑星1ドット単位なので整数倍を保つ） */
+.planet {
+  transform: translateY(calc(var(--dy, 0) * var(--scale) * 1px));
+}
+
+.planet-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.planet-link:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: 2px;
+}
+
+.planet-body {
+  position: relative;
+  display: block;
+  width: calc(64px * var(--scale));
+  height: calc(64px * var(--scale));
+}
+
+.planet-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* JavaScript が動かないときの代わり：惑星の色の丸（止まった状態） */
+.planet-body::before {
+  content: "";
+  position: absolute;
+  inset: calc(1px * var(--scale));
+  border: calc(1px * var(--scale)) solid var(--text);
+  border-radius: 50%;
+  background: var(--planet);
+}
+
+.planet-body.is-drawn::before {
+  content: none;
+}
+
+.planet-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .planet-name {
+    font-size: 1rem;
+  }
+}
+
+.planet-link:hover .planet-name {
+  text-decoration: underline;
+}
+
+/* 開いたときに惑星が順にふわっと現れる */
+@keyframes planet-appear {
+  from {
+    opacity: 0;
+    translate: 0 calc(4px * var(--scale));
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.planet-link {
+  animation: planet-appear 0.6s ease-out both;
+  animation-delay: calc(var(--i, 0) * 0.12s);
+}
+
+/* 「視差効果を減らす」がオンなら、すべての動きを止める */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }

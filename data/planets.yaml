@@ -1,0 +1,58 @@
+# 惑星の設定（docs/spec.md 第7.2節）
+# 色は仮。ドット絵ができたら実際の色に差し替える。
+# seed / surface / offset はフェーズ0の自動生成の仮素材用（surface: noise=まだら, bands=縞模様）。
+# offset はトップでの上下のずらし量（惑星1ドット単位、0〜6。段の間隔が8ドットなので重ならない）。
+- id: illustration
+  name: イラスト
+  name_en: Illustration
+  color: "#f3c94f"
+  band: "#fdf4d6"
+  bubble_thumbs: true
+  seed: 11
+  surface: noise
+  offset: 0
+- id: pixel-art
+  name: ピクセルアート
+  name_en: Pixel Art
+  color: "#f08cb4"
+  band: "#fde7f0"
+  bubble_thumbs: true
+  seed: 23
+  surface: bands
+  offset: 6
+- id: gamebook
+  name: ゲームブック
+  name_en: Gamebook
+  color: "#8cc63f"
+  band: "#eef7e0"
+  bubble_thumbs: true
+  seed: 37
+  surface: noise
+  offset: 2
+- id: live2d
+  name: Live2D
+  name_en: Live2D
+  color: "#f39a4a"
+  band: "#fdebd9"
+  bubble_thumbs: true
+  seed: 41
+  surface: bands
+  offset: 4
+- id: original
+  name: オリジナルキャラクター
+  name_en: Original Characters
+  color: "#5b8def"
+  band: "#e5edfd"
+  bubble_thumbs: true
+  seed: 53
+  surface: noise
+  offset: 0
+- id: fanart
+  name: 二次創作
+  name_en: Fan Art
+  color: "#9b7fe0"
+  band: "#efe9fb"
+  bubble_thumbs: false
+  seed: 67
+  surface: noise
+  offset: 3
