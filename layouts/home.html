@@ -5,7 +5,7 @@
 <div class="space">
   <ul class="planets">
     {{- range $i, $p := hugo.Data.planets }}
-    <li class="planet" style="--i: {{ $i }}; --dy: {{ $p.offset | default 0 }}; --planet: {{ $p.color | safeCSS }};">
+    <li class="planet" data-pixel-snap style="--i: {{ $i }}; --dy: {{ $p.offset | default 0 }}; --planet: {{ $p.color | safeCSS }};">
       <a class="planet-link" href="{{ printf "/%s/" $p.id | relURL }}">
         <span class="planet-body" aria-hidden="true">
           <canvas class="planet-canvas" width="64" height="64"

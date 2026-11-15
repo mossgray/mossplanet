@@ -42,6 +42,11 @@ img {
   height: auto;
 }
 
+/* ドット絵の位置を整数ピクセルに揃える（assets/js/pixel-snap.js が端数を入れる） */
+[data-pixel-snap] {
+  translate: var(--snap-x, 0px) var(--snap-y, 0px);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
