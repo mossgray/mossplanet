@@ -1,34 +1,18 @@
 baseURL = "https://mossplanet.com/"
-languageCode = "ja-jp"
+locale = "ja"
+defaultContentLanguage = "ja"
 title = "mossplanet"
-[pagination]
-  pagerSize = 10
-
 enableRobotsTXT = true
 
+# タグ・カテゴリーは使わない（docs/spec.md 第6.1節：絞り込みは初回は作らない）
+disableKinds = ["taxonomy", "term"]
+
 [params]
-  tagline = "Illustration / Gamebook Portfolio"
+  description = "モス（mossgray）のイラスト・ドット絵・ゲームブックなどの作品を公開しています。"
   author = "モス / mossgray"
-  description = "モスの作品ポートフォリオです。"
   twitter = "https://x.com/mossgray_"
   youtube = "https://www.youtube.com/@mossgray_"
   skeb = "https://skeb.jp/@mossgray_"
-  email = "you@example.com"
-  logo = "/images/logo/logo03.png"
-  logoMobile = "/images/logo/logo03.png"
-  heroImage = "/images/illust/hyoushi_animation.webp"
-  profileImage = "/images/icons/profile.png"
-  googleAnalytics = "G-FYDLVHFME8"
-
-[menu]
-  [[menu.main]]
-    name = "Works"
-    url = "/works/"
-    weight = 10
-
-[taxonomies]
-  tag = "tags"
-  category = "categories"
 
 [markup]
   [markup.goldmark]

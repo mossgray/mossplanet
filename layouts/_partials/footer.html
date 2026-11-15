@@ -1,0 +1,8 @@
+<footer class="site-footer">
+  <ul class="sns">
+    {{- with site.Params.twitter }}<li><a href="{{ . }}" rel="noopener">X</a></li>{{ end }}
+    {{- with site.Params.youtube }}<li><a href="{{ . }}" rel="noopener">YouTube</a></li>{{ end }}
+    {{- with site.Params.skeb }}<li><a href="{{ . }}" rel="noopener">Skeb</a></li>{{ end }}
+  </ul>
+  <p class="copyright">© {{ now.Year }} mossplanet</p>
+</footer>
