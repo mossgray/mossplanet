@@ -22,3 +22,7 @@
 ## 作品の追加
 - content/works/<作品ID>/index.md を作り、画像を同じフォルダに置く。二次創作は content/fanart/<シリーズID>/。
 - 作品IDは英小文字とハイフン。Front Matter の項目は docs/spec.md の第7.1節に従う。
+
+## 仮の文章
+- 本人があとで書く文章は、Markdown では `{{< todo >}}…{{< /todo >}}` で囲む。テンプレートやデータの文章は `_partials/todo-text.html` を使う。
+- 確認用URLでは黄色い枠で表示され、Netlify の本番ビルド（CONTEXT=production）ではエラーで止まる。手元のビルドでは警告（WARN todo: …）として残りの箇所が出る。

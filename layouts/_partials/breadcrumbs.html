@@ -1,0 +1,43 @@
+{{- /*
+  パンくずリスト（ページ上部の現在地表示）。トップ以外の全ページ。docs/spec.md 第4章
+  - 作品ページ：トップ › 所属する最初の惑星 › 作品
+  - 二次創作のページ：トップ › 二次創作 › シリーズ
+  - 惑星の一覧：トップ › 惑星
+  - それ以外：トップ › 親ページ › ページ
+*/ -}}
+{{- if not .IsHome -}}
+{{- $planets := partialCached "planets.html" . -}}
+{{- $items := slice -}}
+{{- $planetId := "" -}}
+{{- if and (eq .Section "works") .IsPage -}}
+  {{- with .Params.planets -}}{{- $planetId = index . 0 -}}{{- end -}}
+{{- else if and (eq .Section "fanart") .IsPage -}}
+  {{- $planetId = "fanart" -}}
+{{- end -}}
+{{- if $planetId -}}
+  {{- range where $planets "id" $planetId -}}
+    {{- $items = $items | append (dict "title" (cond (eq site.Language.Lang "en") .name_en .name) "url" (.url | relURL) "color" .color "link" .visible) -}}
+  {{- end -}}
+{{- else if not (isset .Params "planet") -}}
+  {{- range .Ancestors.Reverse -}}
+    {{- if not .IsHome -}}{{- $items = $items | append (dict "title" .LinkTitle "url" .RelPermalink "link" true) -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+<nav class="breadcrumbs" aria-label="{{ T "breadcrumb" }}">
+  <ol>
+    <li><a href="{{ "/" | relLangURL }}">{{ T "home" }}</a></li>
+    {{- range $items }}
+    <li>
+      {{- $icon := "" -}}
+      {{- with .color }}{{ $icon = partial "pixel-icon.html" (dict "color" . "size" 16 "scale" 1) }}{{ end -}}
+      {{- if .link -}}
+      <a href="{{ .url }}">{{ $icon }}{{ .title }}</a>
+      {{- else -}}
+      <span>{{ $icon }}{{ .title }}</span>
+      {{- end -}}
+    </li>
+    {{- end }}
+    <li><span aria-current="page">{{ with .Params.color }}{{ partial "pixel-icon.html" (dict "color" . "size" 16 "scale" 1) }}{{ end }}{{ .LinkTitle }}</span></li>
+  </ol>
+</nav>
+{{- end -}}

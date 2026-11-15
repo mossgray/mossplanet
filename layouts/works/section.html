@@ -1,0 +1,28 @@
+{{- /* /works/：すべての惑星と作品。ヘッダーの Works のリンク先で、旧URL /works/ の受け皿 */ -}}
+{{ define "main" }}
+{{- $planets := partialCached "planets.html" . -}}
+<div class="container">
+  <h1>{{ .Title }}</h1>
+  {{ .Content }}
+
+  <h2 class="section-title">惑星</h2>
+  <ul class="planet-cards">
+    {{- range where $planets "visible" true }}
+    <li>
+      <a href="{{ .url | relURL }}" style="--band: {{ .band | safeCSS }};">
+        {{ partial "pixel-icon.html" (dict "color" .color "size" 32 "scale" 2) }}
+        <span class="planet-card-name">{{ .name }}<small lang="en">{{ .name_en }}</small></span>
+        <span class="planet-card-count">{{ if .pending }}{{ T "pending" }}{{ else }}{{ .count }} works{{ end }}</span>
+      </a>
+    </li>
+    {{- end }}
+  </ul>
+
+  <h2 class="section-title">すべての作品</h2>
+  <ul class="work-grid">
+    {{- range .RegularPages.ByDate.Reverse }}
+    {{ partial "work-card.html" (dict "page" .) }}
+    {{- end }}
+  </ul>
+</div>
+{{ end }}

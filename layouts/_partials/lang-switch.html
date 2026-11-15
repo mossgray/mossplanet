@@ -1,0 +1,18 @@
+{{- /* 言語切替え（JA / EN）。訳があるページはその訳へ、ないページは各言語のトップへ */ -}}
+{{- if gt (len hugo.Sites) 1 }}
+<ul class="lang-switch" aria-label="{{ T "lang_switch" }}">
+  {{- range hugo.Sites }}
+  {{- $lang := .Language.Lang -}}
+  {{- $url := "" -}}
+  {{- range site.Home.AllTranslations -}}{{- if eq .Language.Lang $lang -}}{{- $url = .RelPermalink -}}{{- end -}}{{- end -}}
+  {{- range $.AllTranslations -}}{{- if eq .Language.Lang $lang -}}{{- $url = .RelPermalink -}}{{- end -}}{{- end -}}
+  <li>
+    {{- if eq $lang site.Language.Lang -}}
+    <span aria-current="true" lang="{{ $lang }}">{{ upper $lang }}</span>
+    {{- else if $url -}}
+    <a href="{{ $url }}" lang="{{ $lang }}" hreflang="{{ $lang }}">{{ upper $lang }}</a>
+    {{- end -}}
+  </li>
+  {{- end }}
+</ul>
+{{- end }}

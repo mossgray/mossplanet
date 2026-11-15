@@ -1,0 +1,7 @@
+{{- /*
+  仮の文章。本人があとで書き換える箇所を囲む。
+  使い方：{{< todo >}}ここに仮の文章{{< /todo >}}
+  確認用URLでは黄色い枠で目立たせ、本番のビルドではエラーで止める（_partials/todo-flag.html）
+*/ -}}
+{{- partial "todo-flag.html" .Page -}}
+<div class="todo"><span class="todo-label">{{ T "todo_label" }}</span>{{ .Inner | .Page.RenderString (dict "display" "block") }}</div>

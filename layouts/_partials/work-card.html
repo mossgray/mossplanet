@@ -1,0 +1,31 @@
+{{- /*
+  作品カード（一覧のグリッド用）。サムネイル・タイトル・年。
+  dict "page" 作品ページ "current" 今いる惑星ID（他の惑星アイコンを出すとき、これは除く）
+*/ -}}
+{{- $p := .page -}}
+{{- $current := .current | default "" -}}
+{{- $planets := partialCached "planets.html" $p -}}
+<li class="work-card">
+  <a href="{{ $p.RelPermalink }}">
+    <span class="work-thumb{{ if $p.Params.pixel }} is-pixel{{ end }}">
+      {{- with partial "image/thumb.html" $p }}
+      <img src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="" loading="lazy" decoding="async">
+      {{- end }}
+    </span>
+    <span class="work-title">{{ $p.Title }}</span>
+  </a>
+  <span class="work-meta">
+    <time datetime="{{ $p.Date.Format "2006-01-02" }}">{{ $p.Date.Format "2006" }}</time>
+    {{- $others := slice -}}
+    {{- range $p.Params.planets -}}{{- if ne . $current -}}{{- $others = $others | append . -}}{{- end -}}{{- end -}}
+    {{- if and $current $others }}
+    <span class="work-planets">
+      {{- range $others -}}
+        {{- range where $planets "id" . -}}
+        {{ partial "pixel-icon.html" (dict "color" .color "size" 16 "scale" 1 "label" .name) }}
+        {{- end -}}
+      {{- end -}}
+    </span>
+    {{- end }}
+  </span>
+</li>

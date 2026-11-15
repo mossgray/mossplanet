@@ -4,14 +4,15 @@
 <h1 class="visually-hidden">mossplanet — モスのイラスト・ドット絵・ゲームブック</h1>
 <div class="space">
   <ul class="planets">
-    {{- range $i, $p := hugo.Data.planets }}
+    {{- /* 本番では作品数が min_works 未満の惑星を出さない（_partials/planets.html） */ -}}
+    {{- range $i, $p := where (partialCached "planets.html" .) "visible" true }}
     <li class="planet" data-pixel-snap style="--i: {{ $i }}; --dy: {{ $p.offset | default 0 }}; --planet: {{ $p.color | safeCSS }};">
-      <a class="planet-link" href="{{ printf "/%s/" $p.id | relURL }}">
+      <a class="planet-link" href="{{ $p.url | relURL }}">
         <span class="planet-body" aria-hidden="true">
           <canvas class="planet-canvas" width="64" height="64"
             data-color="{{ $p.color }}" data-seed="{{ $p.seed }}" data-surface="{{ $p.surface }}"></canvas>
         </span>
-        <span class="planet-name">{{ $p.name }}</span>
+        <span class="planet-name">{{ cond (eq site.Language.Lang "en") $p.name_en $p.name }}{{ if $p.pending }}<small class="pending-badge">{{ T "pending" }}</small>{{ end }}</span>
       </a>
     </li>
     {{- end }}

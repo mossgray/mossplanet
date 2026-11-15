@@ -1,0 +1,100 @@
+{{- /*
+  道案内のドット絵アイコン（仮素材）。本番の素材（planet-<id>-16.png / -32.png）ができたら差し替える。
+  dict "kind" "planet|moss|satellite|space" "color" "#rrggbb" "size" 16|32 "scale" 2 "label" "代替テキスト（空なら装飾扱い）"
+  - 惑星：縁取り・影・基本色・ハイライトの4層を、行ごとの横長の矩形で描く
+  - SVG を整数倍で表示し、shape-rendering="crispEdges" でドットをぼかさない
+*/ -}}
+{{- $size := .size | default 16 -}}
+{{- $scale := .scale | default 2 -}}
+{{- $kind := .kind | default "planet" -}}
+{{- $color := .color | default "#54bdb2" -}}
+{{- $px := div (float $size) 16 -}}
+{{- $ink := "#0b1b1a" -}}
+{{- $shadow := partial "color-mix.html" (dict "a" $color "b" $ink "t" 0.3) -}}
+{{- $light := partial "color-mix.html" (dict "a" $color "b" "#ffffff" "t" 0.55) -}}
+{{- $c := div (float $size) 2 -}}
+{{- $rects := slice -}}
+
+{{- if or (eq $kind "planet") (eq $kind "moss") -}}
+  {{- $R := $c -}}
+  {{- $Ri := sub $R $px -}}
+  {{- $off := mul $px 2 -}}
+  {{- $hr := mul $px 1.6 -}}
+  {{- $hc := sub $c (mul $px 3.2) -}}
+  {{- range $y := seq 0 (sub $size 1) -}}
+    {{- $dy := sub (add (float $y) 0.5) $c -}}
+    {{- /* 縁取り */ -}}
+    {{- if lt (math.Abs $dy) $R -}}
+      {{- $w := math.Sqrt (sub (mul $R $R) (mul $dy $dy)) -}}
+      {{- $x0 := math.Round (sub $c $w) -}}{{- $x1 := math.Round (add $c $w) -}}
+      {{- if gt $x1 $x0 -}}{{- $rects = $rects | append (dict "x" $x0 "y" $y "w" (sub $x1 $x0) "f" $ink) -}}{{- end -}}
+    {{- end -}}
+    {{- /* 影（内側の円） */ -}}
+    {{- if lt (math.Abs $dy) $Ri -}}
+      {{- $w := math.Sqrt (sub (mul $Ri $Ri) (mul $dy $dy)) -}}
+      {{- $x0 := math.Round (sub $c $w) -}}{{- $x1 := math.Round (add $c $w) -}}
+      {{- if gt $x1 $x0 -}}{{- $rects = $rects | append (dict "x" $x0 "y" $y "w" (sub $x1 $x0) "f" $shadow) -}}{{- end -}}
+      {{- /* 基本色：内側の円と、左上にずらした円の重なり */ -}}
+      {{- $dy2 := add $dy $off -}}
+      {{- if lt (math.Abs $dy2) $Ri -}}
+        {{- $w2 := math.Sqrt (sub (mul $Ri $Ri) (mul $dy2 $dy2)) -}}
+        {{- $bx0 := math.Max $x0 (math.Round (sub (sub $c $off) $w2)) -}}
+        {{- $bx1 := math.Min $x1 (math.Round (add (sub $c $off) $w2)) -}}
+        {{- if gt $bx1 $bx0 -}}{{- $rects = $rects | append (dict "x" $bx0 "y" $y "w" (sub $bx1 $bx0) "f" $color) -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- /* ハイライト */ -}}
+    {{- $dy3 := sub (add (float $y) 0.5) $hc -}}
+    {{- if lt (math.Abs $dy3) $hr -}}
+      {{- $w3 := math.Sqrt (sub (mul $hr $hr) (mul $dy3 $dy3)) -}}
+      {{- $x0 := math.Round (sub $hc $w3) -}}{{- $x1 := math.Round (add $hc $w3) -}}
+      {{- if gt $x1 $x0 -}}{{- $rects = $rects | append (dict "x" $x0 "y" $y "w" (sub $x1 $x0) "f" $light) -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if eq $kind "moss" -}}
+    {{- /* モスの星だけ顔がある（第8章）。仮の目を2つ */ -}}
+    {{- $rects = $rects | append (dict "x" (mul $px 9) "y" (mul $px 6) "w" $px "h" (mul $px 2) "f" $ink) -}}
+    {{- $rects = $rects | append (dict "x" (mul $px 11) "y" (mul $px 6) "w" $px "h" (mul $px 2) "f" $ink) -}}
+  {{- end -}}
+{{- else if eq $kind "satellite" -}}
+  {{- /* 人工衛星：本体・左右のパネル・アンテナ（16マス基準） */ -}}
+  {{- $cells := slice
+    (dict "x" 6 "y" 6 "w" 4 "h" 4 "f" $ink)
+    (dict "x" 7 "y" 7 "w" 2 "h" 2 "f" $light)
+    (dict "x" 1 "y" 6 "w" 4 "h" 4 "f" $ink)
+    (dict "x" 2 "y" 7 "w" 2 "h" 2 "f" $color)
+    (dict "x" 11 "y" 6 "w" 4 "h" 4 "f" $ink)
+    (dict "x" 12 "y" 7 "w" 2 "h" 2 "f" $color)
+    (dict "x" 5 "y" 8 "w" 1 "h" 1 "f" $ink)
+    (dict "x" 10 "y" 8 "w" 1 "h" 1 "f" $ink)
+    (dict "x" 8 "y" 3 "w" 1 "h" 3 "f" $ink)
+    (dict "x" 7 "y" 2 "w" 3 "h" 1 "f" $ink)
+  -}}
+  {{- range $cells -}}
+    {{- $rects = $rects | append (dict "x" (mul .x $px) "y" (mul .y $px) "w" (mul .w $px) "h" (mul .h $px) "f" .f) -}}
+  {{- end -}}
+{{- else if eq $kind "space" -}}
+  {{- /* 宇宙（トップ）：きらめく星 */ -}}
+  {{- $cells := slice
+    (dict "x" 7 "y" 1 "w" 2 "h" 14 "f" $ink)
+    (dict "x" 1 "y" 7 "w" 14 "h" 2 "f" $ink)
+    (dict "x" 6 "y" 4 "w" 4 "h" 8 "f" $ink)
+    (dict "x" 4 "y" 6 "w" 8 "h" 4 "f" $ink)
+    (dict "x" 7 "y" 3 "w" 2 "h" 10 "f" $color)
+    (dict "x" 3 "y" 7 "w" 10 "h" 2 "f" $color)
+    (dict "x" 6 "y" 6 "w" 4 "h" 4 "f" $color)
+    (dict "x" 7 "y" 7 "w" 1 "h" 1 "f" $light)
+  -}}
+  {{- range $cells -}}
+    {{- $rects = $rects | append (dict "x" (mul .x $px) "y" (mul .y $px) "w" (mul .w $px) "h" (mul .h $px) "f" .f) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $dim := mul $size $scale -}}
+<svg class="pixel-icon" data-pixel-snap width="{{ $dim }}" height="{{ $dim }}" viewBox="0 0 {{ $size }} {{ $size }}" shape-rendering="crispEdges"
+  {{- with .label }} role="img" aria-label="{{ . }}"{{ else }} aria-hidden="true" focusable="false"{{ end }}>
+  {{- range $rects -}}
+  <rect x="{{ .x }}" y="{{ .y }}" width="{{ .w }}" height="{{ .h | default $px }}" fill="{{ .f }}"/>
+  {{- end -}}
+</svg>
+{{- /* 末尾の改行なし */ -}}

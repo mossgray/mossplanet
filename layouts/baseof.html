@@ -5,11 +5,16 @@
 </head>
 <body class="{{ block "bodyClass" . }}page{{ end }}">
   {{ partial "header.html" . }}
+  {{ partial "breadcrumbs.html" . }}
   <main id="main">
     {{ block "main" . }}{{ end }}
   </main>
   {{ partial "footer.html" . }}
+  {{ partial "tabbar.html" . }}
   {{- with resources.Get "js/pixel-snap.js" | minify | fingerprint }}
+  <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+  {{- end }}
+  {{- with resources.Get "js/nav.js" | minify | fingerprint }}
   <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
   {{- end }}
   {{ block "scripts" . }}{{ end }}

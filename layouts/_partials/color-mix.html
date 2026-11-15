@@ -1,0 +1,15 @@
+{{- /*
+  2つの色を混ぜる。dict "a" "#rrggbb" "b" "#rrggbb" "t" 0〜1 → "#rrggbb"
+*/ -}}
+{{- $a := strings.TrimPrefix "#" .a -}}
+{{- $b := strings.TrimPrefix "#" .b -}}
+{{- $t := float .t -}}
+{{- $out := "#" -}}
+{{- range seq 0 2 -}}
+  {{- $i := mul . 2 -}}
+  {{- $ca := int (printf "0x%s" (substr $a $i 2)) -}}
+  {{- $cb := int (printf "0x%s" (substr $b $i 2)) -}}
+  {{- $c := int (math.Round (add $ca (mul (sub $cb $ca) $t))) -}}
+  {{- $out = printf "%s%02x" $out $c -}}
+{{- end -}}
+{{- return $out -}}

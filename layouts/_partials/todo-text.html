@@ -1,0 +1,10 @@
+{{- /*
+  テンプレートやデータの文章を、仮の文章として表示する
+  dict "text" "文章" "page" ページ "block" true/false
+*/ -}}
+{{- partial "todo-flag.html" .page -}}
+{{- if .block -}}
+<div class="todo"><span class="todo-label">{{ T "todo_label" }}</span>{{ .text | markdownify }}</div>
+{{- else -}}
+<span class="todo todo-inline">{{ .text }}</span>
+{{- end -}}

@@ -1,0 +1,12 @@
+{{- /*
+  作品のサムネイル（正方形・WebP）を返す。. は作品ページ。cover がなければ何も返さない。
+  ドット絵（pixel: true）は、ぼかさないよう NearestNeighbor で縮小する。
+*/ -}}
+{{- $img := "" -}}
+{{- with .Params.cover -}}
+  {{- with $.Resources.Get . -}}
+    {{- $filter := cond ($.Params.pixel | default false) "NearestNeighbor" "Lanczos" -}}
+    {{- $img = .Fill (printf "480x480 Smart webp q80 %s" $filter) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $img -}}
