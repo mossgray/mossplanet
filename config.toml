@@ -22,6 +22,9 @@ disableKinds = ["taxonomy", "term"]
   # 二次創作エリア（/fanart/）を公開するか。false にすると /fanart/ 以下を出力せず、トップの惑星も消える（第6.5節）
   fanart_public = true
 
+  # 依頼の受付状況。true で「受付中／OPEN」、false で「停止中／CLOSED」の看板を出す（第6.4節）
+  contact_open = true
+
 [markup]
   [markup.goldmark]
     [markup.goldmark.parser]

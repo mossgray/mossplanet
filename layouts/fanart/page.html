@@ -1,0 +1,61 @@
+{{- /*
+  二次創作のシリーズのページ（content/fanart/<シリーズID>/）。docs/spec.md 第6.5節
+  - キャラクター・シリーズごとに複数枚をまとめ、制作メモを添える
+  - fanart.source（原作名）と fanart.copyright（権利表記）から、権利表記を自動で表示する
+  - 依頼への導線は置かない
+  - 画像：cover を先頭に、フォルダ内のほかの画像をファイル名順に並べる
+*/ -}}
+{{ define "main" }}
+{{- $p := index (where (partialCached "planets.html" .) "id" "fanart") 0 -}}
+<header class="title-band" style="--band: {{ $p.band | safeCSS }};">
+  <div class="title-band-inner">
+    <a class="title-band-icon" href="{{ "/fanart/" | relURL }}">{{ partial "pixel-icon.html" (dict "color" $p.color "size" 32 "scale" 2 "label" (printf "%sの一覧へ" $p.name)) }}</a>
+    <div>
+      <h1 class="title-band-title">{{ .Title }}</h1>
+      <p class="title-band-meta">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006" }}</time>
+        {{- with .Params.fanart.source }}<span>原作：{{ . }}</span>{{ end }}
+      </p>
+    </div>
+  </div>
+</header>
+
+<article class="work">
+  {{- $images := slice -}}
+  {{- with .Params.cover }}{{ with $.Resources.Get . }}{{ $images = $images | append . }}{{ end }}{{ end -}}
+  {{- range (.Resources.ByType "image").ByName -}}
+    {{- if ne .Name $.Params.cover -}}{{- $images = $images | append . -}}{{- end -}}
+  {{- end -}}
+  {{- range $i, $img := $images }}
+  <figure class="work-main">
+    {{ partial "image/responsive.html" (dict "res" $img "alt" (cond (eq $i 0) ($.Params.cover_alt | default $.Title) (printf "%s（%d枚目）" $.Title (add $i 1))) "pixel" ($.Params.pixel | default false) "zoom" true "eager" (eq $i 0)) }}
+  </figure>
+  {{- end }}
+
+  <div class="work-body">
+    <div class="prose">
+      {{ .Content }}
+    </div>
+
+    {{- with .Params.fanart }}
+    <p class="fanart-copyright">
+      {{- with .source }}原作：{{ . }}{{ end -}}
+      {{- with .copyright }}<br>{{ . }}{{ end -}}
+    </p>
+    {{- else }}
+    {{- warnf "二次創作のページに fanart.source / fanart.copyright がありません: %s" .RelPermalink -}}
+    {{- end }}
+  </div>
+</article>
+
+<dialog class="zoom-dialog" aria-label="拡大表示">
+  <button type="button" class="zoom-close">閉じる</button>
+  <img alt="">
+</dialog>
+{{ end }}
+
+{{ define "scripts" }}
+{{- with resources.Get "js/zoom.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{ end }}

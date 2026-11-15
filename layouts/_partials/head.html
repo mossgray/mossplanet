@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ $title }}</title>
-{{- if not hugo.IsProduction }}
+{{- if or (not hugo.IsProduction) .Params.noindex }}
 <meta name="robots" content="noindex, nofollow">
 {{- end }}
 <meta name="description" content="{{ $desc }}">

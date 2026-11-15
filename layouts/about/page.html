@@ -1,0 +1,72 @@
+{{- /*
+  About（モスの星）。docs/spec.md 第6.3節
+  ロゴの色（#54bdb2）をこのページの色にする。背景は #e6f5f2、ロゴ色はアイコンや線に、文字は濃い色
+*/ -}}
+{{ define "bodyClass" }}page about-page{{ end }}
+
+{{ define "main" }}
+{{- $planets := where (partialCached "planets.html" .) "visible" true -}}
+{{- $logo := (resources.Get "images/logo/logo-full.png").Resize "x120 webp q90" -}}
+<div class="about">
+  {{- /* 冒頭：モスの星、名前、コピー */ -}}
+  <header class="about-hero">
+    <span class="about-star" data-pixel-snap aria-hidden="true">
+      {{- /* 仮素材：ロゴ色の自動生成の惑星。本番のドット絵（moss-star.png、顔と瞬き）ができたら差し替える */ -}}
+      <canvas class="planet-canvas" width="64" height="64" data-color="#54bdb2" data-seed="7" data-surface="noise"></canvas>
+    </span>
+    <div>
+      <h1 class="about-logo"><img src="{{ $logo.RelPermalink }}" width="{{ div $logo.Width 2 }}" height="60" alt="mossplanet"></h1>
+      <p class="about-name">{{ .Params.name }}<span lang="en">{{ .Params.name_en }}</span></p>
+      <p class="about-copy">{{ .Params.copy }}</p>
+    </div>
+  </header>
+
+  <div class="about-body">
+    {{- /* 自己紹介 */ -}}
+    <section>
+      <h2>自己紹介</h2>
+      <div class="prose">{{ .Content }}</div>
+    </section>
+
+    {{- /* 惑星の紹介 */ -}}
+    <section>
+      <h2>モスの惑星</h2>
+      <ul class="about-planets">
+        {{- range $planets }}
+        <li>
+          <a href="{{ .url | relURL }}">{{ partial "pixel-icon.html" (dict "color" .color "size" 32 "scale" 2) }}<span class="about-planet-name">{{ .name }}{{ if .pending }}<small class="pending-badge">{{ T "pending" }}</small>{{ end }}</span></a>
+          <p>{{ if .todo }}{{ partial "todo-text.html" (dict "text" .tagline "page" $) }}{{ else }}{{ .tagline }}{{ end }}</p>
+        </li>
+        {{- end }}
+      </ul>
+    </section>
+
+    {{- /* SNS */ -}}
+    <section>
+      <h2>SNS</h2>
+      <ul class="about-sns">
+        {{- range .Params.sns }}
+        <li><a href="{{ .url }}" rel="noopener">{{ .name }}</a><span>{{ if .todo }}{{ partial "todo-text.html" (dict "text" .desc "page" $) }}{{ else }}{{ .desc }}{{ end }}</span></li>
+        {{- end }}
+      </ul>
+    </section>
+
+    {{- /* 頒布物 */ -}}
+    {{- with .Params.booth }}
+    <section>
+      <h2>頒布物</h2>
+      <p><a href="{{ .url }}" rel="noopener">BOOTH（mossplanet）</a>：{{ if .todo }}{{ partial "todo-text.html" (dict "text" .items "page" $) }}{{ else }}{{ .items }}{{ end }}</p>
+    </section>
+    {{- end }}
+
+    {{- /* 依頼への導線 */ -}}
+    <p class="about-cta"><a class="button" href="{{ "/contact/" | relLangURL }}">{{ partial "pixel-icon.html" (dict "kind" "satellite" "color" "#5b8def" "size" 16 "scale" 2) }}依頼・問い合わせ</a></p>
+  </div>
+</div>
+{{ end }}
+
+{{ define "scripts" }}
+{{- with resources.Get "js/planets.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{ end }}

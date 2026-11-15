@@ -7,7 +7,7 @@
   - 確認用URL（本番以外）：すべて作る（ページ内に「準備中」と出す）
 
   ここではまだ作品ページの一覧が使えないため、content/works の各フォルダの index.md の Front Matter を直接読んで数える。
-  二次創作（fanart）は /fanart/ の節（content/fanart/）で別に扱うので、ここでは作らない。
+  二次創作（fanart）は惑星の一覧ページではなく、下の /fanart/ の節として作る。
 */ -}}
 {{- $min := site.Params.min_works | default 1 -}}
 {{- $counts := dict -}}
@@ -26,6 +26,38 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
+{{- end -}}
+
+{{- /*
+  二次創作の節（/fanart/）もここで作る。config.toml の fanart_public の1行で、
+  /fanart/ と、その下のシリーズのページ（content/fanart/）をまとめて出力しないようにできる（第6.5節）
+  本番では、シリーズが min_works 未満のときも出力しない
+*/ -}}
+{{- $fanartCount := 0 -}}
+{{- if fileExists "content/fanart" -}}
+  {{- range os.ReadDir "content/fanart" -}}
+    {{- if .IsDir -}}
+      {{- $file := printf "content/fanart/%s/index.md" .Name -}}
+      {{- if fileExists $file -}}
+        {{- $parts := split (readFile $file) "---" -}}
+        {{- if ge (len $parts) 3 -}}
+          {{- if not (index $parts 1 | transform.Unmarshal).draft -}}{{- $fanartCount = add $fanartCount 1 -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $fanartPublish := and (site.Params.fanart_public | default false) (or (ge $fanartCount $min) (not hugo.IsProduction)) -}}
+{{- $fanartRender := cond $fanartPublish "always" "never" -}}
+{{- range where hugo.Data.planets "id" "fanart" -}}
+  {{- $.AddPage (dict
+    "path" "fanart"
+    "kind" "section"
+    "title" .name
+    "params" (dict "color" .color "band" .band "name_en" .name_en "description" .intro)
+    "build" (dict "render" $fanartRender "list" $fanartRender)
+    "cascade" (dict "build" (dict "render" $fanartRender "list" $fanartRender "publishResources" false))
+  ) -}}
 {{- end -}}
 
 {{- range hugo.Data.planets -}}

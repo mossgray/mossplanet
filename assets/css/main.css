@@ -1022,3 +1022,258 @@ img.is-pixel {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* ---------- ボタン ---------- */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: #6fcabf;
+}
+
+/* ---------- About（第6.3節）：ロゴの色のページ ---------- */
+.about-page main {
+  background: var(--brand-light);
+}
+
+.about-page .breadcrumbs {
+  background: var(--brand-light);
+}
+
+.about {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px 16px 56px;
+}
+
+.about-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 32px;
+  padding: 16px 0 32px;
+  border-bottom: 3px solid var(--brand);
+  border-radius: 0 0 2px 2px;
+}
+
+.about-star {
+  display: block;
+  width: 192px;
+  height: 192px;
+}
+
+@media (max-width: 599px) {
+  .about-star {
+    width: 128px;
+    height: 128px;
+  }
+}
+
+.about-star canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.about-logo {
+  margin: 0;
+  line-height: 0;
+}
+
+.about-logo img {
+  width: auto;
+  height: 60px;
+}
+
+.about-name {
+  margin: 12px 0 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.about-name span {
+  margin-left: 8px;
+  font-size: 0.9375rem;
+  font-weight: 400;
+}
+
+.about-copy {
+  margin: 4px 0 0;
+}
+
+.about-body h2 {
+  margin: 40px 0 16px;
+  font-size: 1.25rem;
+}
+
+.about-body a:not(.button) {
+  color: var(--link);
+}
+
+.about-planets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-planets li {
+  padding: 12px;
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.about-planets a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.about-planets p {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+}
+
+.about-sns {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-sns li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #c9e6e1;
+}
+
+.about-sns a {
+  min-width: 6em;
+  font-weight: 700;
+}
+
+.about-cta {
+  margin: 48px 0 0;
+  text-align: center;
+}
+
+/* ---------- 人工衛星（第6.4節） ---------- */
+.contact-band {
+  --band: var(--brand-light);
+}
+
+.status-sign {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 4px 14px;
+  border: 2px solid var(--text);
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 700;
+}
+
+.status-sign.is-open {
+  border-color: var(--link);
+}
+
+.status-sign span {
+  font-size: 0.8125rem;
+}
+
+.contact-body {
+  max-width: 760px;
+}
+
+.contact-body .prose h2,
+.contact-form-section h2 {
+  margin: 40px 0 12px;
+  font-size: 1.25rem;
+}
+
+.contact-form .field {
+  margin-bottom: 20px;
+}
+
+.contact-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.contact-form .required {
+  margin-left: 8px;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #c9dcd9;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+}
+
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+  border-color: var(--link);
+  outline: none;
+}
+
+.contact-form .hint {
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+}
+
+.form-privacy {
+  font-size: 0.8125rem;
+}
+
+.thanks {
+  max-width: 640px;
+  text-align: center;
+}
+
+.thanks-art {
+  margin: 24px 0 0;
+  line-height: 0;
+}
+
+.thanks .todo {
+  text-align: left;
+}
+
+/* ---------- 二次創作 ---------- */
+.fanart-copyright {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #dfe9e7;
+  font-size: 0.8125rem;
+}

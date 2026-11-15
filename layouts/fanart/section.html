@@ -1,0 +1,47 @@
+{{- /*
+  二次創作の惑星（/fanart/）。docs/spec.md 第6.5節
+  依頼への導線も広告も置かない。シリーズ（キャラクター・作品ごと）のページを並べる
+*/ -}}
+{{ define "bodyClass" }}page planet-page fanart-page{{ end }}
+
+{{ define "main" }}
+{{- $p := index (where (partialCached "planets.html" .) "id" "fanart") 0 -}}
+<header class="title-band planet-band" style="--band: {{ $p.band | safeCSS }};">
+  <div class="title-band-inner">
+    <span class="planet-band-body" data-pixel-snap aria-hidden="true">
+      <canvas class="planet-canvas" width="64" height="64"
+        data-color="{{ $p.color }}" data-seed="{{ $p.seed }}" data-surface="{{ $p.surface }}"></canvas>
+    </span>
+    <div>
+      <h1 class="title-band-title">{{ $p.name }}<small lang="en">{{ $p.name_en }}</small></h1>
+      {{- if $p.todo }}
+      {{ partial "todo-text.html" (dict "text" $p.intro "page" . "block" true) }}
+      {{- else }}
+      <p class="planet-intro">{{ $p.intro }}</p>
+      {{- end }}
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  {{- if $p.pending }}
+  <div class="pending-note">
+    <p><strong>{{ T "pending" }}</strong>：二次創作のシリーズはまだありません。本番のサイトでは、この惑星はトップやメニューに出ず、このページも作られません。</p>
+  </div>
+  {{- end }}
+  {{- with .RegularPages.ByDate.Reverse }}
+  <h2 class="section-title">シリーズ<small>{{ len . }}</small></h2>
+  <ul class="work-grid">
+    {{- range . }}
+    {{ partial "work-card.html" (dict "page" .) }}
+    {{- end }}
+  </ul>
+  {{- end }}
+</div>
+{{ end }}
+
+{{ define "scripts" }}
+{{- with resources.Get "js/planets.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{ end }}

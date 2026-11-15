@@ -1,0 +1,40 @@
+{{- /*
+  問い合わせフォーム（Netlify Forms）。docs/spec.md 第6.4節
+  - 項目は名前、連絡先、依頼の種類（選択式）、本文の4つだけ
+  - スパム対策は人間には見えない入力欄（ハニーポット：bot-field）だけ。reCAPTCHA は使わない
+  - 送信後は完了ページ（/contact/thanks/、英語版は /en/contact/thanks/）へ移動する
+  - Netlify は公開時の HTML からこのフォーム（name="contact"）を見つけて受け付ける
+*/ -}}
+{{- $thanks := "/contact/thanks/" | relLangURL -}}
+<form class="contact-form" name="contact" method="POST" action="{{ $thanks }}" data-netlify="true" netlify-honeypot="bot-field">
+  <input type="hidden" name="form-name" value="contact">
+  <input type="hidden" name="lang" value="{{ site.Language.Lang }}">
+  <p class="visually-hidden" aria-hidden="true">
+    <label>{{ T "form_honeypot" }} <input name="bot-field" tabindex="-1" autocomplete="off"></label>
+  </p>
+  <div class="field">
+    <label for="cf-name">{{ T "form_name" }}<span class="required">{{ T "form_required" }}</span></label>
+    <input id="cf-name" name="name" type="text" required autocomplete="name">
+  </div>
+  <div class="field">
+    <label for="cf-contact">{{ T "form_contact" }}<span class="required">{{ T "form_required" }}</span></label>
+    <input id="cf-contact" name="contact" type="text" required autocomplete="email" aria-describedby="cf-contact-hint">
+    <p class="hint" id="cf-contact-hint">{{ T "form_contact_hint" }}</p>
+  </div>
+  <div class="field">
+    <label for="cf-type">{{ T "form_type" }}<span class="required">{{ T "form_required" }}</span></label>
+    <select id="cf-type" name="type" required>
+      <option value="">{{ T "form_type_choose" }}</option>
+      <option value="illustration">{{ T "form_type_illustration" }}</option>
+      <option value="pixel-art">{{ T "form_type_pixel" }}</option>
+      <option value="live2d">{{ T "form_type_live2d" }}</option>
+      <option value="other">{{ T "form_type_other" }}</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="cf-message">{{ T "form_message" }}<span class="required">{{ T "form_required" }}</span></label>
+    <textarea id="cf-message" name="message" rows="8" required></textarea>
+  </div>
+  <p class="form-privacy">{{ T "form_privacy" (dict "url" ("/privacy/" | relLangURL)) | safeHTML }}</p>
+  <button class="button" type="submit">{{ T "form_submit" }}</button>
+</form>
