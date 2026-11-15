@@ -11,3 +11,46 @@
 
 [context.deploy-preview]
   command = "hugo --gc --minify --environment preview"
+
+# ---------- 旧URLからの転送（301）。docs/spec.md 第3章・第9.4節 ----------
+# 旧サイトの作品ページ（日付で始まるURL）→ 新しい作品ID
+[[redirects]]
+  from = "/works/20231012_montoro_live2d/"
+  to = "/works/montoro-live2d/"
+  status = 301
+
+[[redirects]]
+  from = "/works/20240629_midorikawa_live2d/"
+  to = "/works/midorikawa-live2d/"
+  status = 301
+
+[[redirects]]
+  from = "/works/20240110_yorumun/"
+  to = "/works/yorumun-stream-visual/"
+  status = 301
+
+[[redirects]]
+  from = "/works/20240526_huryakon/"
+  to = "/works/trpg-void-character/"
+  status = 301
+
+[[redirects]]
+  from = "/works/20240531_kuicon/"
+  to = "/works/kuu-sns-icon/"
+  status = 301
+
+[[redirects]]
+  from = "/works/20250222_oisiigestalt/"
+  to = "/works/oishii-gestalt-mv/"
+  status = 301
+
+# 旧サイトのタグ・カテゴリーの一覧 → すべての惑星と作品
+[[redirects]]
+  from = "/tags/*"
+  to = "/works/"
+  status = 301
+
+[[redirects]]
+  from = "/categories/*"
+  to = "/works/"
+  status = 301

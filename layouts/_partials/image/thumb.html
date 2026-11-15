@@ -1,9 +1,10 @@
 {{- /*
-  作品のサムネイル（正方形・WebP）を返す。. は作品ページ。cover がなければ何も返さない。
-  ドット絵（pixel: true）は、ぼかさないよう NearestNeighbor で縮小する。
+  作品のサムネイル（正方形・WebP）を返す。. は作品ページ。画像がなければ何も返さない。
+  - thumb（任意。正方形の切り抜きを自分で用意した画像）があればそれを、なければ cover から作る
+  - ドット絵（pixel: true）は、ぼかさないよう NearestNeighbor で縮小する
 */ -}}
 {{- $img := "" -}}
-{{- with .Params.cover -}}
+{{- with .Params.thumb | default .Params.cover -}}
   {{- with $.Resources.Get . -}}
     {{- $filter := cond ($.Params.pixel | default false) "NearestNeighbor" "Lanczos" -}}
     {{- $img = .Fill (printf "480x480 Smart webp q80 %s" $filter) -}}

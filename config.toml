@@ -24,6 +24,9 @@ disableKinds = ["taxonomy", "term"]
 
 [markup]
   [markup.goldmark]
+    [markup.goldmark.parser]
+      # 1行だけの画像を <p> で囲まない（render-image.html で <figure> にするため）
+      wrapStandAloneImageWithinParagraph = false
     [markup.goldmark.renderer]
       unsafe = true
 
