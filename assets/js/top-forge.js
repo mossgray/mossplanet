@@ -1,9 +1,9 @@
 /*
- * 試作A「惑星をつくる工房」（/lab/a/。確認用URLだけ）
+ * トップのインタラクション「惑星をつくる工房」（docs/spec.md 第5.5節。2026年11月16日に試作から採用）
  * - 空いている場所をクリック（タップ）すると、小さな惑星（半径4〜8ドット）がばねの動きで生まれ、ゆっくり漂う
  * - 最大12個。13個目からは、いちばん古いものが縮んで消える
  * - 近づくと青（#4186c4）の点線でつながり、さらに近いと間にレモンイエローの星がまたたく（大きな惑星ともつながる）
- * - マウスのときだけ、カーソルに星屑が少しついてくる。大きな惑星に乗ると小さく跳ねる（lab.css の lab-hop）
+ * - マウスのときだけ、カーソルに星屑が少しついてくる。大きな惑星に乗ると小さく跳ねる（main.css の planet-hop）
  * - 1ドット＝トップの倍率（--scale）ぶんのピクセル。座標はすべて整数ドットに丸めて描く
  * - 「視差効果を減らす」がオンなら、生まれた惑星はその場に止まり、何も動かさない
  * - タブが非表示のときや画面外のときは描画を止める
@@ -14,11 +14,11 @@
 
   var MP = window.mossPlanet;
   var main = document.getElementById("main");
-  var canvas = document.querySelector(".lab-sky");
+  var canvas = document.querySelector(".sky");
   if (!MP || !main || !canvas || !canvas.getContext) return;
 
   var ctx = canvas.getContext("2d");
-  var hint = document.querySelector(".lab-hint");
+  var hint = document.querySelector(".sky-hint");
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   var MAX = 12;
@@ -26,7 +26,6 @@
   var STAR_GAP = 9; // これ未満で星
   var LINE = "#4186c4";
   var LEMON = "#f2e14a";
-  var BIG_R = 31; // 大きな惑星の半径（縁取り込み、ドット）
   // ばね：硬さ200・減衰16（少しだけ行き過ぎて戻る）
   var SPRING_K = 200;
   var SPRING_C = 16;
@@ -80,7 +79,7 @@
         id: "B" + i,
         x: Math.round((r.left + r.width / 2 - base.left) / scale),
         y: Math.round((r.top + r.height / 2 - base.top) / scale),
-        r: BIG_R,
+        r: Math.round(r.width / scale / 2) - 1, // 大きな惑星の半径（縁取り込み、ドット）。スマートフォンでは小さい
         big: true
       });
     }

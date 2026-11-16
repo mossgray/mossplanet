@@ -10,10 +10,9 @@
 (function () {
   "use strict";
 
-  var SIZE = 64; // 惑星のキャンバス（px）
-  var TEX_W = 128; // 地表テクスチャの幅（1周分）
-  var TEX_H = 64;
-  var RADIUS = 30; // 球の半径。外側1ドットは縁取り
+  // 惑星の大きさ（ドット）。CSS の --planet-dots で決める（通常64。スマートフォンのトップは44）
+  // 地表テクスチャは 横＝大きさ×2（1周分）、縦＝大きさ。球の半径は 大きさ/2−2（外側1ドットは縁取り）
+  var DEFAULT_SIZE = 64;
   var STEP_MS = 280; // 1ドット回す間隔
   var OUTLINE = [255, 255, 255]; // 縁取り：白
   var DEEP = [10, 57, 155]; // 影に混ぜる深い青 #0a399b
@@ -74,7 +73,7 @@
   }
 
   // 横方向に周期的な（左右がつながる）バリューノイズ
-  function makeNoise(random, cellsX, cellsY) {
+  function makeNoise(random, cellsX, cellsY, TEX_W, TEX_H) {
     var grid = [];
     for (var i = 0; i < cellsX * (cellsY + 1); i++) grid.push(random());
     return function (x, y) {
@@ -99,10 +98,10 @@
   }
 
   // 各ドットに「色の段階（0〜4）」を入れた配列を返す
-  function makeSurface(seed, kind) {
+  function makeSurface(seed, kind, TEX_W, TEX_H) {
     var random = rng(seed);
-    var coarse = makeNoise(random, 8, 4);
-    var fine = makeNoise(random, 32, 16);
+    var coarse = makeNoise(random, 8, 4, TEX_W, TEX_H);
+    var fine = makeNoise(random, 32, 16, TEX_W, TEX_H);
     var phase = random() * Math.PI * 2;
     var tex = new Uint8Array(TEX_W * TEX_H);
     for (var y = 0; y < TEX_H; y++) {
@@ -125,7 +124,12 @@
   /* ---------- 球への巻き付け（事前計算） ---------- */
 
   // 球の各ドットについて、テクスチャ上の座標と陰影（-1/0/+1）を計算しておく
-  var sphere = (function () {
+  var spheres = {};
+  function makeSphere(SIZE) {
+    if (spheres[SIZE]) return spheres[SIZE];
+    var TEX_W = SIZE * 2;
+    var TEX_H = SIZE;
+    var RADIUS = SIZE / 2 - 2;
     var light = [-0.55, -0.6, 0.58];
     var len = Math.hypot(light[0], light[1], light[2]);
     light = light.map(function (c) { return c / len; });
@@ -154,23 +158,46 @@
         }
       }
     }
+    spheres[SIZE] = cells;
     return cells;
-  })();
+  }
 
   /* ---------- 惑星 ---------- */
 
+  function sizeOf(canvas) {
+    var v = parseInt(getComputedStyle(canvas).getPropertyValue("--planet-dots"), 10);
+    return v > 8 ? v : DEFAULT_SIZE;
+  }
+
   function Planet(canvas) {
+    this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
     this.palette = makePalette(canvas.dataset.color || "#54bdb2");
-    this.tex = makeSurface(parseInt(canvas.dataset.seed, 10) || 1, canvas.dataset.surface);
-    this.image = this.ctx.createImageData(SIZE, SIZE);
     this.offset = 0;
+    this.setup();
     canvas.parentNode.classList.add("is-drawn");
   }
+
+  // 大きさに合わせて球と地表を作り直す（画面幅が変わってスマートフォンの大きさになったときも）
+  Planet.prototype.setup = function () {
+    var size = sizeOf(this.canvas);
+    if (size === this.size) return false;
+    this.size = size;
+    this.texW = size * 2;
+    this.canvas.width = size;
+    this.canvas.height = size;
+    this.sphere = makeSphere(size);
+    this.tex = makeSurface(parseInt(this.canvas.dataset.seed, 10) || 1, this.canvas.dataset.surface, this.texW, size);
+    this.image = this.ctx.createImageData(size, size);
+    this.offset = this.offset % this.texW;
+    return true;
+  };
 
   Planet.prototype.draw = function () {
     var data = this.image.data;
     var pal = this.palette;
+    var sphere = this.sphere;
+    var TEX_W = this.texW;
     for (var k = 0; k < sphere.length; k++) {
       var cell = sphere[k];
       var rgb;
@@ -189,7 +216,7 @@
   };
 
   Planet.prototype.step = function () {
-    this.offset = (this.offset + 1) % TEX_W;
+    this.offset = (this.offset + 1) % this.texW;
     this.draw();
   };
 
@@ -271,6 +298,18 @@
     };
     if (reduceMotion.addEventListener) reduceMotion.addEventListener("change", onChange);
     else if (reduceMotion.addListener) reduceMotion.addListener(onChange);
+    // 画面幅が変わって惑星の大きさ（--planet-dots）が変わったら描き直す
+    var queued = false;
+    window.addEventListener("resize", function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () {
+        queued = false;
+        for (var i = 0; i < planets.length; i++) {
+          if (planets[i].setup()) planets[i].draw();
+        }
+      });
+    });
   }
 
   init();

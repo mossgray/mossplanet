@@ -76,19 +76,3 @@
   {{- end -}}
 {{- end -}}
 
-{{- /*
-  トップのインタラクションの試作（/lab/、/lab/a/、/lab/b/）。確認用URLだけで作り、本番では作らない
-  検索エンジンには載せない（noindex・サイトマップから外す）。layouts/lab.html
-*/ -}}
-{{- if not hugo.IsProduction -}}
-  {{- $lab := dict "noindex" true -}}
-  {{- $.AddPage (dict "path" "lab" "kind" "section" "title" "トップの試作" "layout" "lab"
-    "params" (merge $lab (dict "variant" "index" "description" "トップのインタラクションの試作（確認用URLだけ）"))
-    "sitemap" (dict "disable" true)) -}}
-  {{- $.AddPage (dict "path" "lab/a" "kind" "page" "title" "試作A 惑星をつくる工房" "layout" "lab"
-    "params" (merge $lab (dict "variant" "a" "label" "案A" "description" "空いている場所をクリックすると小さな惑星が生まれ、近づくと点線でつながる試作"))
-    "sitemap" (dict "disable" true)) -}}
-  {{- $.AddPage (dict "path" "lab/b" "kind" "page" "title" "試作B 観測ステーション" "layout" "lab"
-    "params" (merge $lab (dict "variant" "b" "label" "案B" "description" "惑星に乗ると観測カード（惑星名・色見本・作品数）が描かれる試作"))
-    "sitemap" (dict "disable" true)) -}}
-{{- end -}}

@@ -591,6 +591,8 @@ h3 {
 
 .home {
   --space: #e6f5f2;
+  /* 惑星の大きさ（ドット）。planets.js もこの値で描く。スマートフォンは下で44にする */
+  --planet-dots: 64;
   background-color: var(--space);
   background-image: var(--starfield, none);
   background-size: calc(128px * var(--scale)) calc(128px * var(--scale));
@@ -610,7 +612,7 @@ h3 {
 /* 列幅は惑星の幅で固定（長い名前は折り返す）。段の間隔は上下のずらし量（最大6ドット）より広い8ドット */
 .planets {
   display: grid;
-  grid-template-columns: repeat(2, calc(64px * var(--scale) + 8px));
+  grid-template-columns: repeat(2, calc(var(--planet-dots) * var(--scale) * 1px + 8px));
   gap: calc(8px * var(--scale)) 8px;
   margin: 0;
   padding: 0;
@@ -619,7 +621,7 @@ h3 {
 
 @media (min-width: 600px) {
   .planets {
-    grid-template-columns: repeat(3, calc(64px * var(--scale) + 8px));
+    grid-template-columns: repeat(3, calc(var(--planet-dots) * var(--scale) * 1px + 8px));
     column-gap: calc(8px * var(--scale));
   }
 }
@@ -648,8 +650,29 @@ h3 {
 .planet-body {
   position: relative;
   display: block;
-  width: calc(64px * var(--scale));
-  height: calc(64px * var(--scale));
+  width: calc(var(--planet-dots, 64) * var(--scale) * 1px);
+  height: calc(var(--planet-dots, 64) * var(--scale) * 1px);
+}
+
+/* スマートフォン：惑星を小さく（直径44ドット×2倍＝88px）描き、左右の列の高さを大きくずらす。
+   惑星の間に余白を作り、余白のタップ（小さな惑星が生まれる）と惑星のタップを取り違えにくくする */
+@media (max-width: 599px) {
+  .home {
+    --planet-dots: 44;
+  }
+
+  .home .planets {
+    /* 列は惑星より40px広く（惑星名が折り返しにくいように） */
+    grid-template-columns: repeat(2, calc(var(--planet-dots) * var(--scale) * 1px + 40px));
+    column-gap: calc(14px * var(--scale));
+    row-gap: calc(8px * var(--scale));
+    /* 右の列を下げた分、下に余白を足す（transform は高さに数えられないため） */
+    padding-bottom: calc(26px * var(--scale));
+  }
+
+  .home .planet:nth-child(even) {
+    transform: translateY(calc((var(--dy, 0) + 26) * var(--scale) * 1px));
+  }
 }
 
 .planet-canvas {
@@ -715,6 +738,210 @@ h3 {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ---------- トップのインタラクション（第5.5節）：余白をクリック／タップすると小さな惑星が生まれる ---------- */
+
+/* 小さな惑星を描くキャンバス。大きな惑星の後ろに置き、クリックは通す
+   枠（.sky-wrap）ではみ出しを切り取る。はみ出すとPCではスクロールバーが出入りし、
+   幅が変わる → キャンバスを作り直す → またはみ出す、をくり返して画面が左右にぶれる */
+.sky-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  image-rendering: pixelated;
+}
+
+.home main {
+  position: relative;
+  touch-action: manipulation;
+}
+
+.home .space,
+.home .planets {
+  position: relative;
+  z-index: 1;
+}
+
+/* 惑星のまわりの余白はクリックを通し、惑星（リンク）だけ受け取る */
+.home .space,
+.home .planets,
+.home .planet {
+  pointer-events: none;
+}
+
+.home .planet-link {
+  pointer-events: auto;
+}
+
+/* 最初の案内（PCは宇宙の下端、スマートフォンは画面の下・タブバーのすぐ上に固定） */
+.sky-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 2;
+  margin: 0;
+  padding: 6px 14px;
+  border: 1px solid var(--text);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: opacity 200ms var(--ease-out);
+}
+
+.sky-hint.is-hidden {
+  opacity: 0;
+}
+
+.sky-hint-touch {
+  display: none;
+}
+
+@media (hover: none) {
+  .sky-hint-mouse {
+    display: none;
+  }
+
+  .sky-hint-touch {
+    display: inline;
+  }
+}
+
+/* 大きな惑星にカーソルを乗せると小さく跳ねる（top-forge.js が .is-hopping を付け、終わったら外す）
+   - 乗せた瞬間に1ドット上がり（すぐ反応が返る）、2ドットの頂点で少し止まって、戻る。合計240ミリ秒
+   - 1ドット単位でしか動かさない（steps）ので、ドット絵の整数倍が崩れない
+   - クラスで動かすので、途中でカーソルが離れても最後まで跳ね終わる（:hover だと途中でぷつっと戻る） */
+@keyframes planet-hop {
+  0% { transform: translateY(calc(-1px * var(--scale))); }
+  21% { transform: translateY(calc(-2px * var(--scale))); }
+  63% { transform: translateY(calc(-1px * var(--scale))); }
+  88%,
+  100% { transform: translateY(0); }
+}
+
+.home .planet-body.is-hopping {
+  animation: planet-hop 240ms steps(1, end);
+}
+
+/* ---------- トップの吹き出し（第5.4節） ---------- */
+.home .planet-link {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 枠としっぽは、top-bubble.js が吹き出しの大きさに合わせて1枚のドット絵として描き（.bubble-bg）、
+   --scale の整数倍に拡大する。吹き出しの幅と高さも JS がドットの倍数に揃える */
+.bubble {
+  --dot: calc(1px * var(--scale));
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  isolation: isolate;
+  min-width: 112px;
+  box-sizing: border-box;
+  padding: calc(6px + var(--dot));
+  color: var(--text);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  /* 閉じるとき：速く（100ms）、動かさずに消える */
+  transition:
+    opacity 100ms var(--ease-out),
+    visibility 0s linear 100ms;
+}
+
+.bubble-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  image-rendering: pixelated;
+}
+
+.bubble.is-below .bubble-bg {
+  top: calc(-3 * var(--dot));
+}
+
+/* 開くとき：1ドットずれた位置から、ポンと1ドット動いて止まる（ドット単位のまま）＋140msで濃くなる */
+.bubble.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition:
+    opacity 140ms var(--ease-out),
+    transform 70ms steps(1, end),
+    visibility 0s;
+}
+
+.bubble.is-entering {
+  transform: translateY(var(--dot));
+}
+
+.bubble.is-below.is-entering {
+  transform: translateY(calc(-1 * var(--dot)));
+}
+
+/* 隣の惑星へ移ったときは、待たずに・動かさずに中身だけ替える */
+.bubble.is-instant {
+  transition: none;
+}
+
+/* 作品画像の一部を切り抜いた横長の小さなバナー */
+.bubble-banner {
+  width: 144px;
+  height: 40px;
+  margin-bottom: 4px;
+  background-color: #f1f5f4;
+  background-repeat: no-repeat;
+}
+
+.bubble-banner.is-pixel {
+  image-rendering: pixelated;
+}
+
+.bubble-banner[hidden] {
+  display: none;
+}
+
+.bubble-count {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.bubble-count strong {
+  margin: 0 2px;
+  font-size: 1.125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 599px) {
+  .sky-hint {
+    position: fixed;
+    bottom: calc(64px + env(safe-area-inset-bottom) + 12px);
+    z-index: 31;
   }
 }
 

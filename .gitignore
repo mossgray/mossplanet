@@ -5,3 +5,6 @@
 *.tmp
 node_modules/
 .hugo_build.lock
+
+# 作品の受け渡し用フォルダ（元画像・動画・管理用のメモを含むので公開しない）
+/mossplanet-incoming/

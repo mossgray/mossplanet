@@ -1,11 +1,11 @@
 /*
- * 試作B「観測ステーション」（/lab/b/。確認用URLだけ）。トップの吹き出し（第5.4節）の候補
+ * トップの惑星の吹き出し（docs/spec.md 第5.4節。2026年11月16日に試作「観測ステーション」から採用）
  * - 惑星にマウスを乗せて150ミリ秒たつと、ドット絵の枠の吹き出しが惑星の上に出る（上に入らなければ下）
+ * - 枠としっぽの色は、惑星の色の明るさを35%落とした色
  * - 中身：代表作の画像の一部をランダムに切り抜いた横長の小さなバナーと、作品数（0から数え上がる）
  * - 隣の惑星へ移ったときは、待たずに・動かさずに中身だけ替える
  * - キーボードで選んだときはすぐ出し、Escキーで閉じる
  * - スマートフォン：短いタップは今までどおり一覧ページへ。長押し（約0.45秒）で吹き出しを出し、その回は移動しない
- *   （第5.4節では長押しを採用しないと決めている。試してみるための仮の動き）
  * - 「視差効果を減らす」がオンなら、その場にただ現れ、数字も最初から最終の値
  * - 画像は、ページの表示が終わってから読み込む
  */
@@ -23,23 +23,45 @@
   var BANNER_H = 40;
 
   var images = {};
+  var dataEl = document.getElementById("home-bubbles");
   try {
-    images = JSON.parse(document.getElementById("lab-bubbles").textContent) || {};
+    images = JSON.parse(dataEl.textContent) || {};
   } catch (e) {
     images = {};
   }
+  // 文言は言語ごとに i18n から（data-* で受け取る）
+  // 作品数の文言は「作品{n}点」「{n} works」のように {n} の前後で分ける
+  var countText = ((dataEl && dataEl.dataset.count) || "作品{n}点").split("{n}");
+  var TEXT = {
+    before: countText[0] || "",
+    after: countText[1] || "",
+    pending: dataEl ? dataEl.dataset.pending : "（準備中）"
+  };
+
+  // 惑星の色の明るさを35%落とした色（枠としっぽの線）
+  function frameColor(hex) {
+    var n = parseInt((hex || "#0b1b1a").replace("#", ""), 16);
+    var f = function (v) { return Math.round(v * 0.65); };
+    return "rgb(" + f((n >> 16) & 255) + "," + f((n >> 8) & 255) + "," + f(n & 255) + ")";
+  }
+  var lineColor = INK;
 
   /* ---------- 吹き出し ---------- */
 
   var bubble = document.createElement("div");
-  bubble.className = "lab-bubble";
+  bubble.className = "bubble";
   bubble.setAttribute("aria-hidden", "true");
   bubble.innerHTML =
-    '<canvas class="lab-bubble-bg"></canvas>' +
-    '<div class="lab-bubble-banner"></div>' +
-    '<p class="lab-bubble-count">作品<strong>0</strong>点<span></span></p>';
+    '<canvas class="bubble-bg"></canvas>' +
+    '<div class="bubble-banner"></div>' +
+    '<p class="bubble-count"></p>';
   main.appendChild(bubble);
-  var bg = bubble.querySelector(".lab-bubble-bg");
+  var elCountP = bubble.querySelector(".bubble-count");
+  elCountP.appendChild(document.createTextNode(TEXT.before));
+  elCountP.appendChild(document.createElement("strong"));
+  elCountP.appendChild(document.createTextNode(TEXT.after));
+  elCountP.appendChild(document.createElement("span"));
+  var bg = bubble.querySelector(".bubble-bg");
   var bgCtx = bg.getContext("2d");
 
   // 枠としっぽを1枚のドット絵で描く（w×h ドットの吹き出し＋しっぽ3段）
@@ -55,7 +77,7 @@
       c.translate(0, h + 3);
       c.scale(1, -1);
     }
-    var ink = function (x, y, ww, hh) { c.fillStyle = INK; c.fillRect(x, y, ww, hh); };
+    var ink = function (x, y, ww, hh) { c.fillStyle = lineColor; c.fillRect(x, y, ww, hh); };
     var white = function (x, y, ww, hh) { c.fillStyle = "#ffffff"; c.fillRect(x, y, ww, hh); };
     white(1, 1, w - 2, h - 2);
     ink(2, 0, w - 4, 1);
@@ -77,9 +99,9 @@
     c.restore();
   }
 
-  var elBanner = bubble.querySelector(".lab-bubble-banner");
-  var elCount = bubble.querySelector(".lab-bubble-count strong");
-  var elNote = bubble.querySelector(".lab-bubble-count span");
+  var elBanner = bubble.querySelector(".bubble-banner");
+  var elCount = bubble.querySelector(".bubble-count strong");
+  var elNote = bubble.querySelector(".bubble-count span");
 
   /* ---------- 画像の読み込み（表示が終わってから） ---------- */
 
@@ -200,8 +222,9 @@
 
   function render(li) {
     var id = li.dataset.id;
+    lineColor = frameColor(li.dataset.color);
     fillBanner(id);
-    elNote.textContent = li.hasAttribute("data-pending") ? "（準備中）" : "";
+    elNote.textContent = li.hasAttribute("data-pending") ? TEXT.pending : "";
     elCount.textContent = li.dataset.count || "0"; // 大きさを測るため、いったん最終の値で
     place(li);
     countUp(parseInt(li.dataset.count, 10) || 0);
