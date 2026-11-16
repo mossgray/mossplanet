@@ -593,7 +593,7 @@ h3 {
   --space: #e6f5f2;
   background-color: var(--space);
   background-image: var(--starfield, none);
-  background-size: calc(64px * var(--scale)) calc(64px * var(--scale));
+  background-size: calc(128px * var(--scale)) calc(128px * var(--scale));
   image-rendering: pixelated;
 }
 
