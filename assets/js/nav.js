@@ -84,7 +84,7 @@
     }
   }
 
-  // フッターの「動きを止める」ボタン（assets/js/motion.js）。端末の設定で止めているときは押せない
+  // ヘッダーの「動きを止める」ボタン（assets/js/motion.js）。端末の設定で止めているときは押せない
   var motionBtn = document.querySelector(".motion-toggle");
   var motion = window.mossReduceMotion;
   // 動く画像（data-still を持つ GIF）：ボタンで止めたら静止画に差し替える（端末の設定のときは <picture> の source が効く）
@@ -102,6 +102,8 @@
       var sys = motion.systemOff();
       motionBtn.disabled = sys;
       motionBtn.textContent = sys ? motionBtn.dataset.os : motion.userOff() ? motionBtn.dataset.start : motionBtn.dataset.stop;
+      if (sys) motionBtn.title = motionBtn.dataset.osTitle;
+      else motionBtn.removeAttribute("title");
     };
     motionBtn.hidden = false;
     paint();

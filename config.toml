@@ -7,8 +7,8 @@ enableRobotsTXT = true
 disableKinds = ["taxonomy", "term"]
 
 [params]
-  description = "モス（mossgray）のイラスト・ドット絵・ゲームブックなどの作品を公開しています。"
-  author = "モス / mossgray"
+  description = "モス（moss）のイラスト・ドット絵・ゲームブックなどの作品を公開しています。"
+  author = "モス / moss"
   twitter = "https://x.com/mossgray_"
   youtube = "https://www.youtube.com/@mossgray_"
   skeb = "https://skeb.jp/@mossgray_"
@@ -65,4 +65,4 @@ disableKinds = ["taxonomy", "term"]
     label = "English"
     locale = "en"
     [languages.en.params]
-      description = "Portfolio of mossgray: character illustration, pixel art, gamebooks and Live2D models."
+      description = "Portfolio of moss: character illustration, pixel art, gamebooks and Live2D models."

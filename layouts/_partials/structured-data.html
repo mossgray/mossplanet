@@ -1,13 +1,13 @@
 {{- /*
   構造化データ（JSON-LD）。docs/spec.md 第9.1節
-  - トップ：WebSite と Person（モス／mossgray。SNS などのアカウント）
+  - トップ：WebSite と Person（モス／moss。SNS などのアカウント）
   - 作品ページ・ファンアートのページ：作品（ゲームブックは Game、それ以外は CreativeWork）
   - パンくずリスト（BreadcrumbList）は _partials/breadcrumbs.html が出す
 */ -}}
 {{- $person := dict
   "@type" "Person"
   "name" "モス"
-  "alternateName" "mossgray"
+  "alternateName" "moss"
   "url" ("/about/" | absURL)
   "sameAs" (slice site.Params.twitter site.Params.youtube site.Params.skeb site.Params.booth)
 -}}

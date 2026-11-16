@@ -383,7 +383,10 @@ h3 {
 
 /* 「動きを止める」ボタン（assets/js/motion.js） */
 .motion-toggle {
+  flex: none;
   padding: 2px 10px;
+  font-size: 0.75rem;
+  white-space: nowrap;
   border: 1px solid #c9d6d4;
   border-radius: 999px;
   background: #fff;
@@ -2153,7 +2156,7 @@ img.is-pixel {
   font-size: 0.75rem;
 }
 
-/* トップの紹介文と新着 */
+/* トップの紹介文 */
 .home-intro {
   position: relative;
   z-index: 1;
@@ -2184,19 +2187,6 @@ img.is-pixel {
   margin: 0;
 }
 
-.home-new {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 4px 16px;
-  margin: 8px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.home-new-label {
-  font-weight: 700;
-}
 
 .home-intro a {
   color: var(--text);

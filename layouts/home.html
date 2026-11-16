@@ -4,18 +4,10 @@
 <h1 class="visually-hidden">{{ T "home_h1" }}</h1>
 {{ partial "home-planets.html" . }}
 
-{{- /* 紹介文と新着（検索エンジンにサイトの内容を伝え、新作へ直接行けるように）。作品は日本語版にだけあるので、日本語版の作品を使う */ -}}
+{{- /* 紹介文（検索エンジンにサイトの内容を伝える） */ -}}
 <div class="home-intro">
   <div class="home-intro-box">
     <p>{{ T "home_intro" }}</p>
-    {{- with first 3 (where (index hugo.Sites 0).RegularPages "Section" "works").ByDate.Reverse }}
-    <ul class="home-new">
-      <li class="home-new-label">{{ T "home_new" }}</li>
-      {{- range . }}
-      <li><a href="{{ .RelPermalink }}"{{ if ne site.Language.Lang "ja" }} hreflang="ja"{{ end }}>{{ if and (eq site.Language.Lang "en") .Params.title_en }}{{ .Params.title_en }}{{ else }}{{ .Title }}{{ end }}</a></li>
-      {{- end }}
-    </ul>
-    {{- end }}
   </div>
 </div>
 

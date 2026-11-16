@@ -20,6 +20,8 @@
       <li><a href="{{ "/about/" | relLangURL }}"{{ if hasPrefix .RelPermalink ("/about/" | relLangURL) }} aria-current="page"{{ end }}>{{ T "nav_about" }}</a></li>
       <li><a href="{{ "/contact/" | relLangURL }}"{{ if hasPrefix .RelPermalink ("/contact/" | relLangURL) }} aria-current="page"{{ end }}>{{ T "nav_contact" }}</a></li>
     </ul>
+    {{- /* 「動きを止める」ボタン（assets/js/motion.js）。言語切替えの左隣に置く。JavaScript がないときは出さない */}}
+    <button type="button" class="motion-toggle" hidden data-stop="{{ T "motion_stop" }}" data-start="{{ T "motion_start" }}" data-os="{{ T "motion_os" }}" data-os-title="{{ T "motion_os_title" }}">{{ T "motion_stop" }}</button>
     {{ partial "lang-switch.html" . }}
   </nav>
 </header>

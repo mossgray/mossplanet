@@ -1,7 +1,7 @@
 ---
 title: "Commissions & Contact"
 linkTitle: "Contact"
-description: "Commission character illustrations, pixel art or Live2D models from mossgray, or send an inquiry."
+description: "Commission character illustrations, pixel art or Live2D models from moss, or send an inquiry."
 ---
 
 {{< todo >}}
