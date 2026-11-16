@@ -2,7 +2,7 @@
 title: "緑川葉 Live2Dモデル制作"
 date: 2024-06-29
 planets: [live2d]
-cover: midorikawa-expressions.jpg
+cover: midorikawa-expressions.webp
 cover_alt: "緑色の髪に葉の髪飾りをつけた少女の、通常・ドヤ・キラ・泣き・驚き・赤面・青ざめ・照れの8つの表情をまとめた表情集"
 thumb: midorikawa-thumb.webp
 summary: "緑川葉様の配信用Live2Dモデルを、「美少女の姿」と「マスコットの姿」の2モデル制作しました。素材の調整からトラッキング調整までを担当しています。"
