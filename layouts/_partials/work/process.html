@@ -4,6 +4,10 @@
   process:
     - image: rough.webp
       label: ラフ
+    - video: timelapse.mp4          ← 動画（タイムラプスなど）。音なし・横720px程度に縮めたもの
+      poster: timelapse-poster.webp  ← 再生前に表示する静止画
+      label: タイムラプス
+  動画は再生ボタンを押すまで読み込まない（preload="none"）。自動再生はしない
 */ -}}
 {{- $p := . -}}
 {{- with $p.Params.process }}
@@ -11,6 +15,22 @@
   <h2>制作工程</h2>
   <ol class="process-list">
     {{- range $i, $step := . }}
+    {{- if $step.video }}
+    {{- with $p.Resources.Get $step.video }}
+    {{- $poster := "" -}}{{- with $step.poster }}{{ with $p.Resources.Get . }}{{ $poster = . }}{{ end }}{{ end }}
+    <li class="process-video">
+      <figure>
+        <video controls muted playsinline preload="none"{{ with $poster }} poster="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}"{{ end }} aria-label="{{ $p.Title }}：{{ $step.label | default "制作の動画" }}">
+          <source src="{{ .RelPermalink }}" type="{{ .MediaType.Type }}">
+          <a href="{{ .RelPermalink }}">{{ $step.label | default "制作の動画" }}を開く</a>
+        </video>
+        {{- with $step.label }}<figcaption>{{ . }}</figcaption>{{ end }}
+      </figure>
+    </li>
+    {{- else }}
+    {{- warnf "工程の動画が見つかりません: %s（%s）" $step.video $p.RelPermalink -}}
+    {{- end }}
+    {{- else }}
     {{- with $p.Resources.Get $step.image }}
     <li>
       <figure>
@@ -20,6 +40,7 @@
     </li>
     {{- else }}
     {{- warnf "工程の画像が見つかりません: %s（%s）" $step.image $p.RelPermalink -}}
+    {{- end }}
     {{- end }}
     {{- end }}
   </ol>

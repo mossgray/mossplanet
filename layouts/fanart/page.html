@@ -25,8 +25,8 @@
   {{- with .Params.cover }}{{ with $.Resources.Get . }}{{ $images = $images | append . }}{{ end }}{{ end -}}
   {{- /* 工程の画像（process）は下の「制作工程」に出すので、ここには並べない */ -}}
   {{- $processImages := slice -}}
-  {{- range .Params.process }}{{ $processImages = $processImages | append .image }}{{ end -}}
-  {{- range (.Resources.ByType "image").ByName -}}
+  {{- range .Params.process }}{{ $processImages = $processImages | append (slice .image .poster) }}{{ end -}}
+  {{- range sort (.Resources.ByType "image") "Name" -}}
     {{- if and (ne .Name $.Params.cover) (not (in $processImages .Name)) -}}{{- $images = $images | append . -}}{{- end -}}
   {{- end -}}
   {{- range $i, $img := $images }}

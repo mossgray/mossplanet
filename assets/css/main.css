@@ -1193,6 +1193,21 @@ img.is-pixel {
   text-align: center;
 }
 
+/* 工程の動画は1列分の幅を取り、縦長でも画面に収まる高さに */
+.process-list .process-video {
+  grid-column: 1 / -1;
+}
+
+.process-list video {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 80vh;
+  margin: 0 auto;
+  background: #f1f5f4;
+}
+
 /* 二次創作の一覧ページの注意書き */
 .fanart-notice {
   margin: 24px 0 0;
