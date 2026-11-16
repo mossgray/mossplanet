@@ -42,4 +42,11 @@
     <li><span aria-current="page">{{ with .Params.color }}{{ partial "pixel-icon.html" (dict "color" . "size" 16 "scale" 1) }}{{ end }}{{ .LinkTitle }}</span></li>
   </ol>
 </nav>
+{{- /* 検索結果に現在地を出すための構造化データ（BreadcrumbList） */ -}}
+{{- $ld := slice (dict "@type" "ListItem" "position" 1 "name" (T "home") "item" ("/" | absLangURL)) -}}
+{{- range $i, $it := $items -}}
+  {{- $ld = $ld | append (dict "@type" "ListItem" "position" (add $i 2) "name" $it.title "item" (absURL $it.url)) -}}
+{{- end -}}
+{{- $ld = $ld | append (dict "@type" "ListItem" "position" (add (len $items) 2) "name" .LinkTitle "item" .Permalink) }}
+<script type="application/ld+json">{{ dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $ld | jsonify | safeJS }}</script>
 {{- end -}}

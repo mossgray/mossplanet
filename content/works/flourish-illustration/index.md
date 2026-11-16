@@ -1,11 +1,13 @@
 ---
 title: "『Flourish』イラスト"
+seo_title: "『Flourish』イラスト（ドット絵・ピクセルアート）"
 date: 2024-11-17
 planets: [illustration, pixel-art]
 related: [flourish-gamebook]
 cover: flourish-cover.gif
 cover_alt: "緑がかった髪に青い魔女帽子とマントの少女が、草の上に座って本を開き、手元に光る精霊の玉を浮かべている。そばには白いうさぎのような精霊がいる、表紙のドット絵"
 thumb: flourish-cover.png
+cover_still: flourish-cover.png   # 動きを止める設定のときに出す静止画
 pixel: true
 summary: "ゲームブック『Flourish』のために描いた、表紙とイベントカード12枚のドット絵。魔法と精霊のいる、やさしくふんわりとしたファンタジーの世界です。"
 role: "イラスト（表紙・イベントカード）"

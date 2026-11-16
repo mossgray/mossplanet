@@ -18,6 +18,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* ページ内リンクの行き先が、固定ヘッダー（60px）の下に隠れないように */
+  scroll-padding-top: 72px;
 }
 
 body {
@@ -267,11 +269,22 @@ h3 {
 
 .lang-switch {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   margin: 0;
   padding: 0;
   font-size: 0.8125rem;
   list-style: none;
+}
+
+/* 押せる範囲を縦横 24px 以上に（WCAG 2.5.8） */
+.lang-switch a,
+.lang-switch span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0 4px;
 }
 
 .lang-switch span[aria-current] {
@@ -361,6 +374,34 @@ h3 {
 
 .footer-meta a {
   color: var(--text);
+}
+
+.site-footer .ext {
+  margin-left: 2px;
+  font-size: 0.75em;
+}
+
+/* 「動きを止める」ボタン（assets/js/motion.js） */
+.motion-toggle {
+  padding: 2px 10px;
+  border: 1px solid #c9d6d4;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.motion-toggle:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+/* 色の付いた背景の上のリンクは、白の背景より少し濃い色にする（コントラスト 4.5 以上） */
+.about-page main a:not(.button),
+.pending-note a,
+.fanart-notice a {
+  color: #1f5f59;
 }
 
 /* ---------- スマートフォンのタブバー（600px未満） ---------- */
@@ -749,7 +790,7 @@ h3 {
   animation-delay: calc(var(--i, 0) * 0.12s);
 }
 
-/* 「視差効果を減らす」がオンなら、すべての動きを止める */
+/* 「視差効果を減らす」がオンなら、すべての動きを止める。フッターの「動きを止める」ボタン（html.motion-off）も同じ扱い */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -758,6 +799,14 @@ h3 {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+.motion-off *,
+.motion-off *::before,
+.motion-off *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
 }
 
 :root {
@@ -2085,4 +2134,76 @@ img.is-pixel {
 /* ファンアート：原作シリーズごとの節 */
 .fanart-group + .fanart-group {
   margin-top: 8px;
+}
+
+/* ゲームブックの表紙：PCで画面を埋めないよう、横640px・高さ70%までにする（写真や紹介文が最初の画面に入るように） */
+.is-gamebook .work-main img:not(.is-pixel) {
+  max-width: min(100%, 640px);
+  max-height: 70vh;
+}
+
+/* 成長カードなど（画像と同じ文章のカード）は、説明文を小さく・控えめに。文章は検索エンジンとスクリーンリーダーのために残す */
+.card-group-simple .card-text {
+  margin-top: 4px;
+  color: #3d5250;
+  font-size: 0.75rem;
+}
+
+.card-group-simple .card-text .card-name {
+  font-size: 0.75rem;
+}
+
+/* トップの紹介文と新着 */
+.home-intro {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 16px 24px;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.home-intro-box {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  background: rgb(255 255 255 / 0.88);
+  pointer-events: auto;
+}
+
+/* PC では最初の案内（.sky-hint、宇宙の下端）と重ならないよう、下に余白を取る */
+@media (min-width: 600px) {
+  .home-intro {
+    padding-bottom: 72px;
+  }
+}
+
+.home-intro p {
+  margin: 0;
+}
+
+.home-new {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 16px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-new-label {
+  font-weight: 700;
+}
+
+.home-intro a {
+  color: var(--text);
+  text-underline-offset: 3px;
+}
+
+/* 404：惑星から探す */
+.not-found-planets {
+  margin-top: 24px;
 }

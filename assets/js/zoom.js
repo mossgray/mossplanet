@@ -1,7 +1,7 @@
 /*
  * 作品画像の拡大表示（docs/spec.md 第6.2節「クリックすると画面いっぱいに拡大」）
  * - JavaScript がなければ、リンク先の大きな画像がそのまま開く
- * - 画像のクリック・閉じるボタン・Esc キーで閉じる
+ * - 閉じるボタン・Esc キー・背景のクリックで閉じる（前後に移れないときは、画像のクリックでも閉じる）
  * - data-zoom-group が同じ画像どうしは、拡大表示の中で前後へ移れる
  *   （「前へ」「次へ」ボタン、←→キー、スマートフォンでは左右のスワイプ。指で拡大しているときはスワイプしない）
  */
@@ -22,7 +22,9 @@
 
   function show(link) {
     var thumb = link.querySelector("img");
-    img.src = link.getAttribute("href");
+    var motion = window.mossReduceMotion;
+    var still = thumb && thumb.getAttribute("data-still");
+    img.src = still && motion && motion.matches ? still : link.getAttribute("href");
     img.alt = thumb ? thumb.alt : "";
     var pixel = !!(thumb && thumb.classList.contains("is-pixel"));
     img.classList.toggle("is-pixel", pixel);
@@ -74,7 +76,10 @@
   }
 
   close.addEventListener("click", hide);
-  img.addEventListener("click", hide);
+  // 前後に移れるときは、移るつもりで画像を押して閉じてしまわないよう、画像のクリックでは閉じない
+  img.addEventListener("click", function () {
+    if (group.length < 2) hide();
+  });
   dialog.addEventListener("click", function (e) {
     if (e.target === dialog) hide();
   });

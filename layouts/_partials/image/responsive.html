@@ -1,6 +1,6 @@
 {{- /*
   作品画像を、表示用に軽量化して <img> を出力する（メイン画像と本文中の画像で共用）
-  dict "res" 画像リソース "alt" 代替テキスト "pixel" ドット絵か "zoom" クリックで拡大するか "eager" 先に読み込むか "sizes" 表示幅（省略時は最大1100px） "group" 拡大表示で前後に移れる画像のまとまりの名前 "w" 表示用の画像の幅（省略時は1100px。その2倍も作る）
+  dict "res" 画像リソース "alt" 代替テキスト "pixel" ドット絵か "zoom" クリックで拡大するか "eager" 先に読み込むか "sizes" 表示幅（省略時は最大1100px） "group" 拡大表示で前後に移れる画像のまとまりの名前 "w" 表示用の画像の幅（省略時は1100px。その2倍も作る） "still" 動く画像（GIF）の静止画のリソース
   - 通常：表示幅 1100px と、その2倍（高解像度の画面用）の WebP を作る。拡大表示用は長辺 2400px まで
   - ドット絵：縮小・再圧縮せず元の画像を使い、最大幅 1100px に収まる整数倍で表示する（第5.3節・第6.2節）
     表示する画面では、assets/js/pixel-snap.js が枠の幅と画面の高さ（85%）に収まる整数倍に合わせ直す（data-pixel-fit）
@@ -33,6 +33,10 @@
   {{- if gt $r.Width 2400 }}{{ $big = $r.Resize "2400x webp q85" }}{{ else }}{{ $big = $r.Process "webp q85" }}{{ end -}}
   {{- $full = $big.RelPermalink -}}
 {{- end -}}
+{{- /* アニメーションGIFなどの動く画像は、動きを止める設定のときに静止画（still）を出す */ -}}
+{{- $still := "" -}}{{- with .still }}{{ $still = .RelPermalink }}{{ end -}}
 {{- if .zoom }}<a class="zoom" href="{{ $full }}" data-zoom{{ with .group }} data-zoom-group="{{ . }}"{{ end }}>{{ end -}}
-<img src="{{ $src }}"{{ with $srcset }} srcset="{{ . }}" sizes="{{ $.sizes | default "(min-width: 1132px) 1100px, calc(100vw - 32px)" }}"{{ end }} width="{{ $w }}" height="{{ $h }}" alt="{{ $alt }}" loading="{{ $loading }}" decoding="async"{{ if $pixel }} class="is-pixel" data-pixel-fit data-w="{{ $r.Width }}" data-h="{{ $r.Height }}"{{ end }}>
+{{- with $still }}<picture><source media="(prefers-reduced-motion: reduce)" srcset="{{ . }}">{{ end -}}
+<img src="{{ $src }}"{{ with $srcset }} srcset="{{ . }}" sizes="{{ $.sizes | default "(min-width: 1132px) 1100px, calc(100vw - 32px)" }}"{{ end }} width="{{ $w }}" height="{{ $h }}" alt="{{ $alt }}" loading="{{ $loading }}" decoding="async"{{ if $pixel }} class="is-pixel" data-pixel-fit data-w="{{ $r.Width }}" data-h="{{ $r.Height }}"{{ end }}{{ with $still }} data-still="{{ . }}"{{ end }}>
+{{- if $still }}</picture>{{ end -}}
 {{- if .zoom }}</a>{{ end -}}

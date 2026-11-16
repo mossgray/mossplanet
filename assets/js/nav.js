@@ -84,6 +84,32 @@
     }
   }
 
+  // フッターの「動きを止める」ボタン（assets/js/motion.js）。端末の設定で止めているときは押せない
+  var motionBtn = document.querySelector(".motion-toggle");
+  var motion = window.mossReduceMotion;
+  // 動く画像（data-still を持つ GIF）：ボタンで止めたら静止画に差し替える（端末の設定のときは <picture> の source が効く）
+  var swapStill = function () {
+    var imgs = document.querySelectorAll("img[data-still]");
+    for (var i = 0; i < imgs.length; i++) {
+      var img = imgs[i];
+      if (!img.dataset.anim) img.dataset.anim = img.getAttribute("src");
+      img.setAttribute("src", motion && motion.matches ? img.dataset.still : img.dataset.anim);
+    }
+  };
+  if (motion && motion.userOff()) swapStill();
+  if (motionBtn && motion) {
+    var paint = function () {
+      var sys = motion.systemOff();
+      motionBtn.disabled = sys;
+      motionBtn.textContent = sys ? motionBtn.dataset.os : motion.userOff() ? motionBtn.dataset.start : motionBtn.dataset.stop;
+    };
+    motionBtn.hidden = false;
+    paint();
+    motion.addEventListener("change", swapStill);
+    motionBtn.addEventListener("click", function () { motion.setUserOff(!motion.userOff()); });
+    motion.addEventListener("change", paint);
+  }
+
   var header = document.querySelector(".site-header");
   if (header) {
     var scrolled = null;

@@ -15,6 +15,36 @@
 <meta property="og:url" content="{{ .Permalink }}">
 <meta property="og:site_name" content="{{ site.Title }}">
 <meta property="og:locale" content="{{ cond (eq site.Language.Lang "en") "en_US" "ja_JP" }}">
+{{- /*
+  OGP画像（第9.1節）：作品ページはその作品の画像（cover。動く画像は cover_still）から 1200×630 を作る。
+  ファンアートのページと、それ以外のページは共通画像を使う（共通画像は未作成。用意できたら site.Params.ogp_image に書く）
+*/ -}}
+{{- $ogp := "" -}}
+{{- if and .IsPage (eq .Section "works") -}}
+  {{- with .Resources.Get (.Params.cover_still | default .Params.cover) -}}
+    {{- if in (slice "jpeg" "png" "webp") .MediaType.SubType -}}
+      {{- $filter := cond ($.Params.pixel | default false) "NearestNeighbor" "Lanczos" -}}
+      {{- $ogp = (.Fill (printf "1200x630 Smart jpg q85 %s" $filter)).Permalink -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $ogp }}{{ with site.Params.ogp_image }}{{ with resources.Get . }}{{ $ogp = .Permalink }}{{ end }}{{ end }}{{ end -}}
+{{- with $ogp }}
+<meta property="og:image" content="{{ . }}">
+<meta name="twitter:card" content="summary_large_image">
+{{- else }}
+<meta name="twitter:card" content="summary">
+{{- end }}
+{{- /* ファビコン：ロゴマーク（横長）の上下に透明の余白を足して正方形にしてから縮める */ -}}
+{{- with resources.Get "images/logo/logo-mark.png" -}}
+  {{- $pad := div (sub .Width .Height) 2 -}}
+  {{- $square := .Filter (images.Padding $pad 0 $pad 0 "#00000000") -}}
+  {{- $ico := $square.Resize "32x32 png" -}}
+  {{- $touch := ($square.Filter (images.Padding 20 20 20 20 "#ffffff")).Resize "180x180 png" }}
+<link rel="icon" href="{{ $ico.RelPermalink }}" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="{{ $touch.RelPermalink }}">
+{{- end }}
+{{ partial "structured-data.html" . }}
 {{- /* 日本語版と英語版の対応を検索エンジンに伝える（hreflang）。訳があるページだけ */ -}}
 {{- if .IsTranslated }}
 {{- range .AllTranslations }}
@@ -23,6 +53,14 @@
 {{- range where .AllTranslations "Language.Lang" "ja" }}
 <link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
 {{- end }}
+{{- end }}
+{{- /*
+  動きの設定（docs/spec.md 第5.2節）。端末の「視差効果を減らす」と、フッターの「動きを止める」ボタンのどちらかで動きを止める。
+  window.mossReduceMotion は matchMedia と同じ形（matches と change の通知）なので、各スクリプトはこれを使う。
+  ボタンで止めたときは <html> に motion-off を付け、CSS でも reduced-motion と同じ扱いにする。描画の前に付けるため、ここに直接書く
+*/ -}}
+{{- with resources.Get "js/motion.js" | minify }}
+<script>{{ .Content | safeJS }}</script>
 {{- end }}
 {{- with resources.Get "css/main.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">

@@ -21,7 +21,8 @@
 
   var ctx = canvas.getContext("2d");
   var hint = document.querySelector(".sky-hint");
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  // 端末の設定とフッターの「動きを止める」ボタンの両方を見る（assets/js/motion.js）
+  var reduceMotion = window.mossReduceMotion || window.matchMedia("(prefers-reduced-motion: reduce)");
 
   var MAX = 12;
   var LINK_GAP = 26; // 縁と縁の間がこれ未満で点線
@@ -427,8 +428,8 @@
     for (var j = 0; j < small.length; j++) drawPlanet(small[j]);
     for (var k = 0; k < dust.length; k++) {
       var d = dust[k];
-      // 終わりの4割は点滅しながら消える
-      if (d.life > d.max * 0.6 && Math.floor(d.life / 80) % 2) continue;
+      // 終わりの4割は点滅しながら消える（光の点滅は1秒に3回以下にする。170ミリ秒ごとの切り替え＝約2.9回）
+      if (d.life > d.max * 0.6 && Math.floor(d.life / 170) % 2) continue;
       px(Math.round(d.x), Math.round(d.y), d.color);
     }
   }
@@ -462,7 +463,7 @@
 
   main.addEventListener("click", function (e) {
     // リンクやボタンの上では何もしない（大きな惑星への移動とナビゲーションを邪魔しない）
-    if (e.target.closest("a, button, input, textarea, select, label, summary")) return;
+    if (e.target.closest("a, button, input, textarea, select, label, summary, .home-intro-box")) return;
     var base = canvas.getBoundingClientRect();
     var x = Math.round((e.clientX - base.left) / scale);
     var y = Math.round((e.clientY - base.top) / scale);

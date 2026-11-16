@@ -18,7 +18,8 @@
   var DEEP = [10, 57, 155]; // 影に混ぜる深い青 #0a399b
   var SHADOW_MIX = 0.4;
 
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  // 端末の設定とフッターの「動きを止める」ボタンの両方を見る（assets/js/motion.js）
+  var reduceMotion = window.mossReduceMotion || window.matchMedia("(prefers-reduced-motion: reduce)");
 
   /* ---------- 色 ---------- */
 

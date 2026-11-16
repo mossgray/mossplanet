@@ -1,5 +1,6 @@
 ---
 title: "BURGER PLANET"
+seo_title: "BURGER PLANET（宇宙のバーガー屋のジャーナリングRPG）"
 date: 2023-12-30
 planets: [gamebook]
 cover: page-01.webp

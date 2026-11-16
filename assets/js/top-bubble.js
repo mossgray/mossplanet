@@ -14,7 +14,8 @@
 
   var main = document.getElementById("main");
   if (!main) return;
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  // 端末の設定とフッターの「動きを止める」ボタンの両方を見る（assets/js/motion.js）
+  var reduceMotion = window.mossReduceMotion || window.matchMedia("(prefers-reduced-motion: reduce)");
   var INK = "#0b1b1a";
   var OPEN_DELAY = 150; // 通り過ぎただけでちらつかないように（第5.4節）
   var GRACE = 300; // 閉じてからこの時間内に別の惑星へ乗ったら、待たずに出す

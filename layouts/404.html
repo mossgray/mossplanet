@@ -8,5 +8,16 @@
 <div class="container">
   <p>宇宙で迷子になってしまったようです。</p>
   <p><a href="{{ "/" | relURL }}">トップへ戻る</a></p>
+
+  {{- /* 迷子になった人が、そのまま作品を探せるように */ -}}
+  <section class="not-found-planets">
+    <h2 class="section-title">{{ T "not_found_planets" }}</h2>
+    <ul class="planet-cards">
+      {{- range where (partialCached "planets.html" .) "visible" true }}
+      <li><a href="{{ .url | relURL }}" style="--band: {{ .band | safeCSS }};">{{ partial "pixel-icon.html" (dict "color" .color "size" 32 "scale" 2) }}<span class="planet-card-name">{{ .name }}<small lang="en">{{ .name_en }}</small></span></a></li>
+      {{- end }}
+    </ul>
+    <p><a href="{{ "/works/" | relURL }}">{{ T "not_found_all" }}</a></p>
+  </section>
 </div>
 {{ end }}

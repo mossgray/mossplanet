@@ -1,5 +1,6 @@
 ---
 title: "ゲームブック『Flourish』"
+seo_title: "ゲームブック『Flourish』（精霊を育てるジャーナリングRPG）"
 date: 2024-11-17
 planets: [gamebook]
 related: [flourish-illustration]

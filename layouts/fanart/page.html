@@ -55,6 +55,25 @@
 
     {{ partial "work/process.html" . }}
 
+    {{- /* 前後の作品（同じ原作シリーズの中で、新しい順。シリーズに1作しかないときは、ファンアート全体の中で） */ -}}
+    {{- $series := .Params.fanart.series | default .Params.fanart.source -}}
+    {{- $all := (where site.RegularPages "Section" "fanart").ByDate.Reverse -}}
+    {{- $same := slice -}}
+    {{- range $all }}{{ if eq (.Params.fanart.series | default .Params.fanart.source) $series }}{{ $same = $same | append . }}{{ end }}{{ end -}}
+    {{- $list := cond (gt (len $same) 1) $same $all -}}
+    {{- $newer := "" -}}{{- $older := "" -}}{{- $found := false -}}
+    {{- range $list -}}
+      {{- if $found -}}{{- if not $older -}}{{- $older = . -}}{{- end -}}
+      {{- else if eq .RelPermalink $.RelPermalink -}}{{- $found = true -}}
+      {{- else -}}{{- $newer = . -}}{{- end -}}
+    {{- end }}
+    {{- if or $newer $older }}
+    <nav class="work-pager" aria-label="前後のファンアート">
+      {{- with $newer }}<a class="work-pager-newer" href="{{ .RelPermalink }}"><span>新しい作品</span>{{ .Title }}</a>{{ else }}<span></span>{{ end }}
+      {{- with $older }}<a class="work-pager-older" href="{{ .RelPermalink }}"><span>前の作品</span>{{ .Title }}</a>{{ end }}
+    </nav>
+    {{- end }}
+
     {{- with .Params.fanart }}
     <p class="fanart-copyright">
       {{- with .source }}原作：{{ . }}{{ end -}}

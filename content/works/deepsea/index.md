@@ -1,5 +1,6 @@
 ---
 title: "DeepSea"
+seo_title: "DeepSea（深海のいきものになるジャーナリングRPG）"
 date: 2023-09-27
 planets: [gamebook]
 related: [burger-planet]

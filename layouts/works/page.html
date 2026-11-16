@@ -30,11 +30,12 @@
   </div>
 </header>
 
-<article class="work">
+<article class="work{{ if .Params.gamebook }} is-gamebook{{ end }}">
   {{- /* 2. メイン画像：白背景の中央、最大幅1100px。クリックで画面いっぱいに拡大。周りに装飾を置かない */ -}}
+  {{- $still := "" -}}{{- with .Params.cover_still }}{{ $still = $.Resources.Get . }}{{ end }}
   {{- with .Params.cover }}{{ with $.Resources.Get . }}
   <figure class="work-main">
-    {{ partial "image/responsive.html" (dict "res" . "alt" $.Params.cover_alt "pixel" ($.Params.pixel | default false) "zoom" true "eager" true) }}
+    {{ partial "image/responsive.html" (dict "res" . "alt" $.Params.cover_alt "pixel" ($.Params.pixel | default false) "zoom" true "eager" true "still" $still) }}
   </figure>
   {{- end }}{{ end }}
 

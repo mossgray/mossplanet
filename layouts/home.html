@@ -4,6 +4,21 @@
 <h1 class="visually-hidden">{{ T "home_h1" }}</h1>
 {{ partial "home-planets.html" . }}
 
+{{- /* 紹介文と新着（検索エンジンにサイトの内容を伝え、新作へ直接行けるように）。作品は日本語版にだけあるので、日本語版の作品を使う */ -}}
+<div class="home-intro">
+  <div class="home-intro-box">
+    <p>{{ T "home_intro" }}</p>
+    {{- with first 3 (where (index hugo.Sites 0).RegularPages "Section" "works").ByDate.Reverse }}
+    <ul class="home-new">
+      <li class="home-new-label">{{ T "home_new" }}</li>
+      {{- range . }}
+      <li><a href="{{ .RelPermalink }}"{{ if ne site.Language.Lang "ja" }} hreflang="ja"{{ end }}>{{ if and (eq site.Language.Lang "en") .Params.title_en }}{{ .Params.title_en }}{{ else }}{{ .Title }}{{ end }}</a></li>
+      {{- end }}
+    </ul>
+    {{- end }}
+  </div>
+</div>
+
 {{- /*
   余白をクリック／タップすると小さな惑星が生まれる（第5.5節。assets/js/top-forge.js）
   キャンバスは、はみ出しを切り取る枠に入れる。main より広く・高くなると、PCでスクロールバーが出入りして画面が左右にぶれるため
@@ -33,7 +48,8 @@
     {{- end -}}
     {{- range first 3 $featured -}}
       {{- $page := . -}}
-      {{- with .Resources.Get .Params.cover -}}
+      {{- /* 動く画像（GIF）は、吹き出しでは静止画（cover_still）を使う */ -}}
+      {{- with .Resources.Get (.Params.cover_still | default .Params.cover) -}}
         {{- $pixel := $page.Params.pixel | default false -}}
         {{- $img := . -}}
         {{- if not $pixel -}}{{- $img = .Resize "480x webp q80" -}}{{- end -}}

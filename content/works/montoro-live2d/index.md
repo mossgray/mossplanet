@@ -2,6 +2,7 @@
 title: "もんとろ Live2Dモデル制作"
 date: 2023-06-29
 planets: [live2d]
+related: [midorikawa-live2d]
 cover: montoro-expressions.webp
 cover_alt: "目のついた青い球体キャラクターの表情差分と、模様や瞳の見え方を角度ごとに確かめるガイドをまとめたシート"
 thumb: montoro-thumb.webp
