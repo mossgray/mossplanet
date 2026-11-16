@@ -14,6 +14,9 @@ disableKinds = ["taxonomy", "term"]
   skeb = "https://skeb.jp/@mossgray_"
   booth = "https://mossplanet.booth.pm/"
 
+  # 作品に tools（使用ツール）の指定がないときに表示する初期値（docs/spec.md 第7.1節）
+  default_tools = "ラフ：Procreate／作画・仕上げ：CLIP STUDIO PAINT"
+
   # 惑星を公開する最低作品数。これ未満の惑星は本番で非表示（一覧ページも作らない）。
   # 確認用URL（本番以外）では件数に関係なくすべて表示し、「準備中」と出す。
   min_works = 1

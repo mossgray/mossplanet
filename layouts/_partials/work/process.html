@@ -1,0 +1,27 @@
+{{- /*
+  制作工程（作品ページと二次創作のページで共用）。docs/spec.md 第7.1節
+  process に書いた順（ラフ → 線画 → 完成 など）に並べる。各画像にラベルを付け、クリックで拡大できる
+  process:
+    - image: rough.webp
+      label: ラフ
+*/ -}}
+{{- $p := . -}}
+{{- with $p.Params.process }}
+<section class="work-process">
+  <h2>制作工程</h2>
+  <ol class="process-list">
+    {{- range $i, $step := . }}
+    {{- with $p.Resources.Get $step.image }}
+    <li>
+      <figure>
+        {{ partial "image/responsive.html" (dict "res" . "alt" (printf "%s：%s" $p.Title ($step.label | default (printf "工程%d" (add $i 1)))) "pixel" ($p.Params.pixel | default false) "zoom" true "sizes" "(min-width: 792px) 360px, calc(50vw - 24px)") }}
+        {{- with $step.label }}<figcaption>{{ . }}</figcaption>{{ end }}
+      </figure>
+    </li>
+    {{- else }}
+    {{- warnf "工程の画像が見つかりません: %s（%s）" $step.image $p.RelPermalink -}}
+    {{- end }}
+    {{- end }}
+  </ol>
+</section>
+{{- end }}

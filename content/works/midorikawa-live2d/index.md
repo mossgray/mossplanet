@@ -7,6 +7,7 @@ cover_alt: "緑色の髪に葉の髪飾りをつけた少女の、通常・ド�
 thumb: midorikawa-thumb.webp
 summary: "緑川葉様の配信用Live2Dモデルを、「美少女の姿」と「マスコットの姿」の2モデル制作しました。素材の調整からトラッキング調整までを担当しています。"
 role: "イラスト素材の調整、Live2Dモデリング、動き付け、トラッキング調整（2モデル）"
+tools: "イラスト制作：CLIP STUDIO PAINT／モデリング：Live2D Cubism"
 client:
   name: "緑川 葉様"
   url: "https://x.com/whimgreen"

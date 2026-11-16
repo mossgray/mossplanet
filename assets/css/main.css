@@ -1072,13 +1072,134 @@ img.is-pixel {
   text-align: center;
 }
 
-/* YouTube の埋め込み（Hugo の youtube ショートコード） */
-.prose iframe {
-  max-width: 100%;
+/* YouTube 動画（layouts/_shortcodes/youtube.html）。押すまで YouTube に接続しない */
+.yt {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  margin: 24px 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #dfe9e7;
 }
 
-.prose > div:has(> iframe) {
-  margin: 24px 0;
+.yt-link,
+.yt iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.yt-link {
+  display: block;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.yt-link img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 再生ボタン：白い丸に濃い色の三角（色の付いた背景に白文字を載せない） */
+.yt-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 68px;
+  height: 68px;
+  margin: -34px 0 0 -34px;
+  border: 2px solid var(--text);
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 160ms var(--ease-out);
+}
+
+.yt-play::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -12px 0 0 -7px;
+  border-style: solid;
+  border-width: 12px 0 12px 20px;
+  border-color: transparent transparent transparent var(--text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .yt-link:hover .yt-play {
+    transform: scale(1.06);
+  }
+}
+
+.yt-link:active .yt-play {
+  transform: scale(0.97);
+}
+
+.yt-title {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.yt-title small {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.yt-link:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: -3px;
+}
+
+/* 制作工程（process）。2列で並べ、書いた順にラベルを付ける */
+.work-process h2 {
+  margin: 40px 0 16px;
+  font-size: 1.125rem;
+}
+
+.process-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.process-list figure {
+  margin: 0;
+}
+
+.process-list img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.process-list figcaption {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* 二次創作の一覧ページの注意書き */
+.fanart-notice {
+  margin: 24px 0 0;
+  padding: 10px 14px;
+  border-left: 4px solid #c9b8f0;
+  background: #f6f2fd;
+  font-size: 0.875rem;
 }
 
 .work-planets-section h2 {
@@ -1503,4 +1624,11 @@ img.is-pixel {
   padding-top: 16px;
   border-top: 1px solid #dfe9e7;
   font-size: 0.8125rem;
+}
+
+.process-list img.is-pixel {
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto;
+  image-rendering: pixelated;
 }

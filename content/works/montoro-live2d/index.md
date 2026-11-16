@@ -7,6 +7,7 @@ cover_alt: "目のついた青い球体キャラクターの表情差分と、�
 thumb: montoro-thumb.webp
 summary: "海外TRPGの翻訳・リリースを手がけるもんとろ様のLive2Dモデルを、イラストの描き起こしから動き付け・トラッキング調整まで一貫して制作しました。"
 role: "モデル用イラストの描き起こし、Live2Dモデリング、動き付け、トラッキング調整"
+tools: "イラスト制作：CLIP STUDIO PAINT／モデリング：Live2D Cubism"
 client:
   name: "もんとろ様"
   url: "https://x.com/Melolibur"

@@ -1,0 +1,41 @@
+{{- /*
+  作品情報の表（作品ページと二次創作のページで共用）。docs/spec.md 第7.1節
+  値がない項目は出さない。permission（掲載許可の状況）は管理用なので出さない。
+  使用ツール：tools がなければ config.toml の default_tools を出す
+  関連リンク：links の type から自動でラベルを付ける（label があればそちらを優先）。埋め込みはせず、普通の文字リンクにする
+*/ -}}
+{{- $p := . -}}
+{{- $tools := $p.Params.tools | default site.Params.default_tools -}}
+{{- $linkLabels := dict
+  "booth" "BOOTH（販売ページ）"
+  "x" "X"
+  "pixiv" "pixiv"
+  "youtube" "YouTube"
+  "skeb" "Skeb"
+  "instagram" "Instagram"
+  "bluesky" "Bluesky"
+  "site" "Webサイト"
+-}}
+{{- $rows := slice -}}
+{{- with $p.Params.client }}{{ $c := .name | htmlEscape }}{{ with .url }}{{ $c = printf "<a href=\"%s\" rel=\"noopener\">%s</a>" . $c }}{{ end }}{{ $rows = $rows | append (dict "dt" "依頼主" "dd" $c) }}{{ end -}}
+{{- with $p.Params.role }}{{ $rows = $rows | append (dict "dt" "担当範囲" "dd" (. | htmlEscape)) }}{{ end -}}
+{{- with $p.Params.usage }}{{ $rows = $rows | append (dict "dt" "用途・掲載先" "dd" (. | htmlEscape)) }}{{ end -}}
+{{- with $tools }}{{ $t := . }}{{ if reflect.IsSlice . }}{{ $t = delimit . "／" }}{{ end }}{{ $rows = $rows | append (dict "dt" "使用ツール" "dd" ($t | htmlEscape)) }}{{ end -}}
+{{- with $p.Params.duration }}{{ $rows = $rows | append (dict "dt" "作業時間" "dd" (. | htmlEscape)) }}{{ end -}}
+{{- with $p.Params.canvas }}{{ $rows = $rows | append (dict "dt" "キャンバス" "dd" (. | htmlEscape)) }}{{ end -}}
+{{- with $p.Params.colors }}{{ $rows = $rows | append (dict "dt" "色数" "dd" (printf "%v色" .)) }}{{ end -}}
+{{- with $p.Params.links -}}
+  {{- $items := slice -}}
+  {{- range . -}}
+    {{- $label := .label | default (index $linkLabels (.type | default "")) | default .url -}}
+    {{- $items = $items | append (printf "<li><a href=\"%s\" rel=\"noopener\">%s</a></li>" .url ($label | htmlEscape)) -}}
+  {{- end -}}
+  {{- $rows = $rows | append (dict "dt" "関連リンク" "dd" (printf "<ul>%s</ul>" (delimit $items ""))) -}}
+{{- end -}}
+{{- with $rows }}
+<dl class="work-info">
+  {{- range . }}
+  <div><dt>{{ .dt }}</dt><dd>{{ .dd | safeHTML }}</dd></div>
+  {{- end }}
+</dl>
+{{- end }}

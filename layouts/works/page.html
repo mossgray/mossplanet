@@ -33,20 +33,16 @@
   {{- end }}{{ end }}
 
   <div class="work-body">
-    {{- /* 3. 作品情報 */ -}}
-    {{- if or .Params.role .Params.tools .Params.client .Params.links }}
-    <dl class="work-info">
-      {{- with .Params.role }}<div><dt>担当範囲</dt><dd>{{ . }}</dd></div>{{ end }}
-      {{- with .Params.tools }}<div><dt>使用ツール</dt><dd>{{ if reflect.IsSlice . }}{{ delimit . "、" }}{{ else }}{{ . }}{{ end }}</dd></div>{{ end }}
-      {{- with .Params.client }}<div><dt>依頼主</dt><dd>{{ if .url }}<a href="{{ .url }}" rel="noopener">{{ .name }}</a>{{ else }}{{ .name }}{{ end }}</dd></div>{{ end }}
-      {{- with .Params.links }}<div><dt>関連リンク</dt><dd><ul>{{ range . }}<li><a href="{{ .url }}" rel="noopener">{{ .label }}</a></li>{{ end }}</ul></dd></div>{{ end }}
-    </dl>
-    {{- end }}
+    {{- /* 3. 作品情報（値がない項目は出さない） */ -}}
+    {{ partial "work/info.html" . }}
 
     {{- /* 4. 本文 */ -}}
     <div class="prose">
       {{ .Content }}
     </div>
+
+    {{- /* 4.5 制作工程（process） */ -}}
+    {{ partial "work/process.html" . }}
 
     {{- /* 5. この作品が属する惑星 */ -}}
     {{- with where $mine "visible" true }}
@@ -92,5 +88,10 @@
 {{ define "scripts" }}
 {{- with resources.Get "js/zoom.js" | minify | fingerprint }}
 <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- if .HasShortcode "youtube" }}
+{{- with resources.Get "js/youtube.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
 {{- end }}
 {{ end }}

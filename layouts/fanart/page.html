@@ -23,8 +23,11 @@
 <article class="work">
   {{- $images := slice -}}
   {{- with .Params.cover }}{{ with $.Resources.Get . }}{{ $images = $images | append . }}{{ end }}{{ end -}}
+  {{- /* 工程の画像（process）は下の「制作工程」に出すので、ここには並べない */ -}}
+  {{- $processImages := slice -}}
+  {{- range .Params.process }}{{ $processImages = $processImages | append .image }}{{ end -}}
   {{- range (.Resources.ByType "image").ByName -}}
-    {{- if ne .Name $.Params.cover -}}{{- $images = $images | append . -}}{{- end -}}
+    {{- if and (ne .Name $.Params.cover) (not (in $processImages .Name)) -}}{{- $images = $images | append . -}}{{- end -}}
   {{- end -}}
   {{- range $i, $img := $images }}
   <figure class="work-main">
@@ -33,9 +36,13 @@
   {{- end }}
 
   <div class="work-body">
+    {{ partial "work/info.html" . }}
+
     <div class="prose">
       {{ .Content }}
     </div>
+
+    {{ partial "work/process.html" . }}
 
     {{- with .Params.fanart }}
     <p class="fanart-copyright">
@@ -57,5 +64,10 @@
 {{ define "scripts" }}
 {{- with resources.Get "js/zoom.js" | minify | fingerprint }}
 <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- if .HasShortcode "youtube" }}
+{{- with resources.Get "js/youtube.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
 {{- end }}
 {{ end }}
