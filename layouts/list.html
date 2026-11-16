@@ -1,6 +1,11 @@
 {{ define "main" }}
+<header class="title-band page-band">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    <h1 class="title-band-title">{{ .Title }}</h1>
+  </div>
+</header>
 <div class="container">
-  <h1>{{ .Title }}</h1>
   {{ .Content }}
   <ul class="page-list">
     {{- range .Pages.ByDate.Reverse }}

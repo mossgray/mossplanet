@@ -7,6 +7,7 @@
 
 {{- /* 1. タイトル帯：惑星の色を薄めた背景。左に惑星のアイコン（クリックでその惑星の一覧へ） */ -}}
 <header class="title-band" style="--band: {{ $primary.band | default "#e6f5f2" | safeCSS }};">
+  {{ partial "breadcrumbs.html" . }}
   <div class="title-band-inner">
     {{- with $primary }}
     {{- $icon := partial "pixel-icon.html" (dict "color" .color "size" 32 "scale" 2 "label" (printf "%sの一覧へ" .name)) -}}
@@ -32,9 +33,18 @@
   </figure>
   {{- end }}{{ end }}
 
-  <div class="work-body">
-    {{- /* 3. 作品情報（値がない項目は出さない） */ -}}
+  {{- /* 3. 作品情報（値がない項目は出さない） */ -}}
+  {{- if .Params.gallery }}
+  {{- /* ギャラリーがあるときは、作品情報 → ギャラリー（本文の画像。横幅を広く取る） → 本文の文章 の順にする */ -}}
+  <div class="work-body work-body-head">
     {{ partial "work/info.html" . }}
+  </div>
+  {{ partial "work/gallery.html" . }}
+  <div class="work-body">
+  {{- else }}
+  <div class="work-body">
+    {{ partial "work/info.html" . }}
+  {{- end }}
 
     {{- /* 4. 本文 */ -}}
     <div class="prose">

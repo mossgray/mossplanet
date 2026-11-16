@@ -1,6 +1,11 @@
 {{ define "main" }}
+<header class="title-band page-band">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    <h1 class="title-band-title">ページが見つかりません</h1>
+  </div>
+</header>
 <div class="container">
-  <h1>ページが見つかりません</h1>
   <p>宇宙で迷子になってしまったようです。</p>
   <p><a href="{{ "/" | relURL }}">トップへ戻る</a></p>
 </div>

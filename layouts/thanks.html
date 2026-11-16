@@ -2,10 +2,15 @@
 {{ define "bodyClass" }}page thanks-page{{ end }}
 
 {{ define "main" }}
+<header class="title-band page-band">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    <h1 class="title-band-title">{{ .Title }}</h1>
+  </div>
+</header>
 <div class="container thanks">
   {{- /* 仮素材：衛星のアイコンを大きく表示。本番のドット絵（satellite.png）ができたら差し替える */ -}}
   <p class="thanks-art">{{ partial "pixel-icon.html" (dict "kind" "satellite" "color" "#5b8def" "size" 16 "scale" 8) }}</p>
-  <h1>{{ .Title }}</h1>
   <div class="prose">{{ .Content }}</div>
   <p><a href="{{ "/" | relLangURL }}">{{ T "back_to_top" }}</a></p>
 </div>

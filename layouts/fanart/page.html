@@ -8,6 +8,7 @@
 {{ define "main" }}
 {{- $p := index (where (partialCached "planets.html" .) "id" "fanart") 0 -}}
 <header class="title-band" style="--band: {{ $p.band | safeCSS }};">
+  {{ partial "breadcrumbs.html" . }}
   <div class="title-band-inner">
     <a class="title-band-icon" href="{{ "/fanart/" | relURL }}">{{ partial "pixel-icon.html" (dict "color" $p.color "size" 32 "scale" 2 "label" (printf "%sの一覧へ" $p.name)) }}</a>
     <div>
@@ -26,6 +27,8 @@
   {{- /* 工程の画像（process）は下の「制作工程」に出すので、ここには並べない */ -}}
   {{- $processImages := slice -}}
   {{- range .Params.process }}{{ $processImages = $processImages | append (slice .image .poster) }}{{ end -}}
+  {{- /* ギャラリー（gallery）の画像も、下のギャラリーに出すので除く */ -}}
+  {{- range .Params.gallery }}{{ $processImages = $processImages | append .image }}{{ end -}}
   {{- range sort (.Resources.ByType "image") "Name" -}}
     {{- if and (ne .Name $.Params.cover) (not (in $processImages .Name)) -}}{{- $images = $images | append . -}}{{- end -}}
   {{- end -}}
@@ -35,8 +38,16 @@
   </figure>
   {{- end }}
 
+  {{- if .Params.gallery }}
+  <div class="work-body work-body-head">
+    {{ partial "work/info.html" . }}
+  </div>
+  {{ partial "work/gallery.html" . }}
+  <div class="work-body">
+  {{- else }}
   <div class="work-body">
     {{ partial "work/info.html" . }}
+  {{- end }}
 
     <div class="prose">
       {{ .Content }}

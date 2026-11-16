@@ -7,6 +7,7 @@
 {{ define "main" }}
 {{- $p := index (where (partialCached "planets.html" .) "id" "fanart") 0 -}}
 <header class="title-band planet-band" style="--band: {{ $p.band | safeCSS }};">
+  {{ partial "breadcrumbs.html" . }}
   <div class="title-band-inner">
     <span class="planet-band-body" data-pixel-snap aria-hidden="true">
       <canvas class="planet-canvas" width="64" height="64"

@@ -9,6 +9,7 @@
 {{ define "main" }}
 {{- $open := site.Params.contact_open | default false -}}
 <header class="title-band contact-band">
+  {{ partial "breadcrumbs.html" . }}
   <div class="title-band-inner">
     <span class="title-band-icon">{{ partial "pixel-icon.html" (dict "kind" "satellite" "color" "#5b8def" "size" 16 "scale" 4) }}</span>
     <div>

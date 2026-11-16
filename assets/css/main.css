@@ -5,6 +5,8 @@
   --brand-light: #e6f5f2;
   --link: #2f7d76;
   --bg: #ffffff;
+  /* ヘッダー・タブバーの区切り線 */
+  --line: #e3eaee;
   --radius: 14px;
 }
 
@@ -147,7 +149,9 @@ h3 {
   vertical-align: middle;
 }
 
-/* ---------- ヘッダー（docs/spec.md 第4章） ---------- */
+/* ---------- ヘッダー（docs/spec.md 第4章） ----------
+   トップ以外：白の背景と、下に1pxの薄い区切り線。
+   スクロールして中身の上に重なったときだけ、ごく薄い影を付ける（is-scrolled は assets/js/nav.js が付ける） */
 .site-header {
   position: sticky;
   top: 0;
@@ -158,7 +162,13 @@ h3 {
   gap: 16px;
   height: 60px;
   padding: 0 16px;
-  background: var(--brand-light);
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+  transition: box-shadow 160ms ease;
+}
+
+.site-header.is-scrolled {
+  box-shadow: 0 2px 8px rgb(11 27 26 / 0.06);
 }
 
 .site-logo {
@@ -268,10 +278,15 @@ h3 {
   font-weight: 700;
 }
 
-/* ---------- パンくずリスト ---------- */
+/* ---------- パンくずリスト ----------
+   白い帯にはせず、タイトル帯（.title-band）の中の上部に小さく置く。文字は帯の色の上でも読める濃い色 */
 .breadcrumbs {
-  padding: 8px 0;
-  font-size: 0.8125rem;
+  padding: 12px 0 0;
+  font-size: 0.75rem;
+}
+
+.title-band .breadcrumbs + .title-band-inner {
+  padding-top: 12px;
 }
 
 .breadcrumbs ol {
@@ -302,7 +317,8 @@ h3 {
 }
 
 .breadcrumbs a {
-  color: var(--link);
+  color: var(--text);
+  text-underline-offset: 3px;
 }
 
 /* ---------- フッター ---------- */
@@ -379,7 +395,7 @@ h3 {
     left: 0;
     z-index: 30;
     padding-bottom: env(safe-area-inset-bottom);
-    border-top: 1px solid #d3ebe7;
+    border-top: 1px solid var(--line);
     background: #fff;
   }
 
@@ -599,8 +615,11 @@ h3 {
   image-rendering: pixelated;
 }
 
+/* トップのヘッダーは透明にして、星空の背景を見せる（区切り線と影も付けない） */
 .home .site-header {
+  border-bottom-color: transparent;
   background: transparent;
+  box-shadow: none;
 }
 
 .space {
@@ -1193,6 +1212,77 @@ img.is-pixel {
   text-align: center;
 }
 
+/* ギャラリー（gallery）。番号順に並べ、タイトルとひとことを添える。
+   本文より広い幅（最大1100px）を取り、PC は2列、スマートフォンは1列。ドット絵は枠に収まる整数倍（pixel-snap.js） */
+.work-body-head {
+  padding-bottom: 0;
+}
+
+.work-gallery {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.work-gallery h2 {
+  margin: 40px 0 16px;
+  font-size: 1.125rem;
+}
+
+.gallery-list {
+  display: grid;
+  gap: 32px 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .gallery-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 図は画像の幅に縮めて中央に置き、説明文を画像の幅に収める（表の見出しの仕組みで、文章が長くても図を広げない） */
+.gallery-list figure {
+  display: table;
+  margin: 0 auto;
+}
+
+.gallery-list .zoom {
+  display: block;
+}
+
+.gallery-list img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.gallery-list figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  padding-top: 8px;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.gallery-title {
+  display: block;
+  font-weight: 700;
+}
+
+.gallery-no {
+  margin-right: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gallery-caption {
+  display: block;
+  margin-top: 2px;
+}
+
 /* 工程の動画は1列分の幅を取り、縦長でも画面に収まる高さに */
 .process-list .process-video {
   grid-column: 1 / -1;
@@ -1411,8 +1501,9 @@ img.is-pixel {
   background: var(--brand-light);
 }
 
-.about-page .breadcrumbs {
-  background: var(--brand-light);
+/* パンくずリストは、ページの色の部分（.about）の先頭に置く。左右の余白は .about 側で取る */
+.about .breadcrumbs ol {
+  padding: 0;
 }
 
 .about {

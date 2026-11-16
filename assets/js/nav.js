@@ -3,6 +3,7 @@
  * - ヘッダーの「Works」：惑星の一覧メニューを開く（JavaScript がなければ /works/ へのリンク）
  * - スマートフォンのタブバーの「Works」：惑星の一覧を下から開く
  * - Esc キー、外側のクリックで閉じる
+ * - ヘッダーがスクロールして中身の上に重なったら is-scrolled を付ける（ごく薄い影。トップでは CSS で影を消す）
  * docs/spec.md 第4章
  */
 (function () {
@@ -81,5 +82,18 @@
         sheetCtl.hide(true);
       });
     }
+  }
+
+  var header = document.querySelector(".site-header");
+  if (header) {
+    var scrolled = null;
+    var onScroll = function () {
+      var now = window.scrollY > 0;
+      if (now === scrolled) return;
+      scrolled = now;
+      header.classList.toggle("is-scrolled", now);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
   }
 })();

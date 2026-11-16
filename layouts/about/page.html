@@ -9,6 +9,7 @@
 {{- $en := eq site.Language.Lang "en" -}}
 {{- $logo := (resources.Get "images/logo/logo-full.png").Resize "x120 webp q90" -}}
 <div class="about">
+  {{ partial "breadcrumbs.html" . }}
   {{- /* 冒頭：モスの星、名前、コピー */ -}}
   <header class="about-hero">
     <span class="about-star" data-pixel-snap aria-hidden="true">

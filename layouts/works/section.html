@@ -1,8 +1,13 @@
 {{- /* /works/：すべての惑星と作品。ヘッダーの Works のリンク先で、旧URL /works/ の受け皿 */ -}}
 {{ define "main" }}
 {{- $planets := partialCached "planets.html" . -}}
+<header class="title-band page-band">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    <h1 class="title-band-title">{{ .Title }}</h1>
+  </div>
+</header>
 <div class="container">
-  <h1>{{ .Title }}</h1>
   {{ .Content }}
 
   <h2 class="section-title">惑星</h2>

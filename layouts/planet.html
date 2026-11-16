@@ -8,6 +8,7 @@
 
 {{- /* タイトル帯：惑星の色を薄めた背景、左に回る惑星、右に名前と紹介文 */ -}}
 <header class="title-band planet-band" style="--band: {{ $p.band | safeCSS }};">
+  {{ partial "breadcrumbs.html" . }}
   <div class="title-band-inner">
     <span class="planet-band-body" data-pixel-snap aria-hidden="true">
       <canvas class="planet-canvas" width="64" height="64"
