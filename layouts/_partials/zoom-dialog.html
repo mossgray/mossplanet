@@ -1,0 +1,12 @@
+{{- /*
+  拡大表示（assets/js/zoom.js）。data-zoom-group が同じ画像どうしは、前後へ移れる（ボタン・←→キー・スワイプ）
+*/ -}}
+<dialog class="zoom-dialog" aria-label="拡大表示">
+  <button type="button" class="zoom-close">閉じる</button>
+  <img alt="">
+  <div class="zoom-nav" hidden>
+    <button type="button" class="zoom-prev">前へ</button>
+    <span class="zoom-count" aria-live="polite"></span>
+    <button type="button" class="zoom-next">次へ</button>
+  </div>
+</dialog>

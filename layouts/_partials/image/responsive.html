@@ -1,6 +1,6 @@
 {{- /*
   作品画像を、表示用に軽量化して <img> を出力する（メイン画像と本文中の画像で共用）
-  dict "res" 画像リソース "alt" 代替テキスト "pixel" ドット絵か "zoom" クリックで拡大するか "eager" 先に読み込むか "sizes" 表示幅（省略時は最大1100px）
+  dict "res" 画像リソース "alt" 代替テキスト "pixel" ドット絵か "zoom" クリックで拡大するか "eager" 先に読み込むか "sizes" 表示幅（省略時は最大1100px） "group" 拡大表示で前後に移れる画像のまとまりの名前 "w" 表示用の画像の幅（省略時は1100px。その2倍も作る）
   - 通常：表示幅 1100px と、その2倍（高解像度の画面用）の WebP を作る。拡大表示用は長辺 2400px まで
   - ドット絵：縮小・再圧縮せず元の画像を使い、最大幅 1100px に収まる整数倍で表示する（第5.3節・第6.2節）
     表示する画面では、assets/js/pixel-snap.js が枠の幅と画面の高さ（85%）に収まる整数倍に合わせ直す（data-pixel-fit）
@@ -11,6 +11,7 @@
 {{- $loading := cond (.eager | default false) "eager" "lazy" -}}
 {{- $src := "" -}}{{- $srcset := "" -}}{{- $w := 0 -}}{{- $h := 0 -}}{{- $full := "" -}}
 {{- $pixel := .pixel | default false -}}
+{{- $base := .w | default 1100 -}}
 {{- if or $pixel (not (in (slice "jpeg" "png" "webp" "tiff" "bmp") $r.MediaType.SubType)) -}}
   {{- $k := 1 -}}
   {{- with $r.Width -}}{{- $k = math.Max 1 (math.Floor (div 1100.0 .)) | int -}}{{- end -}}
@@ -20,18 +21,18 @@
 {{- else -}}
   {{- /* cond は両方の値を計算してしまうので、画像処理の分岐は if で書く */ -}}
   {{- $one := "" -}}
-  {{- if gt $r.Width 1100 }}{{ $one = $r.Resize "1100x webp q82" }}{{ else }}{{ $one = $r.Process "webp q82" }}{{ end -}}
+  {{- if gt $r.Width $base }}{{ $one = $r.Resize (printf "%dx webp q82" $base) }}{{ else }}{{ $one = $r.Process "webp q82" }}{{ end -}}
   {{- $src = $one.RelPermalink -}}
   {{- $w = $one.Width -}}{{- $h = $one.Height -}}
   {{- $srcset = printf "%s %dw" $one.RelPermalink $one.Width -}}
-  {{- if gt $r.Width 1100 -}}
-    {{- $two := $r.Resize (printf "%dx webp q78" (math.Min 2200 $r.Width | int)) -}}
+  {{- if gt $r.Width $base -}}
+    {{- $two := $r.Resize (printf "%dx webp q78" (math.Min (mul $base 2) $r.Width | int)) -}}
     {{- $srcset = printf "%s, %s %dw" $srcset $two.RelPermalink $two.Width -}}
   {{- end -}}
   {{- $big := "" -}}
   {{- if gt $r.Width 2400 }}{{ $big = $r.Resize "2400x webp q85" }}{{ else }}{{ $big = $r.Process "webp q85" }}{{ end -}}
   {{- $full = $big.RelPermalink -}}
 {{- end -}}
-{{- if .zoom }}<a class="zoom" href="{{ $full }}" data-zoom>{{ end -}}
+{{- if .zoom }}<a class="zoom" href="{{ $full }}" data-zoom{{ with .group }} data-zoom-group="{{ . }}"{{ end }}>{{ end -}}
 <img src="{{ $src }}"{{ with $srcset }} srcset="{{ . }}" sizes="{{ $.sizes | default "(min-width: 1132px) 1100px, calc(100vw - 32px)" }}"{{ end }} width="{{ $w }}" height="{{ $h }}" alt="{{ $alt }}" loading="{{ $loading }}" decoding="async"{{ if $pixel }} class="is-pixel" data-pixel-fit data-w="{{ $r.Width }}" data-h="{{ $r.Height }}"{{ end }}>
 {{- if .zoom }}</a>{{ end -}}

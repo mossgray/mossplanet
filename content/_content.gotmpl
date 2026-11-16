@@ -30,8 +30,8 @@
 
 {{- /*
   二次創作の節（/fanart/）もここで作る。config.toml の fanart_public の1行で、
-  /fanart/ と、その下のシリーズのページ（content/fanart/）をまとめて出力しないようにできる（第6.5節）
-  本番では、シリーズが min_works 未満のときも出力しない
+  /fanart/ と、その下の作品ページ（content/fanart/）をまとめて出力しないようにできる（第6.5節）
+  本番では、作品が min_works 未満のときも出力しない
 */ -}}
 {{- $fanartCount := 0 -}}
 {{- if fileExists "content/fanart" -}}

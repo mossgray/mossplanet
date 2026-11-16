@@ -1738,3 +1738,349 @@ img.is-pixel {
   margin: 0 auto;
   image-rendering: pixelated;
 }
+
+/* ---------- ゲームブック（第6.2.1節・第7.4節） ---------- */
+
+/* 実物の写真：PC は2列、スマートフォンは1列 */
+.work-photos {
+  max-width: 1100px;
+  margin: 24px auto 0;
+  padding: 0 16px;
+}
+
+.photo-list {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 600px) {
+  .photo-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.photo-list .zoom {
+  display: block;
+}
+
+.photo-list img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* 「遊んでみる」ボタン */
+.play-button {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 24px 0 0;
+}
+
+.play-button small {
+  font-size: 0.8125rem;
+}
+
+/* 遊び方の流れ */
+.work-howto h2,
+.work-cards > h2,
+.work-pages h2,
+.work-related h2 {
+  margin: 40px 0 16px;
+  font-size: 1.125rem;
+}
+
+.howto-list {
+  margin: 0;
+  padding: 0 0 0 1.5em;
+}
+
+.howto-list li + li {
+  margin-top: 12px;
+}
+
+.howto-list strong {
+  display: block;
+}
+
+.howto-list span p {
+  margin: 2px 0 0;
+}
+
+/* カード */
+.work-cards,
+.work-pages {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.card-group h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 32px 0 8px;
+  font-size: 1rem;
+}
+
+.card-group h3 small {
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.card-group-heading {
+  padding: 0 10px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+}
+
+.card-group-lead {
+  margin: 0 0 16px;
+  font-size: 0.875rem;
+}
+
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 横長のカード（イベント・成長）は、PC 2列・スマートフォン1列 */
+.card-group-event .card-list,
+.card-group-simple .card-list {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 768px) {
+  .card-group-flip .card-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .card-group-event .card-list,
+  .card-group-simple .card-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.card-image {
+  display: block;
+}
+
+.card-list img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.card-text {
+  margin-top: 8px;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+
+.card-text p {
+  margin: 0;
+}
+
+.card-text .card-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-bottom: 2px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.card-name span[lang] {
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.card-note {
+  margin-top: 2px;
+  color: #3d5250;
+}
+
+.card-scene {
+  margin-top: 4px !important;
+}
+
+.card-scene a {
+  color: var(--link);
+}
+
+/* 得意属性の印：文字は濃い色のまま、属性の色は縁と薄い背景に */
+.card-attrs {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.attr-mark {
+  display: inline-block;
+  min-width: 1.9em;
+  padding: 0 6px;
+  border: 2px solid var(--attr);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--attr) 18%, #fff);
+  color: var(--text);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* 表と裏が入れ替わるカード。回転は transform だけ（「視差効果を減らす」では transition が消え、入れ替わるだけになる） */
+.flip-card {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 450ms var(--ease-in-out, cubic-bezier(0.77, 0, 0.175, 1));
+}
+
+.flip-card[aria-pressed="true"] .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+.flip-card:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .flip-card:hover .flip-card-inner {
+    filter: brightness(1.03);
+  }
+}
+
+/* 紙面・冊子：見開きがないときは PC 4列・スマートフォン2列。見開きがあるときは2列で、見開きは2列分 */
+.pages-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .pages-list:not(.has-spreads) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.pages-list.has-spreads {
+  gap: 24px 0;
+}
+
+.pages-list .is-spread {
+  grid-column: 1 / -1;
+}
+
+/* 最初の1ページ（表紙）は右側に置く。本を開いたときと同じ並び */
+.pages-list.has-spreads > .page-item:first-child:not(.is-spread) {
+  grid-column: 2;
+}
+
+.page-item figure {
+  margin: 0;
+}
+
+.page-item .zoom {
+  display: block;
+}
+
+.page-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  box-shadow: 0 0 0 1px #e3eaee;
+}
+
+.page-item figcaption {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+/* 関連作品 */
+.work-related {
+  margin-top: 8px;
+}
+
+/* 拡大表示の前後の移動 */
+.zoom-dialog.has-nav {
+  padding-bottom: 72px;
+}
+
+.zoom-nav:not([hidden]) {
+  position: absolute;
+  right: 0;
+  bottom: 16px;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.zoom-nav button {
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.zoom-nav button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.zoom-count {
+  min-width: 4em;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+/* 二次創作：原作シリーズごとの節 */
+.fanart-group + .fanart-group {
+  margin-top: 8px;
+}

@@ -14,6 +14,7 @@ links:
     url: https://x.com/mossgray_/status/2118311669428588661
 fanart:
   source: "学園アイドルマスター"
+  series: "学マス"
   copyright: "THE IDOLM@STER™& ©Bandai Namco Entertainment Inc."
 ---
 

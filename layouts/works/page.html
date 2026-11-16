@@ -1,4 +1,9 @@
-{{- /* 作品ページ。docs/spec.md 第6.2節 */ -}}
+{{- /*
+  作品ページ。docs/spec.md 第6.2節
+  ゲームブック（gamebook の項目がある作品）は、第6.2.1節の並びにする：
+  表紙 → 実物の写真 → 紹介文 → 仕様の表 → 「遊んでみる」→ 遊び方の流れ → カード → 紙面 → 本文の続き → 関連作品
+  本文は <!-- after --> の行で前後に分けられる。前が紹介文、後ろが紙面のあとに出す部分（BGM・参考文献など）
+*/ -}}
 {{ define "main" }}
 {{- $planets := partialCached "planets.html" . -}}
 {{- $mine := slice -}}
@@ -33,6 +38,26 @@
   </figure>
   {{- end }}{{ end }}
 
+  {{- $parts := split .Content "<!-- after -->" -}}
+  {{- $intro := index $parts 0 -}}
+  {{- $after := cond (gt (len $parts) 1) (index $parts 1) "" -}}
+
+  {{- if .Params.gamebook }}
+  {{- /* ゲームブック：実物の写真 → 紹介文 → 仕様の表 → 遊んでみる → 遊び方 → カード → 紙面 → 本文の続き */ -}}
+  {{ partial "work/photos.html" . }}
+  <div class="work-body work-body-head">
+    <div class="prose">{{ $intro | safeHTML }}</div>
+    {{ partial "work/info.html" . }}
+    {{- with .Params.play_url }}
+    <p class="play-button"><a class="button" href="{{ . }}" rel="noopener">{{ $.Params.play_label | default "遊んでみる" }}</a>{{ with $.Params.play_note }}<small>{{ . }}</small>{{ end }}</p>
+    {{- end }}
+    {{ partial "work/howto.html" . }}
+  </div>
+  {{ partial "work/cards.html" . }}
+  {{ partial "work/pages.html" . }}
+  <div class="work-body">
+    {{- with $after }}<div class="prose">{{ . | safeHTML }}</div>{{ end }}
+  {{- else }}
   {{- /* 3. 作品情報（値がない項目は出さない） */ -}}
   {{- if .Params.gallery }}
   {{- /* ギャラリーがあるときは、作品情報 → ギャラリー（本文の画像。横幅を広く取る） → 本文の文章 の順にする */ -}}
@@ -48,11 +73,17 @@
 
     {{- /* 4. 本文 */ -}}
     <div class="prose">
-      {{ .Content }}
+      {{ $intro | safeHTML }}
     </div>
+    {{ partial "work/photos.html" . }}
 
     {{- /* 4.5 制作工程（process） */ -}}
     {{ partial "work/process.html" . }}
+    {{- with $after }}<div class="prose">{{ . | safeHTML }}</div>{{ end }}
+  {{- end }}
+
+    {{- /* 4.8 関連作品（related） */ -}}
+    {{ partial "work/related.html" . }}
 
     {{- /* 5. この作品が属する惑星 */ -}}
     {{- with where $mine "visible" true }}
@@ -89,15 +120,17 @@
 </article>
 
 {{- /* 拡大表示 */ -}}
-<dialog class="zoom-dialog" aria-label="拡大表示">
-  <button type="button" class="zoom-close">閉じる</button>
-  <img alt="">
-</dialog>
+{{ partial "zoom-dialog.html" . }}
 {{ end }}
 
 {{ define "scripts" }}
 {{- with resources.Get "js/zoom.js" | minify | fingerprint }}
 <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- if .Params.cards }}
+{{- with resources.Get "js/cards.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
 {{- end }}
 {{- if .HasShortcode "youtube" }}
 {{- with resources.Get "js/youtube.js" | minify | fingerprint }}

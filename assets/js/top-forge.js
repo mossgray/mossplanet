@@ -7,6 +7,8 @@
  * - 1ドット＝トップの倍率（--scale）ぶんのピクセル。座標はすべて整数ドットに丸めて描く
  * - 「視差効果を減らす」がオンなら、生まれた惑星はその場に止まり、何も動かさない
  * - タブが非表示のときや画面外のときは描画を止める
+ * - 関連線：作品を共有している惑星どうし（と related でつながった作品の惑星どうし）を、薄い点線で常に結ぶ（第5.1節）
+ *   組み合わせは Hugo が作る（layouts/home.html の #home-relations）
  * 色の作り方は planets.js（window.mossPlanet）と同じ
  */
 (function () {
@@ -37,6 +39,11 @@
   var bigs = [];
   var dust = [];
   var links = {}; // "idA|idB" → 表示の度合い 0〜1（ふわっと出し入れする）
+  var relations = [];
+  try {
+    var relEl = document.getElementById("home-relations");
+    if (relEl) relations = JSON.parse(relEl.textContent).map(function (k) { return k.split("|"); });
+  } catch (e) { relations = []; }
   var nextId = 1;
   var raf = 0;
   var last = 0;
@@ -75,8 +82,10 @@
     bigs = [];
     for (var i = 0; i < els.length; i++) {
       var r = els[i].getBoundingClientRect();
+      var li = els[i].closest(".planet");
       bigs.push({
         id: "B" + i,
+        pid: li ? li.dataset.id : "",
         x: Math.round((r.left + r.width / 2 - base.left) / scale),
         y: Math.round((r.top + r.height / 2 - base.top) / scale),
         r: Math.round(r.width / scale / 2) - 1, // 大きな惑星の半径（縁取り込み、ドット）。スマートフォンでは小さい
@@ -393,6 +402,18 @@
   function draw(now) {
     now = now || performance.now();
     ctx.clearRect(0, 0, W, H);
+    // 関連線（大きな惑星どうし。常に薄く表示）
+    ctx.globalAlpha = 0.45;
+    for (var r = 0; r < relations.length; r++) {
+      var a = null;
+      var b = null;
+      for (var m = 0; m < bigs.length; m++) {
+        if (bigs[m].pid === relations[r][0]) a = bigs[m];
+        if (bigs[m].pid === relations[r][1]) b = bigs[m];
+      }
+      if (a && b) dotted({ a: a, b: b, ra: a.r, rb: b.r });
+    }
+    ctx.globalAlpha = 1;
     var list = pairs();
     for (var i = 0; i < list.length; i++) {
       var amount = links[list[i].key];

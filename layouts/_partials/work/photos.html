@@ -1,0 +1,20 @@
+{{- /*
+  実物の写真（ゲームブックの冊子など）。docs/spec.md 第7.1節
+  photos:
+    - image: photo1.jpg
+      alt: 冊子とカードを机に並べた写真
+*/ -}}
+{{- $p := . -}}
+{{- with $p.Params.photos }}
+<section class="work-photos" aria-label="実物の写真">
+  <ul class="photo-list">
+    {{- range $i, $ph := . }}
+    {{- with $p.Resources.Get $ph.image }}
+    <li>{{ partial "image/responsive.html" (dict "res" . "alt" ($ph.alt | default (printf "%sの写真（%d枚目）" $p.Title (add $i 1))) "zoom" true "group" "photos" "sizes" "(min-width: 1132px) 534px, (min-width: 600px) calc(50vw - 28px), calc(100vw - 32px)") }}</li>
+    {{- else }}
+    {{- warnf "写真が見つかりません: %s（%s）" $ph.image $p.RelPermalink -}}
+    {{- end }}
+    {{- end }}
+  </ul>
+</section>
+{{- end }}

@@ -1,6 +1,6 @@
 {{- /*
   二次創作の惑星（/fanart/）。docs/spec.md 第6.5節
-  依頼への導線も広告も置かない。シリーズ（キャラクター・作品ごと）のページを並べる
+  依頼への導線も広告も置かない。1枚1ページの作品を、原作シリーズごとの節に分けて並べる
 */ -}}
 {{ define "bodyClass" }}page planet-page fanart-page{{ end }}
 
@@ -28,16 +28,30 @@
   <p class="fanart-notice">このページの作品は、個人による非公式の二次創作です。原作の権利は各権利者に帰属します。</p>
   {{- if $p.pending }}
   <div class="pending-note">
-    <p><strong>{{ T "pending" }}</strong>：二次創作のシリーズはまだありません。本番のサイトでは、この惑星はトップやメニューに出ず、このページも作られません。</p>
+    <p><strong>{{ T "pending" }}</strong>：二次創作の作品はまだありません。本番のサイトでは、この惑星はトップやメニューに出ず、このページも作られません。</p>
   </div>
   {{- end }}
-  {{- with .RegularPages.ByDate.Reverse }}
-  <h2 class="section-title">シリーズ<small>{{ len . }}</small></h2>
-  <ul class="work-grid">
-    {{- range . }}
-    {{ partial "work-card.html" (dict "page" .) }}
-    {{- end }}
-  </ul>
+  {{- /* 原作シリーズごとに節を分ける。見出しは fanart.series（短い名前。例：学マス）、なければ原作名。
+       節の並びは、その節でいちばん新しい作品の順 */ -}}
+  {{- $groups := slice -}}
+  {{- range .RegularPages.ByDate.Reverse -}}
+    {{- $g := .Params.fanart.series | default .Params.fanart.source | default "その他" -}}
+    {{- if not (in $groups $g) }}{{ $groups = $groups | append $g }}{{ end -}}
+  {{- end -}}
+  {{- range $groups }}
+  {{- $g := . -}}
+  {{- $pages := slice -}}
+  {{- range $.RegularPages.ByDate.Reverse -}}
+    {{- if eq (.Params.fanart.series | default .Params.fanart.source | default "その他") $g }}{{ $pages = $pages | append . }}{{ end -}}
+  {{- end }}
+  <section class="fanart-group">
+    <h2 class="section-title">{{ $g }}<small>{{ len $pages }}</small></h2>
+    <ul class="work-grid">
+      {{- range $pages }}
+      {{ partial "work-card.html" (dict "page" .) }}
+      {{- end }}
+    </ul>
+  </section>
   {{- end }}
 </div>
 {{ end }}

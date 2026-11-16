@@ -1,0 +1,22 @@
+{{- /*
+  関連作品。related に作品ID（content/works/ のフォルダ名）を並べる。docs/spec.md 第7.1節
+  相手の作品の related にこの作品が書いてあれば、こちらに書いていなくても表示する（片方に書けば両方に出る）
+*/ -}}
+{{- $self := .File.ContentBaseName -}}
+{{- $list := slice -}}
+{{- range .Params.related -}}
+  {{- with site.GetPage (printf "/works/%s" .) }}{{ $list = $list | append . }}{{ else }}{{ warnf "関連作品が見つかりません: %s（%s）" . $.RelPermalink }}{{ end -}}
+{{- end -}}
+{{- range where site.RegularPages "Section" "works" -}}
+  {{- if and (in (.Params.related | default slice) $self) (not (in $list .)) }}{{ $list = $list | append . }}{{ end -}}
+{{- end -}}
+{{- with $list }}
+<section class="work-related">
+  <h2>関連作品</h2>
+  <ul class="work-grid">
+    {{- range . }}
+    {{ partial "work-card.html" (dict "page" .) }}
+    {{- end }}
+  </ul>
+</section>
+{{- end }}

@@ -43,6 +43,34 @@
   {{- end -}}
   {{- $data = merge $data (dict $id $imgs) -}}
 {{- end }}
+{{- /*
+  関連線（第5.1節）：結ぶ惑星の組み合わせ。assets/js/top-forge.js が点線で描く
+  - 複数の惑星に属する作品：その惑星どうし
+  - related（関連作品）でつながった作品どうし：それぞれの惑星どうし（同じ惑星は除く）
+  表示している惑星どうしだけを、重複なしで "idA|idB"（名前順）にまとめる
+*/ -}}
+{{- $visible := slice -}}
+{{- range where (partialCached "planets.html" .) "visible" true }}{{ $visible = $visible | append .id }}{{ end -}}
+{{- $rel := slice -}}
+{{- range $works -}}
+  {{- $a := .Params.planets | default slice -}}
+  {{- $groups := slice (dict "x" $a "y" $a) -}}
+  {{- range .Params.related -}}
+    {{- with site.GetPage (printf "/works/%s" .) }}{{ $groups = $groups | append (dict "x" $a "y" (.Params.planets | default slice)) }}{{ end -}}
+  {{- end -}}
+  {{- range $groups -}}
+    {{- $y := .y -}}
+    {{- range $p := .x -}}
+      {{- range $q := $y -}}
+        {{- if and (ne $p $q) (in $visible $p) (in $visible $q) -}}
+          {{- $key := delimit (sort (slice $p $q)) "|" -}}
+          {{- if not (in $rel $key) }}{{ $rel = $rel | append $key }}{{ end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end }}
+<script type="application/json" id="home-relations">{{ $rel | jsonify | safeJS }}</script>
 <script type="application/json" id="home-bubbles" data-count="{{ T "bubble_count" }}" data-pending="{{ T "bubble_pending" }}">{{ $data | jsonify | safeJS }}</script>
 {{ end }}
 

@@ -1,6 +1,6 @@
 {{- /*
-  二次創作のシリーズのページ（content/fanart/<シリーズID>/）。docs/spec.md 第6.5節
-  - キャラクター・シリーズごとに複数枚をまとめ、制作メモを添える
+  二次創作の作品ページ（content/fanart/<作品ID>/）。docs/spec.md 第6.5節
+  - 1枚1ページ。/fanart/ では原作シリーズ（fanart.series）ごとの節に分けて並べる
   - fanart.source（原作名）と fanart.copyright（権利表記）から、権利表記を自動で表示する
   - 依頼への導線は置かない
   - 画像：cover を先頭に、フォルダ内のほかの画像をファイル名順に並べる
@@ -66,10 +66,7 @@
   </div>
 </article>
 
-<dialog class="zoom-dialog" aria-label="拡大表示">
-  <button type="button" class="zoom-close">閉じる</button>
-  <img alt="">
-</dialog>
+{{ partial "zoom-dialog.html" . }}
 {{ end }}
 
 {{ define "scripts" }}

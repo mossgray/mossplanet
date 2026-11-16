@@ -3,7 +3,8 @@
   gallery に書いた順に、番号を付けて並べる。各画像にタイトルとひとことを添え、クリックで拡大できる
   gallery_title: "イベントカードのイラスト"   ← 見出し（省略時は「ギャラリー」）
   gallery:
-    - image: scene-01.png
+    - id: herb-garden            ← 任意。ページ内リンクの行き先（例：/works/flourish-illustration/#herb-garden）
+      image: scene-01.png
       title: 魔法薬草園のお世話
       caption: 植物をたくさん描きたくて生まれた1枚。
       alt: 森の中で、薬草の鉢植えを抱えた魔法使いの少女と精霊   ← 省略時は title
@@ -16,7 +17,7 @@
   <ol class="gallery-list">
     {{- range $i, $item := . }}
     {{- with $p.Resources.Get $item.image }}
-    <li>
+    <li{{ with $item.id }} id="{{ . }}"{{ end }}>
       <figure>
         {{ partial "image/responsive.html" (dict "res" . "alt" ($item.alt | default $item.title | default (printf "%s（%d枚目）" $p.Title (add $i 1))) "pixel" ($p.Params.pixel | default false) "zoom" true "sizes" "(min-width: 1132px) 534px, (min-width: 768px) calc(50vw - 28px), calc(100vw - 32px)") }}
         <figcaption>

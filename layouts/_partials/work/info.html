@@ -5,7 +5,8 @@
   関連リンク：links の type から自動でラベルを付ける（label があればそちらを優先）。埋め込みはせず、普通の文字リンクにする
 */ -}}
 {{- $p := . -}}
-{{- $tools := $p.Params.tools | default site.Params.default_tools -}}
+{{- /* ゲームブックは作り方がイラストと違うので、初期値は出さない */ -}}
+{{- $tools := $p.Params.tools | default (cond (isset $p.Params "gamebook") "" site.Params.default_tools) -}}
 {{- $linkLabels := dict
   "booth" "BOOTH（販売ページ）"
   "x" "X"
@@ -18,6 +19,14 @@
 -}}
 {{- $rows := slice -}}
 {{- with $p.Params.client }}{{ $c := .name | htmlEscape }}{{ with .url }}{{ $c = printf "<a href=\"%s\" rel=\"noopener\">%s</a>" . $c }}{{ end }}{{ $rows = $rows | append (dict "dt" "依頼主" "dd" $c) }}{{ end -}}
+{{- /* ゲームブック（gamebook）：ジャンル・所要時間・仕様・必要なもの・頒布を先に出す */ -}}
+{{- with $p.Params.gamebook -}}
+  {{- with .genre }}{{ $rows = $rows | append (dict "dt" "ジャンル" "dd" (. | htmlEscape)) }}{{ end -}}
+  {{- with .playtime }}{{ $rows = $rows | append (dict "dt" "所要時間" "dd" (. | htmlEscape)) }}{{ end -}}
+  {{- with .format }}{{ $rows = $rows | append (dict "dt" "仕様" "dd" (. | htmlEscape)) }}{{ end -}}
+  {{- with .needs }}{{ $rows = $rows | append (dict "dt" "必要なもの" "dd" (. | htmlEscape)) }}{{ end -}}
+  {{- with .release }}{{ $rows = $rows | append (dict "dt" "頒布" "dd" (. | htmlEscape)) }}{{ end -}}
+{{- end -}}
 {{- with $p.Params.role }}{{ $rows = $rows | append (dict "dt" "担当範囲" "dd" (. | htmlEscape)) }}{{ end -}}
 {{- with $p.Params.usage }}{{ $rows = $rows | append (dict "dt" "用途・掲載先" "dd" (. | htmlEscape)) }}{{ end -}}
 {{- with $tools }}{{ $t := . }}{{ if reflect.IsSlice . }}{{ $t = delimit . "／" }}{{ end }}{{ $rows = $rows | append (dict "dt" "使用ツール" "dd" ($t | htmlEscape)) }}{{ end -}}
