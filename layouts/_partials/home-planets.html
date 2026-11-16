@@ -1,0 +1,23 @@
+{{- /*
+  トップの惑星の並び（トップと、試作ページ /lab/ で共通）。docs/spec.md 第5章
+  本番では作品数が min_works 未満の惑星を出さない（_partials/planets.html）
+  data-* は試作ページのスクリプト（観測カードなど）が読む
+*/ -}}
+{{- $en := eq site.Language.Lang "en" -}}
+<div class="space">
+  <ul class="planets">
+    {{- range $i, $p := where (partialCached "planets.html" .) "visible" true }}
+    {{- $name := cond $en $p.name_en $p.name }}
+    <li class="planet" data-pixel-snap style="--i: {{ $i }}; --dy: {{ $p.offset | default 0 }}; --planet: {{ $p.color | safeCSS }};"
+      data-name="{{ $name }}" data-color="{{ $p.color }}" data-count="{{ $p.count }}"{{ if $p.pending }} data-pending{{ end }}>
+      <a class="planet-link" href="{{ $p.url | relURL }}">
+        <span class="planet-body" aria-hidden="true">
+          <canvas class="planet-canvas" width="64" height="64"
+            data-color="{{ $p.color }}" data-seed="{{ $p.seed }}" data-surface="{{ $p.surface }}"></canvas>
+        </span>
+        <span class="planet-name">{{ $name }}{{ if $p.pending }}<small class="pending-badge">{{ T "pending" }}</small>{{ end }}</span>
+      </a>
+    </li>
+    {{- end }}
+  </ul>
+</div>

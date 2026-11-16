@@ -1,0 +1,233 @@
+/*
+ * トップのインタラクションの試作（/lab/）だけで読み込むスタイル
+ * 確認用URLだけのページなので、main.css とは分けておく
+ */
+
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ---------- 試作の一覧（/lab/） ---------- */
+.lab-list {
+  padding-top: 32px;
+  padding-bottom: 48px;
+}
+
+.lab-list li {
+  margin-bottom: 8px;
+}
+
+/* ---------- 切り替え（現行／A／B） ---------- */
+.lab main {
+  position: relative;
+  touch-action: manipulation;
+}
+
+.lab-switch {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  width: fit-content;
+  margin: 8px auto 0;
+  padding: 4px;
+  border: 1px solid var(--text);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.lab-switch a {
+  padding: 4px 12px;
+  border-radius: 999px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.lab-switch a[aria-current="page"] {
+  background: #ffe9a8;
+}
+
+/* ---------- 案A：工房 ---------- */
+
+/* 小さな惑星を描くキャンバス。大きな惑星の後ろに置き、クリックは通す */
+.lab-sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
+.lab .space,
+.lab .planets {
+  position: relative;
+  z-index: 1;
+}
+
+/* 惑星のまわりの余白はクリックを通し、惑星（リンク）だけ受け取る */
+.lab-a .space,
+.lab-a .planets,
+.lab-a .planet {
+  pointer-events: none;
+}
+
+.lab-a .planet-link {
+  pointer-events: auto;
+}
+
+/* 最初の案内 */
+.lab-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 2;
+  margin: 0;
+  padding: 6px 14px;
+  border: 1px solid var(--text);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: opacity 200ms var(--ease-out);
+}
+
+.lab-hint.is-hidden {
+  opacity: 0;
+}
+
+.lab-hint-touch {
+  display: none;
+}
+
+@media (hover: none) {
+  .lab-hint-mouse {
+    display: none;
+  }
+
+  .lab-hint-touch {
+    display: inline;
+  }
+}
+
+/* 大きな惑星にカーソルを乗せると小さく跳ねる（1ドット単位で、整数倍を保つ） */
+@keyframes lab-hop {
+  0% { transform: translateY(0); }
+  20% { transform: translateY(calc(-1px * var(--scale))); }
+  40% { transform: translateY(calc(-2px * var(--scale))); }
+  60% { transform: translateY(calc(-1px * var(--scale))); }
+  80%,
+  100% { transform: translateY(0); }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lab-a .planet-link:hover .planet-body {
+    animation: lab-hop 400ms steps(1, end);
+  }
+}
+
+/* ---------- 案B：観測カード ---------- */
+.lab-b .planet-link {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.lab-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  min-width: 184px;
+  padding: 14px 18px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  color: var(--text);
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 160ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+
+.lab-card.is-open {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.lab-card-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.lab-card-line path {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lab-card-line path + path {
+  stroke-width: 1;
+  opacity: 0.35;
+}
+
+.lab-card-label {
+  margin: 0 0 2px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.lab-card-name {
+  margin: 0 0 8px;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.lab-card-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  font-size: 0.875rem;
+}
+
+.lab-card-swatch {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--text);
+  border-radius: 3px;
+}
+
+.lab-card-hex {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  letter-spacing: 0.04em;
+}
+
+.lab-card-count {
+  font-size: 1.375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 試作ページはトップと同じ見た目にするため、パンくずリストを出さない */
+.lab .breadcrumbs {
+  display: none;
+}

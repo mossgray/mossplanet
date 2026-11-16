@@ -1,0 +1,55 @@
+{{- /*
+  トップのインタラクションの試作。確認用URLだけで作る（content/_content.gotmpl）
+  - /lab/   ：試作の一覧
+  - /lab/a/ ：案A「惑星をつくる工房」（assets/js/lab-a.js）
+  - /lab/b/ ：案B「観測ステーション」（assets/js/lab-b.js）
+  どちらも今のトップをそのまま使い、その上に演出を重ねる
+*/ -}}
+{{ define "bodyClass" }}{{ if eq .Params.variant "index" }}page lab-index{{ else }}page home lab lab-{{ .Params.variant }}{{ end }}{{ end }}
+
+{{ define "main" }}
+{{- $v := .Params.variant -}}
+{{- $a := site.GetPage "/lab/a" -}}
+{{- $b := site.GetPage "/lab/b" -}}
+{{- with resources.Get "css/lab.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
+{{- end }}
+
+{{- if eq $v "index" }}
+<div class="container lab-list">
+  <h1>{{ .Title }}</h1>
+  <p>トップに重ねる演出の試作です。確認用URLだけにあり、本番では作られません。3つを行き来して比べてください。</p>
+  <ul>
+    <li><a href="{{ "/" | relURL }}">現行のトップ</a>：演出なし</li>
+    <li><a href="{{ $a.RelPermalink }}">{{ $a.Title }}</a>：{{ $a.Params.description }}</li>
+    <li><a href="{{ $b.RelPermalink }}">{{ $b.Title }}</a>：{{ $b.Params.description }}</li>
+  </ul>
+</div>
+{{- else }}
+<h1 class="visually-hidden">{{ .Title }}</h1>
+<nav class="lab-switch" aria-label="試作の切り替え">
+  <a href="{{ "/" | relURL }}">現行</a>
+  <a href="{{ $a.RelPermalink }}"{{ if eq $v "a" }} aria-current="page"{{ end }}>案A 工房</a>
+  <a href="{{ $b.RelPermalink }}"{{ if eq $v "b" }} aria-current="page"{{ end }}>案B 観測</a>
+</nav>
+{{ partial "home-planets.html" . }}
+{{- if eq $v "a" }}
+<canvas class="lab-sky" aria-hidden="true"></canvas>
+<p class="lab-hint" aria-hidden="true">
+  <span class="lab-hint-mouse">空いている場所をクリックしてみて</span>
+  <span class="lab-hint-touch">空いている場所をタップしてみて</span>
+</p>
+{{- end }}
+{{- end }}
+{{ end }}
+
+{{ define "scripts" }}
+{{- if ne .Params.variant "index" }}
+{{- with resources.Get "js/planets.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- with resources.Get (printf "js/lab-%s.js" .Params.variant) | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- end }}
+{{ end }}
