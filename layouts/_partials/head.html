@@ -62,6 +62,9 @@
 {{- with resources.Get "js/motion.js" | minify }}
 <script>{{ .Content | safeJS }}</script>
 {{- end }}
+{{- if and .IsHome (eq site.Language.Lang "ja") }}
+<link rel="preload" href="/fonts/mossplanet-title-pixel.woff" as="font" type="font/woff" crossorigin>
+{{- end }}
 {{- with resources.Get "css/main.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
 {{- end }}

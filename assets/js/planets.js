@@ -5,6 +5,7 @@
  * - 縁取りは白1ドット。影は惑星の色に深い青（#0a399b）を4割混ぜた色で、
  *   中間の明るさは影の色と地表の色の市松模様（ディザ）で表す
  * - 「視差効果を減らす」がオンなら回転しない（1コマ目で止める）
+ * - 日本語版では、惑星の前面の中央にドット絵フォントのタイトルを重ねる（回転しない）
  * docs/spec.md 第5.2節・第8章
  */
 (function () {
@@ -260,6 +261,136 @@
   // 試作ページ（/lab/）のミニ惑星でも同じ色の作り方を使う
   window.mossPlanet = { hexToRgb: hexToRgb, mix: mix, makePalette: makePalette, toneColor: toneColor, rng: rng, OUTLINE: OUTLINE, STEP_MS: STEP_MS };
 
+  /* ---------- 惑星の前面のタイトル（ドット絵フォント） ---------- */
+
+  // フォントは static/fonts/mossplanet-title-pixel.woff（x8y12pxDenkiChip をタイトルの文字だけに絞ったもの）。
+  // 12px で描き、惑星と同じ整数倍で拡大する。文字は白、まわり8方向に1ドットの縁取り。
+  // 縁の色は、惑星の影の色（惑星の色に #0a399b を4割）を、さらに #0b1b1a へ45%寄せた色
+  var TITLE_FONT = '12px "mossplanet title"';
+  var TITLE_FALLBACK = '700 12px "Noto Sans JP", system-ui, sans-serif';
+  var TITLE_LINE = 12; // 行の間隔（ドット）
+  var TEXT = [11, 27, 26]; // #0b1b1a
+  var titleFont = null; // 読み込み後に TITLE_FONT か TITLE_FALLBACK
+
+  // 確認用URLだけ：?edge=dark で縁を #0b1b1a にした版を見られる（本番では使わない）
+  var space = document.querySelector(".space");
+  var darkEdge = !!(space && space.hasAttribute("data-preview") && /[?&]edge=dark\b/.test(location.search));
+
+  function edgeColor(hex) {
+    if (darkEdge) return TEXT;
+    return mix(mix(hexToRgb(hex), DEEP, SHADOW_MIX), TEXT, 0.45);
+  }
+
+  // 文字を1行ずつ描き、半透明のにじみを捨てて「文字のドット」だけの配列にする
+  function titleMask(lines) {
+    var work = document.createElement("canvas").getContext("2d");
+    work.font = titleFont;
+    var widths = lines.map(function (t) { return Math.ceil(work.measureText(t).width); });
+    var w = Math.max.apply(null, widths) + 4;
+    var h = lines.length * TITLE_LINE + 4;
+    work.canvas.width = w;
+    work.canvas.height = h;
+    work.font = titleFont; // 大きさを変えると設定が消えるので、もう一度
+    work.textBaseline = "alphabetic";
+    work.fillStyle = "#000";
+    for (var i = 0; i < lines.length; i++) {
+      // 行ごとに中央へ（位置は整数）
+      work.fillText(lines[i], 2 + Math.floor((w - 4 - widths[i]) / 2), 2 + i * TITLE_LINE + 11);
+    }
+    var data = work.getImageData(0, 0, w, h).data;
+    var mask = new Uint8Array(w * h);
+    var minX = w, minY = h, maxX = -1, maxY = -1;
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        if (data[(y * w + x) * 4 + 3] >= 128) {
+          mask[y * w + x] = 1;
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    return { mask: mask, w: w, h: h, minX: minX, minY: minY, maxX: maxX, maxY: maxY };
+  }
+
+  function drawTitle(canvas, size) {
+    if (!titleFont) return;
+    var full = canvas.dataset.title || "";
+    var work = document.createElement("canvas").getContext("2d");
+    work.font = titleFont;
+    // 惑星の内側（縁から3ドット内側）に1行で収まらなければ、title_break の位置で改行する
+    var lines = [full];
+    if (Math.ceil(work.measureText(full).width) + 2 > size - 6 && canvas.dataset.break) {
+      lines = canvas.dataset.break.split("|");
+    }
+    var m = titleMask(lines);
+    if (m.maxX < 0) return;
+    // 縁取りの1ドットを含めた大きさ
+    var W = m.maxX - m.minX + 3;
+    var H = m.maxY - m.minY + 3;
+    canvas.width = W;
+    canvas.height = H;
+    var ctx = canvas.getContext("2d");
+    var img = ctx.createImageData(W, H);
+    var edge = edgeColor(canvas.dataset.color || "#54bdb2");
+    function at(x, y) {
+      // 切り抜いた座標 → 元の配列
+      var sx = x + m.minX - 1;
+      var sy = y + m.minY - 1;
+      return sx >= 0 && sy >= 0 && sx < m.w && sy < m.h && m.mask[sy * m.w + sx] === 1;
+    }
+    for (var y = 0; y < H; y++) {
+      for (var x = 0; x < W; x++) {
+        var rgb = null;
+        if (at(x, y)) rgb = [255, 255, 255];
+        else if (at(x - 1, y - 1) || at(x, y - 1) || at(x + 1, y - 1) || at(x - 1, y) ||
+                 at(x + 1, y) || at(x - 1, y + 1) || at(x, y + 1) || at(x + 1, y + 1)) rgb = edge;
+        if (!rgb) continue;
+        var i = (y * W + x) * 4;
+        img.data[i] = rgb[0];
+        img.data[i + 1] = rgb[1];
+        img.data[i + 2] = rgb[2];
+        img.data[i + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    // 惑星の中央に、拡大前の大きさで整数の座標に置く（はみ出すときは左右にはみ出す）
+    var left = Math.floor((size - W) / 2);
+    var top = Math.floor((size - H) / 2);
+    var st = canvas.style;
+    st.width = "calc(" + W + "px * var(--scale))";
+    st.height = "calc(" + H + "px * var(--scale))";
+    st.left = "calc(" + left + "px * var(--scale))";
+    st.top = "calc(" + top + "px * var(--scale))";
+    canvas.hidden = false;
+    var link = canvas.closest(".planet-link");
+    if (link) link.classList.add("has-title");
+  }
+
+  function drawTitles() {
+    var list = document.querySelectorAll(".planet-title");
+    for (var i = 0; i < list.length; i++) {
+      var body = list[i].parentNode.querySelector(".planet-canvas");
+      drawTitle(list[i], body ? sizeOf(body) : DEFAULT_SIZE);
+    }
+  }
+
+  // フォントの読み込みが終わってから描く。読み込めなかったら（3秒待っても来なければ）通常のフォントで描く
+  function loadTitleFont() {
+    if (!document.querySelector(".planet-title")) return;
+    var done = false;
+    function finish(ok) {
+      if (done) return;
+      done = true;
+      titleFont = ok ? TITLE_FONT : TITLE_FALLBACK;
+      drawTitles();
+    }
+    if (!document.fonts || !document.fonts.load) { finish(false); return; }
+    document.fonts.load(TITLE_FONT).then(function (faces) { finish(faces && faces.length > 0); }, function () { finish(false); });
+    window.setTimeout(function () { finish(false); }, 3000);
+  }
+
   /* ---------- 起動 ---------- */
 
   var planets = [];
@@ -287,6 +418,7 @@
       planets.push(p);
     }
     makeStarfield();
+    loadTitleFont();
     start();
 
     document.addEventListener("visibilitychange", function () {
@@ -306,9 +438,15 @@
       queued = true;
       requestAnimationFrame(function () {
         queued = false;
+        var changed = false;
         for (var i = 0; i < planets.length; i++) {
-          if (planets[i].setup()) planets[i].draw();
+          if (planets[i].setup()) {
+            planets[i].draw();
+            changed = true;
+          }
         }
+        // 惑星の大きさが変わったら、タイトルの改行と位置も決め直す
+        if (changed) drawTitles();
       });
     });
   }

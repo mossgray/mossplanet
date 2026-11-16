@@ -484,6 +484,12 @@
       if (e.pointerType !== "mouse" || reduceMotion.matches || body.classList.contains("is-hopping")) return;
       body.classList.add("is-hopping");
     });
+    // キーボードで選んだときも、惑星とタイトルを一緒に跳ねさせる
+    link.addEventListener("focus", function () {
+      if (reduceMotion.matches || body.classList.contains("is-hopping")) return;
+      if (link.matches && !link.matches(":focus-visible")) return;
+      body.classList.add("is-hopping");
+    });
     body.addEventListener("animationend", function () {
       body.classList.remove("is-hopping");
     });

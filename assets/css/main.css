@@ -343,9 +343,10 @@ h3 {
 
 .site-footer .sns {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 4px 20px;
   margin: 0 0 8px;
   padding: 0;
   list-style: none;
@@ -354,10 +355,22 @@ h3 {
 .site-footer .sns a {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   min-height: 32px;
   color: var(--text);
   font-weight: 700;
   text-decoration: none;
+}
+
+/* 16×16 のドット絵を2倍で */
+.sns-icon {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
+.site-footer .sns a:hover .sns-name {
+  text-decoration: underline;
 }
 
 .site-footer .sns a:hover {
@@ -374,11 +387,6 @@ h3 {
 
 .footer-meta a {
   color: var(--text);
-}
-
-.site-footer .ext {
-  margin-left: 2px;
-  font-size: 0.75em;
 }
 
 /* 「動きを止める」ボタン（assets/js/motion.js） */
@@ -774,6 +782,52 @@ h3 {
 
 .planet-link:hover .planet-name {
   text-decoration: underline;
+}
+
+/* 惑星の前面のタイトル（ドット絵フォント x8y12pxDenkiChip。static/fonts/ に OFL.txt）。
+   planets.js が拡大前の大きさで描き、--scale の整数倍に拡大して、整数の座標に置く */
+@font-face {
+  font-family: "mossplanet title";
+  src: url("/fonts/mossplanet-title-pixel.woff") format("woff");
+  font-display: block;
+}
+
+.planet-title {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.planet-title[hidden] {
+  display: none;
+}
+
+.planet-name-main,
+.planet-name-en {
+  display: block;
+}
+
+/* タイトルを描けたら、日本語名は見えなくして（読み上げと検索には残す）、英語名を小さく添える */
+.has-title .planet-name-main {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.planet-name-en {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.planet-name:has(.planet-name-en) .pending-badge {
+  margin: 2px 0 0;
 }
 
 /* 開いたときに惑星が順にふわっと現れる */
@@ -2196,4 +2250,12 @@ img.is-pixel {
 /* 404：惑星から探す */
 .not-found-planets {
   margin-top: 24px;
+}
+
+/* About の末尾：フォントのクレジット */
+.about-credit {
+  margin-top: 32px;
+  color: #3d5250;
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
 }

@@ -2,6 +2,7 @@
 # 色は仮。ドット絵ができたら実際の色に差し替える。
 # seed / surface / offset はフェーズ0の自動生成の仮素材用（surface: noise=まだら, bands=縞模様）。
 # offset はトップでの上下のずらし量（惑星1ドット単位、0〜6。段の間隔が8ドットなので重ならない）。
+# title_break はトップの惑星に重ねるドット絵フォントのタイトルの改行位置（| で区切る。惑星に1行で収まらないときだけ改行する）。
 # tagline はトップの吹き出しのひとこと（全角20字以内）、tagline_en はその英語版、intro は一覧ページの紹介文（2〜3行）。
 # todo: true の惑星は、tagline・tagline_en・intro が仮の文章（本人があとで書き換える。書き換えたら todo の行を消す）。
 - id: illustration
@@ -19,6 +20,7 @@
   todo: true
 - id: pixel-art
   name: ピクセルアート
+  title_break: "ピクセル|アート"
   name_en: Pixel Art
   color: "#f08cb4"
   band: "#fde7f0"
@@ -32,6 +34,7 @@
   todo: true
 - id: gamebook
   name: ゲームブック
+  title_break: "ゲーム|ブック"
   name_en: Gamebook
   color: "#8cc63f"
   band: "#eef7e0"
@@ -58,6 +61,7 @@
   todo: true
 - id: original
   name: オリジナルキャラクター
+  title_break: "オリジナル|キャラクター"
   name_en: Original Characters
   color: "#5b8def"
   band: "#e5edfd"
@@ -71,6 +75,7 @@
   todo: true
 - id: fanart
   name: ファンアート
+  title_break: "ファン|アート"
   name_en: Fan Art
   # title タグに使う名前（表示名は name。URL・ID・front matter の fanart はそのまま）
   seo_title: ファンアート（二次創作）
