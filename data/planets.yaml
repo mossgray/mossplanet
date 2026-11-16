@@ -70,8 +70,10 @@
   intro: モスのオリジナルキャラクターたちを紹介する惑星です。
   todo: true
 - id: fanart
-  name: 二次創作
+  name: ファンアート
   name_en: Fan Art
+  # title タグに使う名前（表示名は name。URL・ID・front matter の fanart はそのまま）
+  seo_title: ファンアート（二次創作）
   color: "#9b7fe0"
   band: "#efe9fb"
   bubble_thumbs: false
@@ -80,5 +82,4 @@
   offset: 3
   tagline: 好きな作品へのファンアート
   tagline_en: Fan art of works I love
-  intro: 好きな作品のファンアートを、シリーズごとにまとめた惑星です。
-  todo: true
+  intro: 好きな作品への気持ちをこめて描いた、ファンアート（二次創作）です。

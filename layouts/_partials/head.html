@@ -1,4 +1,4 @@
-{{- $pageTitle := cond (eq .Kind "404") "ページが見つかりません" .Title -}}
+{{- $pageTitle := cond (eq .Kind "404") "ページが見つかりません" (.Params.seo_title | default .Title) -}}
 {{- $title := cond .IsHome site.Title (printf "%s | %s" $pageTitle site.Title) -}}
 {{- $desc := .Description | default .Params.description | default .Params.summary | default site.Params.description -}}
 <meta charset="utf-8">

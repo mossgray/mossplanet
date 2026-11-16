@@ -3,7 +3,7 @@
   - data/planets.yaml の各惑星に、url・作品数（count）・表示するか（visible）・準備中か（pending）を足す
   - 作品数：works は planets に惑星IDを含む作品、fanart は /fanart/ 配下のページ
   - 本番：作品数が min_works 未満の惑星は非表示。確認用URL（本番以外）：すべて表示し、足りない惑星は pending
-  - 二次創作エリアを非公開（config.toml の fanart_public = false）にしているときは、fanart を常に非表示
+  - ファンアートエリアを非公開（config.toml の fanart_public = false）にしているときは、fanart を常に非表示
   ※ 一覧ページを作るかどうかは content/_content.gotmpl で同じ規則で決めている
 */ -}}
 {{- $min := site.Params.min_works | default 1 -}}

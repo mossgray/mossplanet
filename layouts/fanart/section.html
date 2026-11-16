@@ -1,5 +1,5 @@
 {{- /*
-  二次創作の惑星（/fanart/）。docs/spec.md 第6.5節
+  ファンアートの惑星（/fanart/）。docs/spec.md 第6.5節
   依頼への導線も広告も置かない。1枚1ページの作品を、原作シリーズごとの節に分けて並べる
 */ -}}
 {{ define "bodyClass" }}page planet-page fanart-page{{ end }}
@@ -25,10 +25,10 @@
 </header>
 
 <div class="container">
-  <p class="fanart-notice">このページの作品は、個人による非公式の二次創作です。原作の権利は各権利者に帰属します。</p>
+  <p class="fanart-notice">このページの作品は、原作の権利者とは関係のない、個人の非営利のファンアートです。</p>
   {{- if $p.pending }}
   <div class="pending-note">
-    <p><strong>{{ T "pending" }}</strong>：二次創作の作品はまだありません。本番のサイトでは、この惑星はトップやメニューに出ず、このページも作られません。</p>
+    <p><strong>{{ T "pending" }}</strong>：ファンアートの作品はまだありません。本番のサイトでは、この惑星はトップやメニューに出ず、このページも作られません。</p>
   </div>
   {{- end }}
   {{- /* 原作シリーズごとに節を分ける。見出しは fanart.series（短い名前。例：学マス）、なければ原作名。

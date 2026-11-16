@@ -1,5 +1,5 @@
 {{- /*
-  二次創作の作品ページ（content/fanart/<作品ID>/）。docs/spec.md 第6.5節
+  ファンアートの作品ページ（content/fanart/<作品ID>/）。docs/spec.md 第6.5節
   - 1枚1ページ。/fanart/ では原作シリーズ（fanart.series）ごとの節に分けて並べる
   - fanart.source（原作名）と fanart.copyright（権利表記）から、権利表記を自動で表示する
   - 依頼への導線は置かない
@@ -61,7 +61,7 @@
       {{- with .copyright }}<br>{{ . }}{{ end -}}
     </p>
     {{- else }}
-    {{- warnf "二次創作のページに fanart.source / fanart.copyright がありません: %s" .RelPermalink -}}
+    {{- warnf "ファンアートのページに fanart.source / fanart.copyright がありません: %s" .RelPermalink -}}
     {{- end }}
   </div>
 </article>

@@ -1298,7 +1298,7 @@ img.is-pixel {
   background: #f1f5f4;
 }
 
-/* 二次創作の一覧ページの注意書き */
+/* ファンアートの一覧ページの注意書き */
 .fanart-notice {
   margin: 24px 0 0;
   padding: 10px 14px;
@@ -1724,7 +1724,7 @@ img.is-pixel {
   text-align: left;
 }
 
-/* ---------- 二次創作 ---------- */
+/* ---------- ファンアート ---------- */
 .fanart-copyright {
   margin-top: 32px;
   padding-top: 16px;
@@ -1977,9 +1977,11 @@ img.is-pixel {
   border-radius: 8px;
 }
 
+/* マウスを乗せたときは、カードの縁に薄い影を付ける。
+   filter を回転する要素（.flip-card-inner）に付けると立体の表示が平らになり、裏返していても表が見えてしまうため使わない */
 @media (hover: hover) and (pointer: fine) {
-  .flip-card:hover .flip-card-inner {
-    filter: brightness(1.03);
+  .flip-card:hover img {
+    box-shadow: 0 2px 10px rgb(11 27 26 / 0.16);
   }
 }
 
@@ -2080,7 +2082,7 @@ img.is-pixel {
   text-align: center;
 }
 
-/* 二次創作：原作シリーズごとの節 */
+/* ファンアート：原作シリーズごとの節 */
 .fanart-group + .fanart-group {
   margin-top: 8px;
 }

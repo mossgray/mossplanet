@@ -17,7 +17,7 @@
 {{- /*
   吹き出しのバナー用の画像（第5.4節。assets/js/top-bubble.js）
   惑星ごとに代表作（featured_in → 足りなければ新しい順、最大3件）のメイン画像を横480pxに縮めたWebP。
-  どれを・どこを切り抜くかは top-bubble.js がランダムに決める。bubble_thumbs: false の惑星（二次創作）は画像を出さない。
+  どれを・どこを切り抜くかは top-bubble.js がランダムに決める。bubble_thumbs: false の惑星（ファンアート）は画像を出さない。
   作品は日本語版にだけあるので、英語版のトップからも日本語版（最初のサイト）の作品を使う
 */ -}}
 {{- $works := where (index hugo.Sites 0).RegularPages "Section" "works" -}}

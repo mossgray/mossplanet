@@ -7,7 +7,7 @@
   - 確認用URL（本番以外）：すべて作る（ページ内に「準備中」と出す）
 
   ここではまだ作品ページの一覧が使えないため、content/works の各フォルダの index.md の Front Matter を直接読んで数える。
-  二次創作（fanart）は惑星の一覧ページではなく、下の /fanart/ の節として作る。
+  ファンアート（fanart）は惑星の一覧ページではなく、下の /fanart/ の節として作る。
 */ -}}
 {{- $min := site.Params.min_works | default 1 -}}
 {{- $counts := dict -}}
@@ -29,7 +29,7 @@
 {{- end -}}
 
 {{- /*
-  二次創作の節（/fanart/）もここで作る。config.toml の fanart_public の1行で、
+  ファンアートの節（/fanart/）もここで作る。config.toml の fanart_public の1行で、
   /fanart/ と、その下の作品ページ（content/fanart/）をまとめて出力しないようにできる（第6.5節）
   本番では、作品が min_works 未満のときも出力しない
 */ -}}
@@ -54,7 +54,7 @@
     "path" "fanart"
     "kind" "section"
     "title" .name
-    "params" (dict "color" .color "band" .band "name_en" .name_en "description" .intro)
+    "params" (dict "color" .color "band" .band "name_en" .name_en "description" .intro "seo_title" .seo_title)
     "build" (dict "render" $fanartRender "list" $fanartRender)
     "cascade" (dict "build" (dict "render" $fanartRender "list" $fanartRender "publishResources" false))
   ) -}}
