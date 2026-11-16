@@ -34,11 +34,43 @@
 </nav>
 {{ partial "home-planets.html" . }}
 {{- if eq $v "a" }}
-<canvas class="lab-sky" aria-hidden="true"></canvas>
+{{- /* はみ出しを切り取る枠。canvas が main より広く・高くなるとスクロールバーが出入りして、画面が左右にぶれるため */}}
+<div class="lab-sky-wrap" aria-hidden="true"><canvas class="lab-sky"></canvas></div>
 <p class="lab-hint" aria-hidden="true">
   <span class="lab-hint-mouse">空いている場所をクリックしてみて</span>
   <span class="lab-hint-touch">空いている場所をタップしてみて</span>
 </p>
+{{- end }}
+{{- if eq $v "b" }}
+{{- /*
+  吹き出しのバナー用の画像。惑星ごとに代表作（featured_in → 足りなければ新しい順、最大3件。第5.4節）の
+  メイン画像を横480pxに縮めたWebP。どれを・どこを切り抜くかは lab-b.js がランダムに決める。
+  bubble_thumbs: false の惑星（二次創作）は画像を出さない
+*/ -}}
+{{- $works := where site.RegularPages "Section" "works" -}}
+{{- $data := dict -}}
+{{- range where (partialCached "planets.html" .) "visible" true -}}
+  {{- $id := .id -}}
+  {{- $imgs := slice -}}
+  {{- if and .bubble_thumbs (ne $id "fanart") -}}
+    {{- $mine := where $works "Params.planets" "intersect" (slice $id) -}}
+    {{- $featured := where $mine "Params.featured_in" "intersect" (slice $id) -}}
+    {{- range $mine.ByDate.Reverse -}}
+      {{- if and (lt (len $featured) 3) (not (in $featured .)) -}}{{- $featured = $featured | append . -}}{{- end -}}
+    {{- end -}}
+    {{- range first 3 $featured -}}
+      {{- $page := . -}}
+      {{- with .Resources.Get .Params.cover -}}
+        {{- $pixel := $page.Params.pixel | default false -}}
+        {{- $img := . -}}
+        {{- if not $pixel -}}{{- $img = .Resize "480x webp q80" -}}{{- end -}}
+        {{- $imgs = $imgs | append (dict "src" $img.RelPermalink "w" $img.Width "h" $img.Height "pixel" $pixel) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $data = merge $data (dict $id $imgs) -}}
+{{- end }}
+<script type="application/json" id="lab-bubbles">{{ $data | jsonify | safeJS }}</script>
 {{- end }}
 {{- end }}
 {{ end }}

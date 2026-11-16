@@ -3,7 +3,7 @@
  * - 空いている場所をクリック（タップ）すると、小さな惑星（半径4〜8ドット）がばねの動きで生まれ、ゆっくり漂う
  * - 最大12個。13個目からは、いちばん古いものが縮んで消える
  * - 近づくと青（#4186c4）の点線でつながり、さらに近いと間にレモンイエローの星がまたたく（大きな惑星ともつながる）
- * - マウスのときだけ、カーソルに星屑が少しついてくる
+ * - マウスのときだけ、カーソルに星屑が少しついてくる。大きな惑星に乗ると小さく跳ねる（lab.css の lab-hop）
  * - 1ドット＝トップの倍率（--scale）ぶんのピクセル。座標はすべて整数ドットに丸めて描く
  * - 「視差効果を減らす」がオンなら、生まれた惑星はその場に止まり、何も動かさない
  * - タブが非表示のときや画面外のときは描画を止める
@@ -53,8 +53,9 @@
 
   function resize() {
     scale = readScale();
-    W = Math.ceil(main.clientWidth / scale);
-    H = Math.ceil(main.clientHeight / scale);
+    // 端数は切り捨てて、main より大きくしない（はみ出すとPCでスクロールバーが出入りして画面がぶれる）
+    W = Math.floor(main.clientWidth / scale);
+    H = Math.floor(main.clientHeight / scale);
     canvas.width = W;
     canvas.height = H;
     canvas.style.width = W * scale + "px";
@@ -454,6 +455,18 @@
   });
 
   main.addEventListener("pointermove", onMove);
+
+  // 大きな惑星に（マウスで）乗ったら小さく跳ねる。跳ねている途中はやり直さず、最後まで跳ね終える
+  Array.prototype.forEach.call(main.querySelectorAll(".planet-link"), function (link) {
+    var body = link.querySelector(".planet-body");
+    link.addEventListener("pointerenter", function (e) {
+      if (e.pointerType !== "mouse" || reduceMotion.matches || body.classList.contains("is-hopping")) return;
+      body.classList.add("is-hopping");
+    });
+    body.addEventListener("animationend", function () {
+      body.classList.remove("is-hopping");
+    });
+  });
 
   document.addEventListener("visibilitychange", function () {
     visible = !document.hidden;

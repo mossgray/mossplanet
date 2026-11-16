@@ -52,13 +52,21 @@
 
 /* ---------- 案A：工房 ---------- */
 
-/* 小さな惑星を描くキャンバス。大きな惑星の後ろに置き、クリックは通す */
+/* 小さな惑星を描くキャンバス。大きな惑星の後ろに置き、クリックは通す
+   枠（.lab-sky-wrap）ではみ出しを切り取る。はみ出すとPCではスクロールバーが出入りし、
+   幅が変わる → キャンバスを作り直す → またはみ出す、をくり返して画面が左右にぶれる */
+.lab-sky-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 .lab-sky {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 0;
-  pointer-events: none;
   image-rendering: pixelated;
 }
 
@@ -117,113 +125,115 @@
   }
 }
 
-/* 大きな惑星にカーソルを乗せると小さく跳ねる（1ドット単位で、整数倍を保つ） */
+/* 大きな惑星にカーソルを乗せると小さく跳ねる（lab-a.js が .is-hopping を付け、終わったら外す）
+   - 乗せた瞬間に1ドット上がり（すぐ反応が返る）、2ドットの頂点で少し止まって、戻る。合計240ミリ秒
+   - 1ドット単位でしか動かさない（steps）ので、ドット絵の整数倍が崩れない
+   - クラスで動かすので、途中でカーソルが離れても最後まで跳ね終わる（:hover だと途中でぷつっと戻る） */
 @keyframes lab-hop {
-  0% { transform: translateY(0); }
-  20% { transform: translateY(calc(-1px * var(--scale))); }
-  40% { transform: translateY(calc(-2px * var(--scale))); }
-  60% { transform: translateY(calc(-1px * var(--scale))); }
-  80%,
+  0% { transform: translateY(calc(-1px * var(--scale))); }
+  21% { transform: translateY(calc(-2px * var(--scale))); }
+  63% { transform: translateY(calc(-1px * var(--scale))); }
+  88%,
   100% { transform: translateY(0); }
 }
 
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .lab-a .planet-link:hover .planet-body {
-    animation: lab-hop 400ms steps(1, end);
-  }
+.lab-a .planet-body.is-hopping {
+  animation: lab-hop 240ms steps(1, end);
 }
 
-/* ---------- 案B：観測カード ---------- */
+/* ---------- 案B：吹き出し ---------- */
 .lab-b .planet-link {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
 }
 
-.lab-card {
+/* 枠としっぽは、lab-b.js が吹き出しの大きさに合わせて1枚のドット絵として描き（.lab-bubble-bg）、
+   --scale の整数倍に拡大する。吹き出しの幅と高さも JS がドットの倍数に揃える */
+.lab-bubble {
+  --dot: calc(1px * var(--scale));
   position: absolute;
   top: 0;
   left: 0;
   z-index: 3;
-  min-width: 184px;
-  padding: 14px 18px 14px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.82);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
+  isolation: isolate;
+  min-width: 112px;
+  box-sizing: border-box;
+  padding: calc(6px + var(--dot));
   color: var(--text);
   pointer-events: none;
   opacity: 0;
-  transform: scale(0.96);
+  visibility: hidden;
+  /* 閉じるとき：速く（100ms）、動かさずに消える */
   transition:
-    opacity 160ms var(--ease-out),
-    transform 160ms var(--ease-out);
+    opacity 100ms var(--ease-out),
+    visibility 0s linear 100ms;
 }
 
-.lab-card.is-open {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.lab-card-line {
+.lab-bubble-bg {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  image-rendering: pixelated;
 }
 
-.lab-card-line path {
-  fill: none;
-  stroke: var(--text);
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.lab-bubble.is-below .lab-bubble-bg {
+  top: calc(-3 * var(--dot));
 }
 
-.lab-card-line path + path {
-  stroke-width: 1;
-  opacity: 0.35;
+/* 開くとき：1ドットずれた位置から、ポンと1ドット動いて止まる（ドット単位のまま）＋140msで濃くなる */
+.lab-bubble.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition:
+    opacity 140ms var(--ease-out),
+    transform 70ms steps(1, end),
+    visibility 0s;
 }
 
-.lab-card-label {
-  margin: 0 0 2px;
-  font-size: 0.6875rem;
+.lab-bubble.is-entering {
+  transform: translateY(var(--dot));
+}
+
+.lab-bubble.is-below.is-entering {
+  transform: translateY(calc(-1 * var(--dot)));
+}
+
+/* 隣の惑星へ移ったときは、待たずに・動かさずに中身だけ替える */
+.lab-bubble.is-instant {
+  transition: none;
+}
+
+/* 作品画像の一部を切り抜いた横長の小さなバナー */
+.lab-bubble-banner {
+  width: 144px;
+  height: 40px;
+  margin-bottom: 4px;
+  background-color: #f1f5f4;
+  background-repeat: no-repeat;
+}
+
+.lab-bubble-banner.is-pixel {
+  image-rendering: pixelated;
+}
+
+.lab-bubble-banner[hidden] {
+  display: none;
+}
+
+.lab-bubble-count {
+  margin: 0;
+  font-size: 0.8125rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  line-height: 1.4;
+  text-align: center;
 }
 
-.lab-card-name {
-  margin: 0 0 8px;
-  font-size: 1.0625rem;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.lab-card-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 4px;
-  font-size: 0.875rem;
-}
-
-.lab-card-swatch {
-  flex: none;
-  width: 18px;
-  height: 18px;
-  border: 1px solid var(--text);
-  border-radius: 3px;
-}
-
-.lab-card-hex {
-  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
-  letter-spacing: 0.04em;
-}
-
-.lab-card-count {
-  font-size: 1.375rem;
-  font-weight: 700;
+.lab-bubble-count strong {
+  margin: 0 2px;
+  font-size: 1.125rem;
   font-variant-numeric: tabular-nums;
 }
 

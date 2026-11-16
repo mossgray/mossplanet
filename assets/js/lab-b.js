@@ -1,9 +1,13 @@
 /*
- * 試作B「観測ステーション」（/lab/b/。確認用URLだけ）。トップの吹き出しの候補
- * - 惑星にカーソルを乗せる（キーボードで選ぶ）と、半透明のカードが出て、手描き風の枠線が描かれていく
- * - 中身：惑星名、色見本とカラーコード、作品数（0から数え上がる）
- * - スマートフォン：短いタップは今までどおり一覧ページへ。長押し（約0.45秒）でカードを出し、その回は移動しない
- * - 「視差効果を減らす」がオンなら、枠線も数字も最初から完成した状態で出す
+ * 試作B「観測ステーション」（/lab/b/。確認用URLだけ）。トップの吹き出し（第5.4節）の候補
+ * - 惑星にマウスを乗せて150ミリ秒たつと、ドット絵の枠の吹き出しが惑星の上に出る（上に入らなければ下）
+ * - 中身：代表作の画像の一部をランダムに切り抜いた横長の小さなバナーと、作品数（0から数え上がる）
+ * - 隣の惑星へ移ったときは、待たずに・動かさずに中身だけ替える
+ * - キーボードで選んだときはすぐ出し、Escキーで閉じる
+ * - スマートフォン：短いタップは今までどおり一覧ページへ。長押し（約0.45秒）で吹き出しを出し、その回は移動しない
+ *   （第5.4節では長押しを採用しないと決めている。試してみるための仮の動き）
+ * - 「視差効果を減らす」がオンなら、その場にただ現れ、数字も最初から最終の値
+ * - 画像は、ページの表示が終わってから読み込む
  */
 (function () {
   "use strict";
@@ -11,108 +15,135 @@
   var main = document.getElementById("main");
   if (!main) return;
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var SVG = "http://www.w3.org/2000/svg";
-  var EASE_OUT = "cubic-bezier(0.23, 1, 0.32, 1)";
+  var INK = "#0b1b1a";
+  var OPEN_DELAY = 150; // 通り過ぎただけでちらつかないように（第5.4節）
+  var GRACE = 300; // 閉じてからこの時間内に別の惑星へ乗ったら、待たずに出す
   var LONG_PRESS = 450;
+  var BANNER_W = 144;
+  var BANNER_H = 40;
 
-  /* ---------- カード ---------- */
+  var images = {};
+  try {
+    images = JSON.parse(document.getElementById("lab-bubbles").textContent) || {};
+  } catch (e) {
+    images = {};
+  }
 
-  var card = document.createElement("div");
-  card.className = "lab-card";
-  card.setAttribute("aria-hidden", "true");
-  card.innerHTML =
-    '<svg class="lab-card-line" xmlns="' + SVG + '"><path></path><path></path></svg>' +
-    '<p class="lab-card-label">OBSERVATION</p>' +
-    '<p class="lab-card-name"></p>' +
-    '<p class="lab-card-row"><span class="lab-card-swatch"></span><span class="lab-card-hex"></span></p>' +
-    '<p class="lab-card-row">作品 <span class="lab-card-count">0</span> 点<span class="lab-card-pending"></span></p>';
-  main.appendChild(card);
+  /* ---------- 吹き出し ---------- */
 
-  var paths = card.querySelectorAll("path");
-  var elName = card.querySelector(".lab-card-name");
-  var elSwatch = card.querySelector(".lab-card-swatch");
-  var elHex = card.querySelector(".lab-card-hex");
-  var elCount = card.querySelector(".lab-card-count");
-  var elPending = card.querySelector(".lab-card-pending");
+  var bubble = document.createElement("div");
+  bubble.className = "lab-bubble";
+  bubble.setAttribute("aria-hidden", "true");
+  bubble.innerHTML =
+    '<canvas class="lab-bubble-bg"></canvas>' +
+    '<div class="lab-bubble-banner"></div>' +
+    '<p class="lab-bubble-count">作品<strong>0</strong>点<span></span></p>';
+  main.appendChild(bubble);
+  var bg = bubble.querySelector(".lab-bubble-bg");
+  var bgCtx = bg.getContext("2d");
 
-  var current = null;
-  var hideTimer = 0;
+  // 枠としっぽを1枚のドット絵で描く（w×h ドットの吹き出し＋しっぽ3段）
+  // 角は2段階で欠けて丸く見える。しっぽの1段目は枠の線に重ねて、線を白で切る
+  function drawFrame(w, h, tailX, below) {
+    bg.width = w;
+    bg.height = h + 3;
+    var c = bgCtx;
+    c.clearRect(0, 0, w, h + 3);
+    c.save();
+    if (below) {
+      // 上向き：上下を反転して描く
+      c.translate(0, h + 3);
+      c.scale(1, -1);
+    }
+    var ink = function (x, y, ww, hh) { c.fillStyle = INK; c.fillRect(x, y, ww, hh); };
+    var white = function (x, y, ww, hh) { c.fillStyle = "#ffffff"; c.fillRect(x, y, ww, hh); };
+    white(1, 1, w - 2, h - 2);
+    ink(2, 0, w - 4, 1);
+    ink(2, h - 1, w - 4, 1);
+    ink(0, 2, 1, h - 4);
+    ink(w - 1, 2, 1, h - 4);
+    ink(1, 1, 1, 1);
+    ink(w - 2, 1, 1, 1);
+    ink(1, h - 2, 1, 1);
+    ink(w - 2, h - 2, 1, 1);
+    // しっぽ（下向き）
+    white(tailX + 1, h - 1, 3, 1);
+    ink(tailX, h - 1, 1, 1);
+    ink(tailX + 4, h - 1, 1, 1);
+    ink(tailX + 1, h, 1, 1);
+    white(tailX + 2, h, 1, 1);
+    ink(tailX + 3, h, 1, 1);
+    ink(tailX + 2, h + 1, 1, 1);
+    c.restore();
+  }
+
+  var elBanner = bubble.querySelector(".lab-bubble-banner");
+  var elCount = bubble.querySelector(".lab-bubble-count strong");
+  var elNote = bubble.querySelector(".lab-bubble-count span");
+
+  /* ---------- 画像の読み込み（表示が終わってから） ---------- */
+
+  var loaded = {}; // src → Image（読み込み済み）
+  function preload() {
+    Object.keys(images).forEach(function (id) {
+      images[id].forEach(function (info) {
+        var img = new Image();
+        img.decoding = "async";
+        img.onload = function () {
+          loaded[info.src] = img;
+          if (current && current.dataset.id === id && !elBanner.style.backgroundImage) fillBanner(id);
+        };
+        img.src = info.src;
+      });
+    });
+  }
+  var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 200); };
+  if (document.readyState === "complete") idle(preload);
+  else window.addEventListener("load", function () { idle(preload); });
+
+  // 代表作から1枚選び、ランダムな場所を横長に切り抜く
+  function fillBanner(id) {
+    var list = (images[id] || []).filter(function (info) { return loaded[info.src]; });
+    elBanner.style.backgroundImage = "";
+    elBanner.classList.remove("is-pixel");
+    if (!(images[id] || []).length) {
+      elBanner.hidden = true;
+      return;
+    }
+    elBanner.hidden = false;
+    if (!list.length) return; // まだ読み込み中：灰色の枠だけ出しておく
+    var info = list[Math.floor(Math.random() * list.length)];
+    // 枠を覆う最小の倍率に、1.3〜2.2倍の寄りを掛ける（作品の一部分が見える）
+    var cover = Math.max(BANNER_W / info.w, BANNER_H / info.h);
+    var s = cover * (1.3 + Math.random() * 0.9);
+    if (info.pixel) {
+      // ドット絵は整数倍で、ぼかさずに
+      s = Math.max(1, Math.ceil(cover));
+      elBanner.classList.add("is-pixel");
+    }
+    var w = Math.round(info.w * s);
+    var h = Math.round(info.h * s);
+    // 端は余白（背景）のことが多いので、横は中央6割・縦は上寄りの範囲から選ぶ（人物の顔や上半身が入りやすい）
+    var x = -Math.round((0.2 + Math.random() * 0.6) * Math.max(0, w - BANNER_W));
+    var y = -Math.round((0.1 + Math.random() * 0.5) * Math.max(0, h - BANNER_H));
+    elBanner.style.backgroundImage = "url(" + info.src + ")";
+    elBanner.style.backgroundSize = w + "px " + h + "px";
+    elBanner.style.backgroundPosition = x + "px " + y + "px";
+  }
+
+  /* ---------- 数え上げ ---------- */
+
   var countRaf = 0;
-  var lineAnims = [];
-
-  // 手描き風の枠：角の丸い四角を、少し揺らした点でなぞる。最後は書き始めを少し越えて終わる
-  function sketch(w, h, seed, inset) {
-    var s = seed;
-    var rand = function () {
-      s = (s * 9301 + 49297) % 233280;
-      return s / 233280 - 0.5;
-    };
-    var r = 9;
-    var pts = [];
-    var edge = function (x0, y0, x1, y1) {
-      var len = Math.hypot(x1 - x0, y1 - y0);
-      var n = Math.max(2, Math.round(len / 26));
-      for (var i = 0; i < n; i++) {
-        var t = i / n;
-        pts.push([x0 + (x1 - x0) * t + rand() * 2.2, y0 + (y1 - y0) * t + rand() * 2.2]);
-      }
-    };
-    var a = inset;
-    var bx = w - inset;
-    var by = h - inset;
-    edge(a + r, a, bx - r, a);
-    pts.push([bx - 1, a + 1]);
-    edge(bx, a + r, bx, by - r);
-    pts.push([bx - 1, by - 1]);
-    edge(bx - r, by, a + r, by);
-    pts.push([a + 1, by - 1]);
-    edge(a, by - r, a, a + r);
-    pts.push([a + 1, a + 1]);
-    pts.push([a + r + 14 + rand() * 4, a - 1 + rand()]);
-    // 点の間を二次曲線でなめらかにつなぐ
-    var d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
-    for (var k = 1; k < pts.length - 1; k++) {
-      var mx = (pts[k][0] + pts[k + 1][0]) / 2;
-      var my = (pts[k][1] + pts[k + 1][1]) / 2;
-      d += " Q" + pts[k][0].toFixed(1) + " " + pts[k][1].toFixed(1) + " " + mx.toFixed(1) + " " + my.toFixed(1);
-    }
-    var lastPt = pts[pts.length - 1];
-    d += " L" + lastPt[0].toFixed(1) + " " + lastPt[1].toFixed(1);
-    return d;
-  }
-
-  function drawLines(seed) {
-    var w = card.offsetWidth;
-    var h = card.offsetHeight;
-    paths[0].setAttribute("d", sketch(w, h, seed, 1));
-    paths[1].setAttribute("d", sketch(w, h, seed + 17, 3));
-    for (var i = 0; i < lineAnims.length; i++) lineAnims[i].cancel();
-    lineAnims = [];
-    for (var j = 0; j < paths.length; j++) {
-      var len = paths[j].getTotalLength();
-      paths[j].style.strokeDasharray = len + " " + len;
-      if (reduceMotion.matches || !paths[j].animate) {
-        paths[j].style.strokeDashoffset = "0";
-        continue;
-      }
-      // 1本目が描かれ始めてから、2本目が少し遅れて追いかける
-      lineAnims.push(paths[j].animate(
-        [{ strokeDashoffset: len }, { strokeDashoffset: 0 }],
-        { duration: j ? 320 : 380, delay: j ? 90 : 0, easing: EASE_OUT, fill: "both" }
-      ));
-    }
-  }
-
   function countUp(n) {
     cancelAnimationFrame(countRaf);
     if (reduceMotion.matches || n === 0) {
       elCount.textContent = n;
       return;
     }
-    var start = performance.now() + 100;
-    var dur = 520;
+    var start = performance.now();
+    var dur = 400;
     var tick = function (now) {
-      var t = Math.min(1, Math.max(0, (now - start) / dur));
+      var t = Math.min(1, (now - start) / dur);
       elCount.textContent = Math.round(n * (1 - Math.pow(1 - t, 3)));
       if (t < 1) countRaf = requestAnimationFrame(tick);
     };
@@ -120,84 +151,135 @@
     countRaf = requestAnimationFrame(tick);
   }
 
-  // カードを惑星の横に置く（右に入らなければ左、それでも入らなければ画面内に収める）
+  /* ---------- 置き場所 ---------- */
+
+  function scale() {
+    var s = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--scale"), 10);
+    return s > 0 ? s : 2;
+  }
+
+  // 惑星の上（しっぽの先が惑星の縁に届く位置）。画面の上端に近いときは下。左右は画面内に収め、しっぽは惑星の中心を指す
+  // 位置・幅・高さはすべてドットの倍数に揃える
   function place(li) {
+    var dot = scale();
     var body = li.querySelector(".planet-body");
+    bubble.style.width = "";
+    bubble.style.height = "";
+    var wd = Math.ceil(bubble.offsetWidth / dot);
+    var hd = Math.ceil(bubble.offsetHeight / dot);
+    var w = wd * dot;
+    var h = hd * dot;
+    bubble.style.width = w + "px";
+    bubble.style.height = h + "px";
     var m = main.getBoundingClientRect();
     var r = body.getBoundingClientRect();
-    var w = card.offsetWidth;
-    var h = card.offsetHeight;
-    var gap = 8;
-    var left = r.right - m.left + gap;
-    var origin = "left center";
-    if (left + w > m.width - 8) {
-      left = r.left - m.left - gap - w;
-      origin = "right center";
-    }
-    if (left < 8) {
-      left = Math.min(Math.max(8, r.left - m.left + r.width / 2 - w / 2), m.width - w - 8);
-      origin = "center top";
-    }
-    var top = r.top - m.top + r.height / 2 - h / 2;
-    if (origin === "center top") top = r.top - m.top + r.height * 0.55;
-    card.style.left = Math.round(left) + "px";
-    card.style.top = Math.round(top) + "px";
-    card.style.transformOrigin = origin;
+    var tailH = 2 * dot; // しっぽのうち吹き出しの外に出る高さ
+    var cx = r.left + r.width / 2 - m.left;
+    var top = r.top - m.top + 2 * dot - tailH - h;
+    var below = r.top + 2 * dot - tailH - h < 8;
+    if (below) top = r.bottom - m.top - 2 * dot + tailH;
+    var left = Math.min(Math.max(8, cx - w / 2), m.width - w - 8);
+    left = Math.round(left / dot) * dot;
+    top = Math.round(top / dot) * dot;
+    var tailX = Math.round((cx - left) / dot - 2.5);
+    tailX = Math.min(Math.max(3, tailX), wd - 8);
+    drawFrame(wd, hd, tailX, below);
+    bg.style.width = wd * dot + "px";
+    bg.style.height = (hd + 3) * dot + "px";
+    bubble.classList.toggle("is-below", below);
+    bubble.style.left = left + "px";
+    bubble.style.top = top + "px";
   }
 
-  function show(li) {
-    clearTimeout(hideTimer);
-    if (current === li && card.classList.contains("is-open")) return;
-    current = li;
-    var color = li.dataset.color || "#000000";
-    var count = parseInt(li.dataset.count, 10) || 0;
-    elName.textContent = li.dataset.name || "";
-    elSwatch.style.background = color;
-    elHex.textContent = color.toUpperCase();
-    elPending.textContent = li.hasAttribute("data-pending") ? "（準備中）" : "";
-    elCount.textContent = count; // 大きさを測るため、いったん最終の値で
+  /* ---------- 開く・閉じる ---------- */
+
+  var current = null;
+  var openTimer = 0;
+  var closeTimer = 0;
+  var closedAt = 0;
+
+  function render(li) {
+    var id = li.dataset.id;
+    fillBanner(id);
+    elNote.textContent = li.hasAttribute("data-pending") ? "（準備中）" : "";
+    elCount.textContent = li.dataset.count || "0"; // 大きさを測るため、いったん最終の値で
     place(li);
-    var index = Array.prototype.indexOf.call(li.parentNode.children, li);
-    drawLines(index * 41 + 7);
-    countUp(count);
-    card.classList.add("is-open");
+    countUp(parseInt(li.dataset.count, 10) || 0);
   }
 
-  function hide(delay) {
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(function () {
-      card.classList.remove("is-open");
+  function open(li, instant) {
+    clearTimeout(openTimer);
+    clearTimeout(closeTimer);
+    if (current === li && bubble.classList.contains("is-open")) return;
+    var wasOpen = bubble.classList.contains("is-open");
+    current = li;
+    if (instant || wasOpen || reduceMotion.matches) {
+      bubble.classList.add("is-instant");
+      bubble.classList.remove("is-entering");
+      render(li);
+      bubble.classList.add("is-open");
+      void bubble.offsetWidth;
+      bubble.classList.remove("is-instant");
+      return;
+    }
+    render(li);
+    // 1ドットずれた位置から始めて、次のフレームで正しい位置へ（ポンと上がる）
+    bubble.classList.add("is-instant", "is-entering");
+    void bubble.offsetWidth;
+    bubble.classList.remove("is-instant");
+    bubble.classList.add("is-open");
+    requestAnimationFrame(function () {
+      bubble.classList.remove("is-entering");
+    });
+  }
+
+  function close(delay) {
+    clearTimeout(openTimer);
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(function () {
+      if (bubble.classList.contains("is-open")) closedAt = performance.now();
+      bubble.classList.remove("is-open", "is-entering");
+      cancelAnimationFrame(countRaf);
       current = null;
     }, delay || 0);
   }
 
+  function hoverOpen(li) {
+    clearTimeout(openTimer);
+    clearTimeout(closeTimer);
+    // 開いている間・閉じた直後は待たずに。最初の1回だけ150ミリ秒待つ
+    if (bubble.classList.contains("is-open") || performance.now() - closedAt < GRACE) {
+      open(li, true);
+    } else {
+      openTimer = setTimeout(function () { open(li); }, OPEN_DELAY);
+    }
+  }
+
   /* ---------- 操作 ---------- */
 
-  var items = main.querySelectorAll(".planet");
   var pressTimer = 0;
   var pressStart = null;
   var suppressClick = false;
 
-  Array.prototype.forEach.call(items, function (li) {
+  Array.prototype.forEach.call(main.querySelectorAll(".planet"), function (li) {
     var link = li.querySelector(".planet-link");
 
-    // マウス：乗せたら出す。離れても少し待つ（隣の惑星へ移るときに点滅しないように）
     link.addEventListener("pointerenter", function (e) {
-      if (e.pointerType === "mouse") show(li);
+      if (e.pointerType === "mouse") hoverOpen(li);
     });
     link.addEventListener("pointerleave", function (e) {
-      if (e.pointerType === "mouse") hide(120);
+      if (e.pointerType === "mouse") close(80);
     });
 
-    // キーボード
+    // キーボード：すぐ出す（キー操作には動きを付けない）
     link.addEventListener("focus", function () {
-      if (link.matches(":focus-visible")) show(li);
+      if (link.matches(":focus-visible")) open(li, true);
     });
     link.addEventListener("blur", function () {
-      hide(0);
+      close(0);
     });
 
-    // タッチ：長押しでカード。短いタップは通常どおり移動
+    // タッチ：長押しで吹き出し。短いタップは通常どおり移動
     link.addEventListener("pointerdown", function (e) {
       if (e.pointerType === "mouse") return;
       suppressClick = false;
@@ -205,7 +287,7 @@
       clearTimeout(pressTimer);
       pressTimer = setTimeout(function () {
         suppressClick = true;
-        show(li);
+        open(li);
       }, LONG_PRESS);
     });
     link.addEventListener("pointermove", function (e) {
@@ -227,16 +309,19 @@
         suppressClick = false;
       }
     });
-    // 長押しでリンクのメニューが出ないように
     link.addEventListener("contextmenu", function (e) {
       if (suppressClick || pressStart) e.preventDefault();
     });
   });
 
-  // タッチでカードを出したあと、ほかの場所をタップしたら閉じる
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && current) close(0);
+  });
+
+  // タッチで出したあと、ほかの場所をタップしたら閉じる
   document.addEventListener("pointerdown", function (e) {
     if (e.pointerType === "mouse" || !current) return;
-    if (!current.contains(e.target)) hide(0);
+    if (!current.contains(e.target)) close(0);
   });
 
   window.addEventListener("resize", function () {

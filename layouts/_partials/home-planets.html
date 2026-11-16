@@ -9,7 +9,7 @@
     {{- range $i, $p := where (partialCached "planets.html" .) "visible" true }}
     {{- $name := cond $en $p.name_en $p.name }}
     <li class="planet" data-pixel-snap style="--i: {{ $i }}; --dy: {{ $p.offset | default 0 }}; --planet: {{ $p.color | safeCSS }};"
-      data-name="{{ $name }}" data-color="{{ $p.color }}" data-count="{{ $p.count }}"{{ if $p.pending }} data-pending{{ end }}>
+      data-id="{{ $p.id }}" data-name="{{ $name }}" data-color="{{ $p.color }}" data-count="{{ $p.count }}"{{ if $p.pending }} data-pending{{ end }}>
       <a class="planet-link" href="{{ $p.url | relURL }}">
         <span class="planet-body" aria-hidden="true">
           <canvas class="planet-canvas" width="64" height="64"
