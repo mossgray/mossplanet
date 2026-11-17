@@ -473,7 +473,16 @@ h3 {
     text-decoration: none;
   }
 
-  .tabbar a[aria-current="page"] span {
+  /* About のアイコン：モスの星を32×32に縮めた絵を1倍で（ほかのアイコンと同じ32pxの枠） */
+  .tab-moss {
+    --blink-sheet: url("/images/moss-star-32-sheet.png");
+    position: relative;
+    display: block;
+    width: 32px;
+    height: 32px;
+  }
+
+  .tabbar a[aria-current="page"] > span:last-child {
     font-weight: 700;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -855,18 +864,23 @@ h3 {
   image-rendering: pixelated;
 }
 
-/* まばたき：2コマの絵（左：目を開けた絵、右：目を閉じた絵）の右のコマを、planets.js が .is-blinking の間だけ出す。
-   目を開けた絵は opacity で隠す（visibility だと代替テキストが読み上げられなくなるため） */
-.moss-star-blink {
-  visibility: hidden;
-  background: url("/images/moss-star-sheet.png") 100% 0 / 200% 100% no-repeat;
+/* まばたき：2コマの絵（左：目を開けた絵、右：目を閉じた絵）の右のコマを、moss-blink.js が .is-blinking の間だけ出す。
+   目を開けた絵は opacity で隠す（visibility だと代替テキストが読み上げられなくなるため）。
+   2コマの絵は --blink-sheet（トップは64×64の、タブバーは32×32の）。2コマ分の幅で読み込むので整数倍のまま */
+.moss-blink {
+  --blink-sheet: url("/images/moss-star-sheet.png");
 }
 
-.moss-star-body.is-blinking .moss-star-img {
+.moss-star-blink {
+  visibility: hidden;
+  background: var(--blink-sheet) 100% 0 / 200% 100% no-repeat;
+}
+
+.moss-blink.is-blinking .moss-star-img {
   opacity: 0;
 }
 
-.moss-star-body.is-blinking .moss-star-blink {
+.moss-blink.is-blinking .moss-star-blink {
   visibility: visible;
 }
 

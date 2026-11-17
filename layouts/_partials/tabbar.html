@@ -5,7 +5,8 @@
   <ul>
     <li><a href="{{ "/" | relLangURL }}"{{ if .IsHome }} aria-current="page"{{ end }}>{{ partial "pixel-icon.html" (dict "kind" "space" "color" "#f3c94f" "size" 16 "scale" 2) }}<span>{{ T "tab_space" }}</span></a></li>
     <li><a class="tab-works" href="{{ "/works/" | relURL }}" aria-haspopup="true" aria-expanded="false" aria-controls="works-sheet"{{ if $isWorks }} aria-current="page"{{ end }}>{{ partial "pixel-icon.html" (dict "color" "#f08cb4" "size" 16 "scale" 2) }}<span>{{ T "tab_works" }}</span></a></li>
-    <li><a href="{{ "/about/" | relLangURL }}"{{ if eq $section "about" }} aria-current="page"{{ end }}>{{ partial "pixel-icon.html" (dict "kind" "moss" "color" "#54bdb2" "size" 16 "scale" 2) }}<span>{{ T "tab_about" }}</span></a></li>
+    <li><a href="{{ "/about/" | relLangURL }}"{{ if eq $section "about" }} aria-current="page"{{ end }}>{{- /* モスの星（static/images/moss-star-32.png。64×64 の絵を半分にした32×32を1倍で）。まばたきは moss-blink.js */ -}}
+      <span class="tab-moss moss-blink" aria-hidden="true"><img class="moss-star-img" src="/images/moss-star-32.png" width="32" height="32" alt=""><span class="moss-star-blink"></span></span><span>{{ T "tab_about" }}</span></a></li>
     <li><a href="{{ "/contact/" | relLangURL }}"{{ if eq $section "contact" }} aria-current="page"{{ end }}>{{ partial "pixel-icon.html" (dict "kind" "satellite" "color" "#5b8def" "size" 16 "scale" 2) }}<span>{{ T "tab_contact" }}</span></a></li>
   </ul>
 </nav>

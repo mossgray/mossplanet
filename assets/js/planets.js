@@ -7,7 +7,6 @@
  * - 「視差効果を減らす」がオンなら回転しない（1コマ目で止める）
  * - 日本語版では、惑星の前面の中央にドット絵フォントのタイトルを重ねる（回転しない）。
  *   タイトルの倍率は CSS の --title-scale（PC のトップは惑星より1段小さい。それ以外は惑星と同じ --scale）
- * - モスの星（PC のトップの中心）は、4〜6秒に一度、0.15秒だけ目を閉じる（まばたき）
  * docs/spec.md 第5.2節・第8章
  */
 (function () {
@@ -403,37 +402,6 @@
     window.setTimeout(function () { finish(false); }, 3000);
   }
 
-  /* ---------- モスの星のまばたき ---------- */
-
-  // 4〜6秒に一度、0.15秒だけ目を閉じた絵（moss-star-sheet.png の右のコマ）にする。
-  // 「視差効果を減らす」「動きを止める」のときと、タブが非表示のときはしない
-  var BLINK_MIN = 4000;
-  var BLINK_MAX = 6000;
-  var BLINK_SHUT = 150;
-  var blinkTimer = null;
-  var blinkBody = null;
-
-  function scheduleBlink() {
-    window.clearTimeout(blinkTimer);
-    blinkTimer = null;
-    if (!blinkBody) return;
-    blinkBody.classList.remove("is-blinking");
-    if (reduceMotion.matches || document.hidden) return;
-    blinkTimer = window.setTimeout(function () {
-      blinkBody.classList.add("is-blinking");
-      blinkTimer = window.setTimeout(scheduleBlink, BLINK_SHUT);
-    }, BLINK_MIN + Math.random() * (BLINK_MAX - BLINK_MIN));
-  }
-
-  function initBlink() {
-    blinkBody = document.querySelector(".moss-star-body");
-    if (!blinkBody) return;
-    scheduleBlink();
-    document.addEventListener("visibilitychange", scheduleBlink);
-    if (reduceMotion.addEventListener) reduceMotion.addEventListener("change", scheduleBlink);
-    else if (reduceMotion.addListener) reduceMotion.addListener(scheduleBlink);
-  }
-
   /* ---------- 起動 ---------- */
 
   var planets = [];
@@ -463,7 +431,6 @@
     makeStarfield();
     loadTitleFont();
     start();
-    initBlink();
 
     document.addEventListener("visibilitychange", function () {
       if (document.hidden) stop();

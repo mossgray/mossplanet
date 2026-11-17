@@ -13,6 +13,10 @@
   {{- with resources.Get "js/pixel-snap.js" | minify | fingerprint }}
   <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
   {{- end }}
+  {{- /* モスの星のまばたき（トップの中心と、タブバーの About アイコン） */}}
+  {{- with resources.Get "js/moss-blink.js" | minify | fingerprint }}
+  <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+  {{- end }}
   {{- with resources.Get "js/nav.js" | minify | fingerprint }}
   <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
   {{- end }}

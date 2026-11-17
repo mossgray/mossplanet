@@ -3,7 +3,7 @@ title: "『Flourish』イラスト"
 seo_title: "『Flourish』イラスト（ドット絵・ピクセルアート）"
 date: 2024-11-17
 planets: [illustration, pixel-art]
-related: [flourish-gamebook]
+related: [flourish-gamebook, flourish-artbook-cover]
 cover: flourish-cover.gif
 cover_alt: "緑がかった髪に青い魔女帽子とマントの少女が、草の上に座って本を開き、手元に光る精霊の玉を浮かべている。そばには白いうさぎのような精霊がいる、表紙のドット絵"
 thumb: flourish-cover.png
@@ -14,7 +14,7 @@ role: "イラスト（表紙・イベントカード）"
 usage: "自作ゲームブック『Flourish』の表紙とシーンイラスト"
 tools: "ラフ：手書き／下書き～仕上げ：CLIP STUDIO PAINT"
 duration: "1枚につき、ラフ：約20分、下書き：約10分、ピクセルアート描画：約60分、仕上げ・色味調整：約60分"
-canvas: "表紙 256×256px、シーン 150×80px、イラスト集用の表紙 156×112px"
+canvas: "表紙 256×256px、シーン 150×80px"
 links:
   - type: booth
     url: https://mossplanet.booth.pm/items/7475132
@@ -92,8 +92,6 @@ gallery:
 
 ## イラスト集
 
-![窓辺で、緑がかった髪に青い魔女帽子の少女がペンを掲げ、窓の外に葉っぱの精霊が浮かんでいる、イラスト集の表紙のドット絵](flourish-artbook.png "イラスト集の表紙（156×112px）")
-
-このページの表紙とイベントカードのイラストは、[BOOTHで販売しているイラスト集](https://mossplanet.booth.pm/items/7475132)に収録したものと同じです。
+このページの表紙とイベントカードのイラストは、[BOOTHで販売しているイラスト集](https://mossplanet.booth.pm/items/7475132)に収録したものと同じです。イラスト集の表紙は、[『Flourish』イラスト集の表紙](/works/flourish-artbook-cover/)のページに掲載しています。
 
 表紙と「空飛ぶほうきレース！」などには、オリジナルBGMがあります。曲は[ゲームブックのページ](/works/flourish-gamebook/#bgm)で聴けます。
