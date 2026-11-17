@@ -399,3 +399,14 @@ Illustrations are delivered as PNG files, and Live2D models as a complete set of
 - プライバシーポリシー（content/privacy/index.md）の「3. 外部サービスの利用」の、YouTube の段落の後に、次の段落を足してください。
 
 文字の表示に、Google LLC（米国）が提供する Google Fonts を利用しています。フォントの読み込みの際、閲覧者のIPアドレスなどの情報がGoogleに送信されます。
+
+---
+
+## 11. トップの紹介文（2026-11-17 追記）
+
+対象：i18n/ja.yaml の home_intro（トップの惑星の下の紹介文。2行）
+
+モス / moss のイラスト・ドット絵・ゲームブック・Live2Dなどの作品ポートフォリオです。
+宇宙に浮かぶ惑星に見立てて、ジャンルごとに紹介しています。
+
+英語版（i18n/en.yaml の home_intro）は、今の文章のままです。

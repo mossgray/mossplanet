@@ -9,6 +9,8 @@
  * - タブが非表示のときや画面外のときは描画を止める
  * - 関連線：作品を共有している惑星どうし（と related でつながった作品の惑星どうし）を、薄い点線で常に結ぶ（第5.1節）
  *   組み合わせは Hugo が作る（layouts/home.html の #home-relations）
+ * - モスの星の線：PC のトップでは、中心のモスの星から各惑星へ細い実線（1ドット、#54bdb2 を40%の濃さ）を常に引く。
+ *   関連線（点線）とは別に描き、「動きを止める」のときも表示する。関連線はモスの星の上には描かない
  * 色の作り方は planets.js（window.mossPlanet）と同じ
  */
 (function () {
@@ -29,6 +31,8 @@
   var STAR_GAP = 9; // これ未満で星
   var LINE = "#4186c4";
   var LEMON = "#f2e14a";
+  var STAR_LINE = "#54bdb2"; // モスの星から惑星への線（ロゴの色）
+  var STAR_LINE_ALPHA = 0.4;
   // ばね：硬さ200・減衰16（少しだけ行き過ぎて戻る）
   var SPRING_K = 200;
   var SPRING_C = 16;
@@ -38,6 +42,7 @@
   var H = 0;
   var small = [];
   var bigs = [];
+  var star = null; // モスの星（PC のトップだけ。出ていないときは null）
   var dust = [];
   var links = {}; // "idA|idB" → 表示の度合い 0〜1（ふわっと出し入れする）
   var relations = [];
@@ -53,8 +58,9 @@
 
   /* ---------- 大きさ ---------- */
 
+  // 倍率はトップ（.home）で決まる（PC は3倍か2倍。第5.3節）ので、main から読む
   function readScale() {
-    var s = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--scale"), 10);
+    var s = parseInt(getComputedStyle(main).getPropertyValue("--scale"), 10);
     return s > 0 ? s : 2;
   }
 
@@ -81,17 +87,21 @@
     var base = canvas.getBoundingClientRect();
     var els = main.querySelectorAll(".planet-body");
     bigs = [];
+    star = null;
     for (var i = 0; i < els.length; i++) {
       var r = els[i].getBoundingClientRect();
+      if (!r.width) continue; // 出していないもの（スマートフォン・タブレットのモスの星）
       var li = els[i].closest(".planet");
-      bigs.push({
+      var node = {
         id: "B" + i,
         pid: li ? li.dataset.id : "",
         x: Math.round((r.left + r.width / 2 - base.left) / scale),
         y: Math.round((r.top + r.height / 2 - base.top) / scale),
         r: Math.round(r.width / scale / 2) - 1, // 大きな惑星の半径（縁取り込み、ドット）。スマートフォンでは小さい
         big: true
-      });
+      };
+      if (node.pid === "moss") star = node;
+      bigs.push(node);
     }
   }
 
@@ -345,7 +355,9 @@
     for (;;) {
       var outA = Math.hypot(x0 - p.a.x, y0 - p.a.y) > p.ra + 2;
       var outB = Math.hypot(x0 - p.b.x, y0 - p.b.y) > p.rb + 2;
-      if (outA && outB) {
+      // 関連線は、間にあるモスの星の上には描かない
+      var outS = !p.skipStar || !star || Math.hypot(x0 - star.x, y0 - star.y) > star.r + 2;
+      if (outA && outB && outS) {
         if (n % 4 < 2) ctx.fillRect(x0, y0, 1, 1);
         n++;
       }
@@ -377,6 +389,25 @@
     }
   }
 
+  // 実線（1ドット）。両端の惑星の中は描かない
+  function solid(a, b, color) {
+    var x0 = a.x;
+    var y0 = a.y;
+    var dx = Math.abs(b.x - x0);
+    var dy = -Math.abs(b.y - y0);
+    var sx = x0 < b.x ? 1 : -1;
+    var sy = y0 < b.y ? 1 : -1;
+    var err = dx + dy;
+    ctx.fillStyle = color;
+    for (;;) {
+      if (Math.hypot(x0 - a.x, y0 - a.y) > a.r + 1 && Math.hypot(x0 - b.x, y0 - b.y) > b.r + 1) ctx.fillRect(x0, y0, 1, 1);
+      if (x0 === b.x && y0 === b.y) break;
+      var e2 = 2 * err;
+      if (e2 >= dy) { err += dy; x0 += sx; }
+      if (e2 <= dx) { err += dx; y0 += sy; }
+    }
+  }
+
   function drawPlanet(p) {
     var r = Math.max(1, Math.round(p.r * p.s));
     var sh = shape(r);
@@ -403,6 +434,13 @@
   function draw(now) {
     now = now || performance.now();
     ctx.clearRect(0, 0, W, H);
+    // モスの星から各惑星への線（常に表示。動きを止めていても出す）
+    if (star) {
+      ctx.globalAlpha = STAR_LINE_ALPHA;
+      for (var s = 0; s < bigs.length; s++) {
+        if (bigs[s] !== star) solid(star, bigs[s], STAR_LINE);
+      }
+    }
     // 関連線（大きな惑星どうし。常に薄く表示）
     ctx.globalAlpha = 0.45;
     for (var r = 0; r < relations.length; r++) {
@@ -412,7 +450,7 @@
         if (bigs[m].pid === relations[r][0]) a = bigs[m];
         if (bigs[m].pid === relations[r][1]) b = bigs[m];
       }
-      if (a && b) dotted({ a: a, b: b, ra: a.r, rb: b.r });
+      if (a && b) dotted({ a: a, b: b, ra: a.r, rb: b.r, skipStar: true });
     }
     ctx.globalAlpha = 1;
     var list = pairs();

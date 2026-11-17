@@ -8,6 +8,7 @@
  * - スマートフォン：短いタップは今までどおり一覧ページへ。長押し（約0.45秒）で吹き出しを出し、その回は移動しない
  * - 「視差効果を減らす」がオンなら、その場にただ現れ、数字も最初から最終の値
  * - 画像は、ページの表示が終わってから読み込む
+ * - モスの星（data-bubble のある項目）は、バナーと作品数の代わりに data-bubble の文字（「About」）だけを出す
  */
 (function () {
   "use strict";
@@ -55,7 +56,8 @@
   bubble.innerHTML =
     '<canvas class="bubble-bg"></canvas>' +
     '<div class="bubble-banner"></div>' +
-    '<p class="bubble-count"></p>';
+    '<p class="bubble-count"></p>' +
+    '<p class="bubble-label" hidden></p>';
   main.appendChild(bubble);
   var elCountP = bubble.querySelector(".bubble-count");
   elCountP.appendChild(document.createTextNode(TEXT.before));
@@ -103,6 +105,7 @@
   var elBanner = bubble.querySelector(".bubble-banner");
   var elCount = bubble.querySelector(".bubble-count strong");
   var elNote = bubble.querySelector(".bubble-count span");
+  var elLabel = bubble.querySelector(".bubble-label");
 
   /* ---------- 画像の読み込み（表示が終わってから） ---------- */
 
@@ -177,7 +180,8 @@
   /* ---------- 置き場所 ---------- */
 
   function scale() {
-    var s = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--scale"), 10);
+    // 倍率はトップ（.home）で決まる（PC は3倍か2倍。第5.3節）ので、main から読む
+    var s = parseInt(getComputedStyle(main).getPropertyValue("--scale"), 10);
     return s > 0 ? s : 2;
   }
 
@@ -224,6 +228,18 @@
   function render(li) {
     var id = li.dataset.id;
     lineColor = frameColor(li.dataset.color);
+    var label = li.dataset.bubble || "";
+    bubble.classList.toggle("is-label", !!label);
+    elLabel.hidden = !label;
+    elCountP.hidden = !!label;
+    if (label) {
+      // モスの星：文字だけ
+      cancelAnimationFrame(countRaf);
+      elLabel.textContent = label;
+      elBanner.hidden = true;
+      place(li);
+      return;
+    }
     fillBanner(id);
     elNote.textContent = li.hasAttribute("data-pending") ? TEXT.pending : "";
     elCount.textContent = li.dataset.count || "0"; // 大きさを測るため、いったん最終の値で

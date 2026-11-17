@@ -5,7 +5,9 @@
  * - 縁取りは白1ドット。影は惑星の色に深い青（#0a399b）を4割混ぜた色で、
  *   中間の明るさは影の色と地表の色の市松模様（ディザ）で表す
  * - 「視差効果を減らす」がオンなら回転しない（1コマ目で止める）
- * - 日本語版では、惑星の前面の中央にドット絵フォントのタイトルを重ねる（回転しない）
+ * - 日本語版では、惑星の前面の中央にドット絵フォントのタイトルを重ねる（回転しない）。
+ *   タイトルの倍率は CSS の --title-scale（PC のトップは惑星より1段小さい。それ以外は惑星と同じ --scale）
+ * - モスの星（PC のトップの中心）は、4〜6秒に一度、0.15秒だけ目を閉じる（まばたき）
  * docs/spec.md 第5.2節・第8章
  */
 (function () {
@@ -264,7 +266,8 @@
   /* ---------- 惑星の前面のタイトル（ドット絵フォント） ---------- */
 
   // フォントは static/fonts/mossplanet-title-pixel.woff（x8y12pxDenkiChip をタイトルの文字だけに絞ったもの）。
-  // 12px で描き、惑星と同じ整数倍で拡大する。文字は白、まわり8方向に1ドットの縁取り。
+  // 12px で描き、--title-scale の整数倍で拡大する（PC のトップは惑星3倍・タイトル2倍。それ以外は惑星と同じ倍率）。
+  // 文字は白、まわり8方向に1ドットの縁取り。
   // 縁の色は、惑星の影の色（惑星の色に #0a399b を4割）を、さらに #0b1b1a へ45%寄せた色
   var TITLE_FONT = '12px "mossplanet title"';
   var TITLE_FALLBACK = '700 12px "Noto Sans JP", system-ui, sans-serif';
@@ -314,14 +317,23 @@
     return { mask: mask, w: w, h: h, minX: minX, minY: minY, maxX: maxX, maxY: maxY };
   }
 
+  // CSS の倍率（整数）を読む。--title-scale がなければ惑星と同じ --scale
+  function scaleOf(el, name) {
+    var v = parseInt(getComputedStyle(el).getPropertyValue(name), 10);
+    return v > 0 ? v : 0;
+  }
+
   function drawTitle(canvas, size) {
     if (!titleFont) return;
+    var scale = scaleOf(canvas, "--scale") || 1;
+    var ts = scaleOf(canvas, "--title-scale") || scale;
+    canvas.dataset.scales = scale + "/" + ts;
     var full = canvas.dataset.title || "";
     var work = document.createElement("canvas").getContext("2d");
     work.font = titleFont;
-    // 惑星の内側（縁から3ドット内側）に1行で収まらなければ、title_break の位置で改行する
+    // 惑星の内側（縁から3ドット内側）に1行で収まらなければ、title_break の位置で改行する（画面上の大きさで比べる）
     var lines = [full];
-    if (Math.ceil(work.measureText(full).width) + 2 > size - 6 && canvas.dataset.break) {
+    if ((Math.ceil(work.measureText(full).width) + 2) * ts > (size - 6) * scale && canvas.dataset.break) {
       lines = canvas.dataset.break.split("|");
     }
     var m = titleMask(lines);
@@ -355,14 +367,14 @@
       }
     }
     ctx.putImageData(img, 0, 0);
-    // 惑星の中央に、拡大前の大きさで整数の座標に置く（はみ出すときは左右にはみ出す）
-    var left = Math.floor((size - W) / 2);
-    var top = Math.floor((size - H) / 2);
+    // 惑星の中央に置く。位置はタイトルの1ドット（ts ピクセル）単位の整数の座標（はみ出すときは左右にはみ出す）
+    var left = Math.floor((size * scale - W * ts) / 2 / ts) * ts;
+    var top = Math.floor((size * scale - H * ts) / 2 / ts) * ts;
     var st = canvas.style;
-    st.width = "calc(" + W + "px * var(--scale))";
-    st.height = "calc(" + H + "px * var(--scale))";
-    st.left = "calc(" + left + "px * var(--scale))";
-    st.top = "calc(" + top + "px * var(--scale))";
+    st.width = W * ts + "px";
+    st.height = H * ts + "px";
+    st.left = left + "px";
+    st.top = top + "px";
     canvas.hidden = false;
     var link = canvas.closest(".planet-link");
     if (link) link.classList.add("has-title");
@@ -389,6 +401,37 @@
     if (!document.fonts || !document.fonts.load) { finish(false); return; }
     document.fonts.load(TITLE_FONT).then(function (faces) { finish(faces && faces.length > 0); }, function () { finish(false); });
     window.setTimeout(function () { finish(false); }, 3000);
+  }
+
+  /* ---------- モスの星のまばたき ---------- */
+
+  // 4〜6秒に一度、0.15秒だけ目を閉じた絵（moss-star-sheet.png の右のコマ）にする。
+  // 「視差効果を減らす」「動きを止める」のときと、タブが非表示のときはしない
+  var BLINK_MIN = 4000;
+  var BLINK_MAX = 6000;
+  var BLINK_SHUT = 150;
+  var blinkTimer = null;
+  var blinkBody = null;
+
+  function scheduleBlink() {
+    window.clearTimeout(blinkTimer);
+    blinkTimer = null;
+    if (!blinkBody) return;
+    blinkBody.classList.remove("is-blinking");
+    if (reduceMotion.matches || document.hidden) return;
+    blinkTimer = window.setTimeout(function () {
+      blinkBody.classList.add("is-blinking");
+      blinkTimer = window.setTimeout(scheduleBlink, BLINK_SHUT);
+    }, BLINK_MIN + Math.random() * (BLINK_MAX - BLINK_MIN));
+  }
+
+  function initBlink() {
+    blinkBody = document.querySelector(".moss-star-body");
+    if (!blinkBody) return;
+    scheduleBlink();
+    document.addEventListener("visibilitychange", scheduleBlink);
+    if (reduceMotion.addEventListener) reduceMotion.addEventListener("change", scheduleBlink);
+    else if (reduceMotion.addListener) reduceMotion.addListener(scheduleBlink);
   }
 
   /* ---------- 起動 ---------- */
@@ -420,6 +463,7 @@
     makeStarfield();
     loadTitleFont();
     start();
+    initBlink();
 
     document.addEventListener("visibilitychange", function () {
       if (document.hidden) stop();
@@ -445,7 +489,9 @@
             changed = true;
           }
         }
-        // 惑星の大きさが変わったら、タイトルの改行と位置も決め直す
+        // 惑星の大きさや倍率が変わったら、タイトルの改行と位置も決め直す
+        var title = document.querySelector(".planet-title[data-scales]");
+        if (title && title.dataset.scales !== (scaleOf(title, "--scale") || 1) + "/" + (scaleOf(title, "--title-scale") || scaleOf(title, "--scale") || 1)) changed = true;
         if (changed) drawTitles();
       });
     });

@@ -748,6 +748,104 @@ h3 {
   }
 }
 
+/* PC のトップ（幅1024px以上。第5.3節）
+   - 倍率：惑星とモスの星は3倍、前面のタイトルは2倍。画面の高さが800px未満なら、惑星とモスの星は2倍、タイトルは1倍
+   - 並び：惑星を六角形の軌道に並べ、中心にモスの星を置く。位置は惑星の ID ごとに決める（本番で出ない惑星があっても、ほかの位置は変わらない）
+     上段：イラスト・ピクセルアート・ゲームブック／下段：Live2D・オリジナル・ファンアート。真ん中の列（ピクセルアートとオリジナル）を上下にずらす
+   - 座標はすべてドット単位（--scale の整数倍）。軌道の半径 --R は惑星どうし・惑星とモスの星の中心の距離で、縁と縁の間は R−64 ドット
+   スマートフォン・タブレットは今までどおり（タイトルは惑星と同じ倍率） */
+.home {
+  --title-scale: var(--scale);
+}
+
+@media (min-width: 1024px) {
+  .home {
+    --scale: 3;
+    --title-scale: 2;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 799px) {
+  .home {
+    --scale: 2;
+    --title-scale: 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home .planets {
+    /* R：軌道の半径（ドット、偶数）。X：横の列の中心までの距離（R×cos30° を整数に） */
+    --R: 84;
+    --X: 73;
+    position: relative;
+    display: block;
+    width: calc((2 * var(--X) + 64) * var(--scale) * 1px);
+    /* いちばん下の惑星の名前の分（28px）を足す */
+    height: calc(((2 * var(--R) + 64) * var(--scale) + 28) * 1px);
+  }
+
+  .home .planet {
+    position: absolute;
+    left: calc(var(--cx) * var(--scale) * 1px);
+    top: calc(var(--cy) * var(--scale) * 1px);
+    width: calc(64 * var(--scale) * 1px);
+    transform: none;
+  }
+
+  .home .planet-link {
+    padding: 0;
+  }
+
+  /* 惑星の左上の位置（ドット）＝中心−32 */
+  .home .planet[data-id="illustration"] { --cx: 0; --cy: calc(var(--R) / 2); }
+  .home .planet[data-id="pixel-art"] { --cx: var(--X); --cy: 0; }
+  .home .planet[data-id="gamebook"] { --cx: calc(2 * var(--X)); --cy: calc(var(--R) / 2); }
+  .home .planet[data-id="live2d"] { --cx: 0; --cy: calc(var(--R) * 3 / 2); }
+  .home .planet[data-id="original"] { --cx: var(--X); --cy: calc(2 * var(--R)); }
+  .home .planet[data-id="fanart"] { --cx: calc(2 * var(--X)); --cy: calc(var(--R) * 3 / 2); }
+  .home .planet[data-id="moss"] { --cx: var(--X); --cy: var(--R); }
+}
+
+/* モスの星（第5.1節）。PC のトップだけに出す。絵は回転させず、惑星と同じ倍率で拡大する */
+.moss-star {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .home .moss-star {
+    display: block;
+  }
+}
+
+.moss-star-body::before {
+  content: none;
+}
+
+.moss-star-img,
+.moss-star-blink {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* まばたき：2コマの絵（左：目を開けた絵、右：目を閉じた絵）の右のコマを、planets.js が .is-blinking の間だけ出す。
+   目を開けた絵は opacity で隠す（visibility だと代替テキストが読み上げられなくなるため） */
+.moss-star-blink {
+  visibility: hidden;
+  background: url("/images/moss-star-sheet.png") 100% 0 / 200% 100% no-repeat;
+}
+
+.moss-star-body.is-blinking .moss-star-img {
+  opacity: 0;
+}
+
+.moss-star-body.is-blinking .moss-star-blink {
+  visibility: visible;
+}
+
 .planet-canvas {
   display: block;
   width: 100%;
@@ -1053,6 +1151,20 @@ h3 {
 .bubble-count {
   margin: 0;
   font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* モスの星の吹き出し：「About」の文字だけ */
+.bubble.is-label {
+  min-width: 0;
+}
+
+.bubble-label {
+  margin: 0;
+  padding: 0 4px;
+  font-size: 0.9375rem;
   font-weight: 700;
   line-height: 1.4;
   text-align: center;
@@ -2231,6 +2343,13 @@ img.is-pixel {
 
 .home-intro p {
   margin: 0;
+}
+
+/* PC では1行目（「…作品ポートフォリオです。」）が1行に収まる幅にする */
+@media (min-width: 1024px) {
+  .home-intro {
+    max-width: 760px;
+  }
 }
 
 

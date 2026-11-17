@@ -7,7 +7,10 @@
 {{- /* 紹介文（検索エンジンにサイトの内容を伝える） */ -}}
 <div class="home-intro">
   <div class="home-intro-box">
-    <p>{{ T "home_intro" }}</p>
+    {{- /* i18n の home_intro を、改行（\n）ごとに1行ずつ */}}
+    {{- range split (T "home_intro") "\n" }}
+    <p>{{ . }}</p>
+    {{- end }}
   </div>
 </div>
 
