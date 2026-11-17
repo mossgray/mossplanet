@@ -18,7 +18,7 @@
       {{- if $p.todo }}
       {{ partial "todo-text.html" (dict "text" $p.intro "page" . "block" true) }}
       {{- else }}
-      <p class="planet-intro">{{ $p.intro }}</p>
+      <p class="planet-intro">{{ $p.intro | safeHTML }}</p>
       {{- end }}
     </div>
   </div>

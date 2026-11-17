@@ -1,5 +1,5 @@
 ---
-title: "Message sent"
+title: "Thank you!"
 description: "Your message has been received."
 url: "/en/contact/thanks/"
 layout: "thanks"
@@ -8,6 +8,8 @@ sitemap:
   disable: true
 ---
 
-{{< todo >}}
-Thank you for your message. I will get back to you within 3 days.
-{{< /todo >}}
+Your message has been sent. I'll get back to you at the email address you provided within 5 days (JST).
+
+If you haven't heard from me after 5 days, please check your spam folder. If it's still not there, I'd appreciate it if you could let me know by DM on X.
+
+While you wait, feel free to explore the other planets.

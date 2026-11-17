@@ -54,7 +54,7 @@
     "path" "fanart"
     "kind" "section"
     "title" .name
-    "params" (dict "color" .color "band" .band "name_en" .name_en "description" .intro "seo_title" .seo_title)
+    "params" (dict "color" .color "band" .band "name_en" .name_en "description" (.intro | replaceRE `<rt>.*?</rt>` "" | plainify) "seo_title" .seo_title)
     "build" (dict "render" $fanartRender "list" $fanartRender)
     "cascade" (dict "build" (dict "render" $fanartRender "list" $fanartRender "publishResources" false))
   ) -}}
@@ -70,7 +70,7 @@
       "kind" "page"
       "title" .name
       "layout" "planet"
-      "params" (dict "planet" .id "color" .color "band" .band "name_en" .name_en "description" .intro)
+      "params" (dict "planet" .id "color" .color "band" .band "name_en" .name_en "description" (.intro | replaceRE `<rt>.*?</rt>` "" | plainify))
       "build" (dict "render" $render "list" $render)
     ) -}}
   {{- end -}}

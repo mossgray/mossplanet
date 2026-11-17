@@ -1707,11 +1707,6 @@ img.is-pixel {
   text-decoration: none;
 }
 
-.about-planets p {
-  margin: 8px 0 0;
-  font-size: 0.875rem;
-}
-
 .about-sns {
   margin: 0;
   padding: 0;
@@ -1805,11 +1800,6 @@ img.is-pixel {
 .contact-form textarea:focus {
   border-color: var(--link);
   outline: none;
-}
-
-.contact-form .hint {
-  margin: 4px 0 0;
-  font-size: 0.8125rem;
 }
 
 .form-privacy {

@@ -1,6 +1,6 @@
 {{- /*
   問い合わせフォーム（Netlify Forms）。docs/spec.md 第6.4節
-  - 項目は名前、連絡先、依頼の種類（選択式）、本文の4つだけ
+  - 項目は名前、メールアドレス、依頼の種類（選択式）、本文の4つだけ（返信はメールで行う。2026年11月17日、XのIDの受付をやめた）
   - スパム対策は人間には見えない入力欄（ハニーポット：bot-field）だけ。reCAPTCHA は使わない
   - 送信後は完了ページ（/contact/thanks/、英語版は /en/contact/thanks/）へ移動する
   - Netlify は公開時の HTML からこのフォーム（name="contact"）を見つけて受け付ける
@@ -17,9 +17,8 @@
     <input id="cf-name" name="name" type="text" required autocomplete="name">
   </div>
   <div class="field">
-    <label for="cf-contact">{{ T "form_contact" }}<span class="required">{{ T "form_required" }}</span></label>
-    <input id="cf-contact" name="contact" type="text" required autocomplete="email" aria-describedby="cf-contact-hint">
-    <p class="hint" id="cf-contact-hint">{{ T "form_contact_hint" }}</p>
+    <label for="cf-email">{{ T "form_email" }}<span class="required">{{ T "form_required" }}</span></label>
+    <input id="cf-email" name="email" type="email" required autocomplete="email">
   </div>
   <div class="field">
     <label for="cf-type">{{ T "form_type" }}<span class="required">{{ T "form_required" }}</span></label>

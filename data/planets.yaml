@@ -3,8 +3,9 @@
 # seed / surface / offset はフェーズ0の自動生成の仮素材用（surface: noise=まだら, bands=縞模様）。
 # offset はトップでの上下のずらし量（惑星1ドット単位、0〜6。段の間隔が8ドットなので重ならない）。
 # title_break はトップの惑星に重ねるドット絵フォントのタイトルの改行位置（| で区切る。惑星に1行で収まらないときだけ改行する）。
-# tagline はトップの吹き出しのひとこと（全角20字以内）、tagline_en はその英語版、intro は一覧ページの紹介文（2〜3行）。
-# todo: true の惑星は、tagline・tagline_en・intro が仮の文章（本人があとで書き換える。書き換えたら todo の行を消す）。
+# intro は一覧ページの紹介文（2〜3行）。「惑星」に「ページ」とルビを振るため <ruby>惑星<rt>ページ</rt></ruby> を HTML のまま書く
+# （テンプレートで HTML として出す。meta description ではルビを外す）。intro_en はその英語版（ルビなし）。
+# todo: true を付けた惑星は、intro が仮の文章として表示される。
 - id: illustration
   name: イラスト
   name_en: Illustration
@@ -14,10 +15,8 @@
   seed: 11
   surface: noise
   offset: 0
-  tagline: キャラクターの一枚絵の星
-  tagline_en: A planet of character illustrations
-  intro: キャラクターデザイン、立ち絵、配信用ビジュアル、MV用イラストなどの一枚絵を集めた惑星です。
-  todo: true
+  intro: ゲーム用の挿絵やライブ配信用ビジュアル、SNSアイコン、お祝いイラストなど、ご依頼と自主制作のイラストを集めた<ruby>惑星<rt>ページ</rt></ruby>です。
+  intro_en: "A planet of illustrations, both commissioned and personal: art for games, livestream visuals, social media icons, celebration pieces, and more."
 - id: pixel-art
   name: ピクセルアート
   title_break: "ピクセル|アート"
@@ -28,10 +27,8 @@
   seed: 23
   surface: bands
   offset: 6
-  tagline: ドットで描いた小さな世界
-  tagline_en: Tiny worlds drawn in pixels
-  intro: ドット絵のイラストやアイコン、アニメーションを集めた惑星です。
-  todo: true
+  intro: ひとつひとつのドットを置いて描く、ピクセルアートの<ruby>惑星<rt>ページ</rt></ruby>です。小さな画面の中に、光や空気、季節の気配まで詰めこむことを大事にしています。ゲームブック『Flourish』のシーンも、ここから生まれました。
+  intro_en: "A planet of pixel art, drawn by placing each pixel one by one. I care about fitting light, air, and even a hint of the season into a tiny canvas. The scenes of the gamebook Flourish were born here, too."
 - id: gamebook
   name: ゲームブック
   title_break: "ゲーム|ブック"
@@ -42,10 +39,8 @@
   seed: 37
   surface: noise
   offset: 2
-  tagline: 読んで遊ぶ物語の森
-  tagline_en: A forest of stories you play by reading
-  intro: 読みながら選んで進むゲームブックの作品を集めた惑星です。
-  todo: true
+  intro: 企画からルール、文章、イラスト、デザインまで、すべてひとりでつくったゲームブックの<ruby>惑星<rt>ページ</rt></ruby>です。サイコロやカードをきっかけに、遊ぶ人が自分だけの物語を綴っていく、ひとり用の作品が中心です。
+  intro_en: "A planet of gamebooks I made entirely on my own, from concept and rules to writing, illustration, and design. Most are solo games where dice and cards spark a story that only you can write."
 - id: live2d
   name: Live2D
   name_en: Live2D
@@ -55,10 +50,8 @@
   seed: 41
   surface: bands
   offset: 4
-  tagline: 動いて話すキャラクターの星
-  tagline_en: Characters that move and talk
-  intro: 配信用のLive2Dモデルを集めた惑星です。イラストの描き起こしから、モデリング、動き付けまで担当しています。
-  todo: true
+  intro: VTuberや配信活動向けに制作した、Live2Dモデルの<ruby>惑星<rt>ページ</rt></ruby>です。自然で違和感のない動きを特に追求して制作しています。
+  intro_en: "A planet of Live2D models made for VTubers and streamers. I pay special attention to natural, seamless movement."
 - id: original
   name: オリジナルキャラクター
   title_break: "オリジナル|キャラクター"
@@ -69,10 +62,8 @@
   seed: 53
   surface: noise
   offset: 0
-  tagline: うちの子たちが暮らす星
-  tagline_en: Home of my original characters
-  intro: モスのオリジナルキャラクターたちを紹介する惑星です。
-  todo: true
+  intro: まだ誰も知らない世界で暮らす、オリジナルキャラクターたちの<ruby>惑星<rt>ページ</rt></ruby>です。好きなものや旅の目的、世界の設定を重ねながら、少しずつ住人を増やしています。
+  intro_en: "A planet of original characters who live in a world no one knows yet. Layering their favorite things, the purpose of their journeys, and the setting of their world, I'm adding new residents little by little."
 - id: fanart
   name: ファンアート
   title_break: "ファン|アート"
@@ -85,6 +76,4 @@
   seed: 67
   surface: noise
   offset: 3
-  tagline: 好きな作品へのファンアート
-  tagline_en: Fan art of works I love
   intro: 好きな作品への気持ちをこめて描いた、ファンアート（二次創作）です。
