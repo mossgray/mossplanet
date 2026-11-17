@@ -39,9 +39,40 @@ Prices are quoted in Japanese yen. Payment from outside Japan is made by PayPal 
 
 ## Terms
 
-{{< todo >}}
-- Commercial use:
-- Number of revisions:
-- Payment timing:
-- Usage scope:
-{{< /todo >}}
+These terms are a translation of the Japanese version. If there is any difference between the two, the Japanese version takes precedence.
+
+### Commercial use
+
+Commercial use is available. Please tell me how you plan to use the art in advance, and I'll quote a price based on that use. If you'd like to use art commissioned for personal use commercially later, please contact me as well.
+
+### Revisions
+
+At the rough sketch stage, I accept up to two major revisions free of charge. From line art onward, revisions are limited to small details such as colors and accessories. Revisions beyond this, or changes to the composition, are charged extra.
+
+### Payment timing
+
+Individuals: Please pay the full amount before work begins, after you approve the quote.
+
+Companies and organizations: I'll send an invoice after delivery. Please pay by the end of the month following delivery.
+
+### Payment method
+
+Clients in Japan: Please pay by bank transfer. The transfer fee is paid by the client.
+
+Clients outside Japan: Please pay by PayPal invoice. The PayPal fee is paid by the client.
+
+### Scope of use
+
+You may use the delivered art within the purpose we agreed on at the quote stage. Copyright remains with the creator (Moss). If you wish to have the copyright transferred, please contact me separately.
+
+The following are not permitted: redistributing or reselling the art to third parties, heavily editing the image, using it to train generative AI, and presenting the art as your own work.
+
+After the art is published, I may post it on this site and on social media as part of my portfolio. If you'd prefer that I don't, please let me know when you commission.
+
+### Cancellation
+
+If you cancel after the commission becomes official, a fee is charged depending on progress (before the rough sketch: 0%; after the rough sketch: 30%; from line art onward: the full amount). If I become unable to deliver for my own reasons, I'll refund the full amount you paid.
+
+### Delivery format
+
+Illustrations are delivered as PNG files, and Live2D models as a complete set of model data. Image size is decided together with you based on the use (web, streaming, print, etc.). If you need working files such as PSD, please ask when you commission.

@@ -7,24 +7,19 @@ copy: "Cute, with a spoonful of wonder."
 sns:
   - name: "X"
     url: "https://x.com/mossgray_"
-    desc: "New works and work-in-progress"
-    todo: true
+    desc: "New work and behind-the-scenes looks at what I'm making. This is where I post first. Event announcements go here, too."
   - name: "YouTube"
     url: "https://www.youtube.com/@mossgray_"
-    desc: "Live2D and BGM"
-    todo: true
+    desc: "World-themed BGM for the gamebook Flourish, and showcase videos of my Live2D models."
   - name: "Skeb"
     url: "https://skeb.jp/@mossgray_"
-    desc: "Illustration commissions"
-    todo: true
+    desc: "Commissions for illustration and pixel art."
   - name: "BOOTH"
     url: "https://mossplanet.booth.pm/"
-    desc: "Mail order of works from events"
-    todo: true
+    desc: "Mail-order sales of works I've released at events."
 booth:
   url: "https://mossplanet.booth.pm/"
-  text: "Pixel art book vol.1 and more"
-  todo: true
+  text: "My pixel art collection, \"Pixel Art Illustration Collection vol.1,\" first released at COMITIA, is available by mail order on BOOTH. Centered on scenes from the gamebook Flourish, it's a book for taking your time with a world made of pixels. (The illustrations in it can also be seen on this site.)"
 ---
 
 Hi, I'm Moss (mossgray). I'm a freelance illustrator, creating under the motto "cute, with a spoonful of wonder."

@@ -9,6 +9,8 @@
   </ul>
   <p class="footer-meta">
     <a href="{{ "/privacy/" | relURL }}"{{ if ne site.Language.Lang "ja" }} hreflang="ja"{{ end }}>{{ T "privacy" }}</a>
+    {{- /* 特定商取引法に基づく表記（日本語版だけ。docs/spec.md 第9.3節） */}}
+    <a href="{{ "/legal/" | relURL }}"{{ if ne site.Language.Lang "ja" }} hreflang="ja"{{ end }}>{{ T "legal" }}</a>
     <span class="copyright">© {{ now.Year }} mossplanet</span>
   </p>
 </footer>

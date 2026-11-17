@@ -5,6 +5,7 @@
 
 ## 作業ルール
 - 作業は renewal ブランチで行う。main への統合と push は、本人の明示的な指示があるときだけ行う。
+- renewal ブランチへの push（`git push origin renewal`）は、確認用URLに反映するため、毎回の確認なしで行ってよい（.claude/settings.json の許可リストに登録済み）。main への push と、それ以外の push は、これまでどおり毎回本人に確認する。
 - 強制 push（--force）や履歴の書き換えはしない。
 - Hugo のバージョンは 0.170.0。netlify.toml の HUGO_VERSION は手元の hugo version と揃える。
 - npm や外部 JavaScript ライブラリは使わない。動きは素の JavaScript で書く。

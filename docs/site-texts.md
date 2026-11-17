@@ -291,3 +291,111 @@ If you haven't heard from me after 5 days, please check your spam folder. If it'
 While you wait, feel free to explore the other planets.
 
 (Button: Back to top)
+
+---
+
+## 8. 英語版の追加分（2026-11-17 追記）
+
+日本語版と同じ内容の英訳です。前回 todo のまま残った3か所に入れてください。
+
+### About の SNS ごとの説明
+
+対象ファイル：content/about/index.en.md
+
+| Link | Description |
+| --- | --- |
+| X | New work and behind-the-scenes looks at what I'm making. This is where I post first. Event announcements go here, too. |
+| YouTube | World-themed BGM for the gamebook Flourish, and showcase videos of my Live2D models. |
+| Skeb | Commissions for illustration and pixel art. |
+| BOOTH | Mail-order sales of works I've released at events. |
+
+### About の頒布物の紹介
+
+対象ファイル：content/about/index.en.md
+
+My pixel art collection, "Pixel Art Illustration Collection vol.1," first released at COMITIA, is available by mail order on BOOTH. Centered on scenes from the gamebook Flourish, it's a book for taking your time with a world made of pixels. (The illustrations in it can also be seen on this site.)
+
+### 依頼ページの Terms（規約）
+
+対象ファイル：content/contact/_index.en.md
+
+冒頭に、日本語版が優先する旨の一文を入れてください。
+
+**Terms**
+
+These terms are a translation of the Japanese version. If there is any difference between the two, the Japanese version takes precedence.
+
+**Commercial use**
+
+Commercial use is available. Please tell me how you plan to use the art in advance, and I'll quote a price based on that use. If you'd like to use art commissioned for personal use commercially later, please contact me as well.
+
+**Revisions**
+
+At the rough sketch stage, I accept up to two major revisions free of charge. From line art onward, revisions are limited to small details such as colors and accessories. Revisions beyond this, or changes to the composition, are charged extra.
+
+**Payment timing**
+
+Individuals: Please pay the full amount before work begins, after you approve the quote.
+
+Companies and organizations: I'll send an invoice after delivery. Please pay by the end of the month following delivery.
+
+**Payment method**
+
+Clients in Japan: Please pay by bank transfer. The transfer fee is paid by the client.
+
+Clients outside Japan: Please pay by PayPal invoice. The PayPal fee is paid by the client.
+
+**Scope of use**
+
+You may use the delivered art within the purpose we agreed on at the quote stage. Copyright remains with the creator (Moss). If you wish to have the copyright transferred, please contact me separately.
+
+The following are not permitted: redistributing or reselling the art to third parties, heavily editing the image, using it to train generative AI, and presenting the art as your own work.
+
+After the art is published, I may post it on this site and on social media as part of my portfolio. If you'd prefer that I don't, please let me know when you commission.
+
+**Cancellation**
+
+If you cancel after the commission becomes official, a fee is charged depending on progress (before the rough sketch: 0%; after the rough sketch: 30%; from line art onward: the full amount). If I become unable to deliver for my own reasons, I'll refund the full amount you paid.
+
+**Delivery format**
+
+Illustrations are delivered as PNG files, and Live2D models as a complete set of model data. Image size is decided together with you based on the use (web, streaming, print, etc.). If you need working files such as PSD, please ask when you commission.
+
+---
+
+## 9. 特定商取引法に基づく表記（2026-11-17 追記）
+
+対象ファイル：content/legal/index.md（新しく作るページ。URL は /legal/）
+
+- フッターと、依頼・問い合わせページの「規約」の末尾から、このページへリンクしてください。
+- 日本語版だけでよく、英語版は作りません（海外の方との契約は特定商取引法の適用外のため）。
+- noindex にはしないでください（誰でも見られる状態にしておく必要があります）。
+
+**特定商取引法に基づく表記**
+
+| 項目 | 内容 |
+| --- | --- |
+| 事業者 | mossplanet（モス） |
+| 事業者の氏名・住所・電話番号 | ご請求があった場合、遅滞なく電子メールで開示します。お問い合わせフォームからご請求ください。 |
+| 連絡先 | お問い合わせフォーム（5日以内に返信します） |
+| 提供する役務 | イラスト、ピクセルアート、Live2Dモデルの制作 |
+| 役務の対価 | ご依頼の内容に応じて個別にお見積もりし、電子メールでお知らせします。 |
+| 対価以外に必要な費用 | 銀行振込の振込手数料、PayPalの決済手数料（いずれもご依頼者様のご負担） |
+| 支払時期 | 個人の方：お見積もりにご了承いただいた後、制作開始前に全額 ／ 法人・団体の方：納品後、納品の翌月末まで |
+| 支払方法 | 銀行振込（国内の方）、PayPalの請求書（海外の方） |
+| 役務の提供時期 | 納期は、お見積もりの際にご提示します。 |
+| 納品方法 | 電子データでお渡しします（イラストはPNG、Live2Dモデルはモデルデータ一式）。 |
+| キャンセル | 正式なご依頼の後にキャンセルされる場合は、進み具合に応じて料金をいただきます（ラフの提出前：0％、ラフの提出後：30％、線画以降：全額）。制作者の都合で納品できなくなった場合は、お支払いいただいた全額を返金します。 |
+
+あわせて、依頼・問い合わせページの「規約」の末尾に、次の一文とリンクを入れてください。
+
+特定商取引法に基づく表記は、こちらのページをご覧ください。（→ /legal/）
+
+---
+
+## 10. フォントとプライバシーポリシー（2026-11-17 追記）
+
+- フォントは仕様書 7.3 のとおり、Noto Sans JP（本文）と Zen Maru Gothic（見出し）を、どちらも Google Fonts から読み込んでください（display=swap、使う太さだけ）。
+- プライバシーポリシー（content/privacy/index.md）の「3. 外部サービスの利用」の、YouTube の段落の後に、次の段落を足してください。
+
+文字の表示に、Google LLC（米国）が提供する Google Fonts を利用しています。フォントの読み込みの際、閲覧者のIPアドレスなどの情報がGoogleに送信されます。

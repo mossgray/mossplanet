@@ -65,6 +65,14 @@
 {{- if and .IsHome (eq site.Language.Lang "ja") }}
 <link rel="preload" href="/fonts/mossplanet-title-pixel.woff" as="font" type="font/woff" crossorigin>
 {{- end }}
+{{- /*
+  本文の Noto Sans JP と、見出しの Zen Maru Gothic を Google Fonts から読み込む（docs/spec.md 第7.3節）。
+  使う太さだけ（本文 400・700、見出し 700）。display=swap で、読み込み中も端末のフォントで文字を出す。
+  閲覧者の IP アドレスなどが Google に送られるため、プライバシーポリシーの「3. 外部サービスの利用」に記載している
+*/}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Zen+Maru+Gothic:wght@700&display=swap">
 {{- with resources.Get "css/main.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
 {{- end }}

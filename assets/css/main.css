@@ -75,9 +75,11 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+/* 見出しはロゴの丸みに合わせた丸ゴシック体（Google Fonts。docs/spec.md 第7.3節） */
 h1,
 h2,
 h3 {
+  font-family: "Zen Maru Gothic", "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
   line-height: 1.4;
 }
 
