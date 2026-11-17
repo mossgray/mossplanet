@@ -43,6 +43,7 @@
   var small = [];
   var bigs = [];
   var star = null; // モスの星（PC のトップだけ。出ていないときは null）
+  var labels = []; // 惑星とモスの星の名前の文字の範囲（ドット）。線はこの上に描かない
   var dust = [];
   var links = {}; // "idA|idB" → 表示の度合い 0〜1（ふわっと出し入れする）
   var relations = [];
@@ -88,6 +89,7 @@
     var els = main.querySelectorAll(".planet-body");
     bigs = [];
     star = null;
+    labels = [];
     for (var i = 0; i < els.length; i++) {
       var r = els[i].getBoundingClientRect();
       if (!r.width) continue; // 出していないもの（スマートフォン・タブレットのモスの星）
@@ -102,6 +104,18 @@
       };
       if (node.pid === "moss") star = node;
       bigs.push(node);
+      var name = li && li.querySelector(".planet-name");
+      if (name) {
+        var n = name.getBoundingClientRect();
+        if (n.width) {
+          labels.push({
+            x0: Math.floor((n.left - base.left) / scale) - 1,
+            y0: Math.floor((n.top - base.top) / scale) - 1,
+            x1: Math.ceil((n.right - base.left) / scale) + 1,
+            y1: Math.ceil((n.bottom - base.top) / scale) + 1
+          });
+        }
+      }
     }
   }
 
@@ -356,7 +370,7 @@
       var outA = Math.hypot(x0 - p.a.x, y0 - p.a.y) > p.ra + 2;
       var outB = Math.hypot(x0 - p.b.x, y0 - p.b.y) > p.rb + 2;
       // 関連線は、間にあるモスの星の上には描かない
-      var outS = !p.skipStar || !star || Math.hypot(x0 - star.x, y0 - star.y) > star.r + 2;
+      var outS = !p.skipStar || ((!star || Math.hypot(x0 - star.x, y0 - star.y) > star.r + 2) && !onLabel(x0, y0));
       if (outA && outB && outS) {
         if (n % 4 < 2) ctx.fillRect(x0, y0, 1, 1);
         n++;
@@ -389,7 +403,16 @@
     }
   }
 
-  // 実線（1ドット）。両端の惑星の中は描かない
+  // 名前の文字の上かどうか（線を描かない）
+  function onLabel(x, y) {
+    for (var i = 0; i < labels.length; i++) {
+      var l = labels[i];
+      if (x >= l.x0 && x < l.x1 && y >= l.y0 && y < l.y1) return true;
+    }
+    return false;
+  }
+
+  // 実線（1ドット）。両端の惑星の中と、名前の文字の上は描かない
   function solid(a, b, color) {
     var x0 = a.x;
     var y0 = a.y;
@@ -400,7 +423,7 @@
     var err = dx + dy;
     ctx.fillStyle = color;
     for (;;) {
-      if (Math.hypot(x0 - a.x, y0 - a.y) > a.r + 1 && Math.hypot(x0 - b.x, y0 - b.y) > b.r + 1) ctx.fillRect(x0, y0, 1, 1);
+      if (Math.hypot(x0 - a.x, y0 - a.y) > a.r + 1 && Math.hypot(x0 - b.x, y0 - b.y) > b.r + 1 && !onLabel(x0, y0)) ctx.fillRect(x0, y0, 1, 1);
       if (x0 === b.x && y0 === b.y) break;
       var e2 = 2 * err;
       if (e2 >= dy) { err += dy; x0 += sx; }

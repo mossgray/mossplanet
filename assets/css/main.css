@@ -752,7 +752,8 @@ h3 {
    - 倍率：惑星とモスの星は3倍、前面のタイトルは2倍。画面の高さが800px未満なら、惑星とモスの星は2倍、タイトルは1倍
    - 並び：惑星を六角形の軌道に並べ、中心にモスの星を置く。位置は惑星の ID ごとに決める（本番で出ない惑星があっても、ほかの位置は変わらない）
      上段：イラスト・ピクセルアート・ゲームブック／下段：Live2D・オリジナル・ファンアート。真ん中の列（ピクセルアートとオリジナル）を上下にずらす
-   - 座標はすべてドット単位（--scale の整数倍）。軌道の半径 --R は惑星どうし・惑星とモスの星の中心の距離で、縁と縁の間は R−64 ドット
+   - モスの星は惑星より1段小さい倍率（タイトルと同じ）で、下に「About」の文字を添える
+   - 座標はすべてドット単位（--scale の整数倍）
    スマートフォン・タブレットは今までどおり（タイトルは惑星と同じ倍率） */
 .home {
   --title-scale: var(--scale);
@@ -774,14 +775,16 @@ h3 {
 
 @media (min-width: 1024px) {
   .home .planets {
-    /* R：軌道の半径（ドット、偶数）。X：横の列の中心までの距離（R×cos30° を整数に） */
-    --R: 84;
-    --X: 73;
+    /* 中心からの距離（惑星のドット）。V1：真ん中の列（ピクセルアート・オリジナル）の上下、V2：左右の列の上下、X：左右の列の横
+       中心のモスの星が小さいので、上下を詰めて少し縦につぶれた六角形にし、そのぶん左右へ広げる（正六角形なら V1＝2×V2） */
+    --V1: 68;
+    --V2: 42;
+    --X: 84;
     position: relative;
     display: block;
     width: calc((2 * var(--X) + 64) * var(--scale) * 1px);
     /* いちばん下の惑星の名前の分（28px）を足す */
-    height: calc(((2 * var(--R) + 64) * var(--scale) + 28) * 1px);
+    height: calc(((2 * var(--V1) + 64) * var(--scale) + 28) * 1px);
   }
 
   .home .planet {
@@ -796,17 +799,28 @@ h3 {
     padding: 0;
   }
 
-  /* 惑星の左上の位置（ドット）＝中心−32 */
-  .home .planet[data-id="illustration"] { --cx: 0; --cy: calc(var(--R) / 2); }
+  /* 惑星の左上の位置（ドット）＝中心−32。六角形の中心は（32＋X, 32＋V1） */
+  .home .planet[data-id="illustration"] { --cx: 0; --cy: calc(var(--V1) - var(--V2)); }
   .home .planet[data-id="pixel-art"] { --cx: var(--X); --cy: 0; }
-  .home .planet[data-id="gamebook"] { --cx: calc(2 * var(--X)); --cy: calc(var(--R) / 2); }
-  .home .planet[data-id="live2d"] { --cx: 0; --cy: calc(var(--R) * 3 / 2); }
-  .home .planet[data-id="original"] { --cx: var(--X); --cy: calc(2 * var(--R)); }
-  .home .planet[data-id="fanart"] { --cx: calc(2 * var(--X)); --cy: calc(var(--R) * 3 / 2); }
-  .home .planet[data-id="moss"] { --cx: var(--X); --cy: var(--R); }
+  .home .planet[data-id="gamebook"] { --cx: calc(2 * var(--X)); --cy: calc(var(--V1) - var(--V2)); }
+  .home .planet[data-id="live2d"] { --cx: 0; --cy: calc(var(--V1) + var(--V2)); }
+  .home .planet[data-id="original"] { --cx: var(--X); --cy: calc(2 * var(--V1)); }
+  .home .planet[data-id="fanart"] { --cx: calc(2 * var(--X)); --cy: calc(var(--V1) + var(--V2)); }
+
+  /* モスの星：惑星より1段小さい倍率（--title-scale。惑星3倍なら2倍、2倍なら1倍）で、絵の中心を六角形の中心に置く。
+     --scale をこの中だけ星の倍率に置き換えるので、大きさ・跳ねる動き・現れる動きも星の1ドット単位になる */
+  .home .planet[data-id="moss"] {
+    --scale: var(--title-scale);
+    left: calc(((32 + var(--X)) * var(--home-scale) - 32 * var(--title-scale)) * 1px);
+    top: calc(((32 + var(--V1)) * var(--home-scale) - 32 * var(--title-scale)) * 1px);
+  }
+
+  .home .planets {
+    --home-scale: var(--scale);
+  }
 }
 
-/* モスの星（第5.1節）。PC のトップだけに出す。絵は回転させず、惑星と同じ倍率で拡大する */
+/* モスの星（第5.1節）。PC のトップだけに出す。絵は回転させない。背後の丸（JavaScript が動かないときの代わり）は付けない */
 .moss-star {
   display: none;
 }
@@ -817,8 +831,18 @@ h3 {
   }
 }
 
-.moss-star-body::before {
+.planet-body.moss-star-body::before {
   content: none;
+}
+
+/* 星の下の「About」の文字。リンクの名前は画像の代替テキスト（About（モスについて））なので、読み上げでは重ねない */
+/* 文字の大きさは、惑星の下の英語名（.planet-name-en）とそろえる。
+   絵の下の10ドットは透明なので、8ドット分（星の倍率で）上に寄せる */
+.planet-name.moss-star-name {
+  margin-top: calc(-8px * var(--scale));
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
 .moss-star-img,

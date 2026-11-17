@@ -31,7 +31,7 @@
     {{- end }}
     {{- /*
       モスの星（第5.1節）。PC（幅1024px以上）だけ、六角形に並べた惑星の中心に置く。スマートフォン・タブレットでは出さない
-      - 絵は static/images/moss-star.png（64×64）。惑星と同じ倍率で拡大し、回転しない
+      - 絵は static/images/moss-star.png（64×64）。惑星より1段小さい整数倍で拡大し、回転しない。下に「About」の文字を添える
       - まばたき：static/images/moss-star-sheet.png の右のコマ（目を閉じた絵）を、planets.js が4〜6秒に一度0.15秒だけ重ねる
       - 惑星と同じく、ホバー・キーボードで跳ね（top-forge.js）、吹き出しには data-bubble の文字だけを出す（top-bubble.js）
     */}}
@@ -42,6 +42,8 @@
           <img class="moss-star-img" src="/images/moss-star.png" width="64" height="64" alt="{{ T "moss_star_alt" }}">
           <span class="moss-star-blink" aria-hidden="true"></span>
         </span>
+        {{- /* 星の下の文字。リンクの名前は画像の代替テキストで伝えるので、読み上げでは重ねない */}}
+        <span class="planet-name moss-star-name" aria-hidden="true">About</span>
       </a>
     </li>
   </ul>
