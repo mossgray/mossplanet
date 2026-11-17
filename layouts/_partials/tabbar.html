@@ -1,6 +1,6 @@
 {{- /* スマートフォンの下部タブバー（画面幅600px未満）。docs/spec.md 第4章 */ -}}
 {{- $section := .Section -}}
-{{- $isWorks := or (eq $section "works") (eq $section "fanart") (isset .Params "planet") -}}
+{{- $isWorks := or (eq $section "works") (eq $section "fanart") (eq $section "characters") (isset .Params "planet") -}}
 <nav class="tabbar" aria-label="{{ T "nav_main" }}">
   <ul>
     <li><a href="{{ "/" | relLangURL }}"{{ if .IsHome }} aria-current="page"{{ end }}>{{ partial "pixel-icon.html" (dict "kind" "space" "color" "#f3c94f" "size" 16 "scale" 2) }}<span>{{ T "tab_space" }}</span></a></li>

@@ -1,0 +1,129 @@
+{{- /*
+  キャラクターページ（/original/<キャラクターID>/。content/characters/<ID>/index.md）。docs/spec.md 第6.7節
+  ファンアートの一覧と同じ部品（惑星のタイトル帯・作品カードのグリッド・節の見出し）を使い回す
+  見出し（代表ビジュアル・名前・一言紹介）→ プロフィール → すがたのバリエーション → デザインの変遷 → 関連作品
+  - 代表ビジュアルとバリエーション：作品ページ（cover_work・variations）のメイン画像を使い、作品ページへリンクする
+  - デザインの変遷：history に古い順。作品ページにしない絵（image）は、このページにだけ載せる
+  - 関連作品：front matter に character: <ID> を書いた作品（新しい順）
+*/ -}}
+{{ define "bodyClass" }}page character-page{{ end }}
+
+{{ define "main" }}
+{{- $id := .File.ContentBaseName -}}
+{{- $planets := partialCached "planets.html" . -}}
+{{- $primary := dict -}}
+{{- with .Params.planets }}{{ range where $planets "id" (index . 0) }}{{ $primary = . }}{{ end }}{{ end -}}
+{{- $works := where site.RegularPages "Section" "works" -}}
+
+{{- /* 見出し：惑星の色の帯に名前と一言紹介 */ -}}
+<header class="title-band planet-band" style="--band: {{ $primary.band | default "#e6f5f2" | safeCSS }};">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    {{- with $primary }}
+    {{- $icon := partial "pixel-icon.html" (dict "color" .color "size" 32 "scale" 2 "label" (printf "%sの一覧へ" .name)) -}}
+    {{- if .visible }}<a class="title-band-icon" href="{{ .url | relURL }}">{{ $icon }}</a>{{ else }}<span class="title-band-icon">{{ $icon }}</span>{{ end }}
+    {{- end }}
+    <div>
+      <h1 class="title-band-title">{{ .Title }}</h1>
+      {{- with .Params.lead }}<p class="character-lead">{{ . }}</p>{{ end }}
+    </div>
+  </div>
+</header>
+
+<article class="character">
+  {{- /* 代表ビジュアル（白背景の中央。周りに装飾を置かない） */ -}}
+  {{- with .Params.cover_work }}{{ with site.GetPage (printf "/works/%s" .) }}{{ $w := . }}
+  {{- with .Resources.Get .Params.cover }}
+  <figure class="work-main character-visual">
+    {{ partial "image/responsive.html" (dict "res" . "alt" $w.Params.cover_alt "pixel" ($w.Params.pixel | default false) "zoom" true "eager" true "group" "character") }}
+  </figure>
+  {{- end }}
+  {{- end }}{{ end }}
+
+  <div class="work-body">
+    {{- /* プロフィール */ -}}
+    {{- with .Params.profile }}
+    <section class="character-section">
+      <h2>プロフィール</h2>
+      <dl class="work-info character-profile">
+        {{- range . }}
+        <div><dt>{{ .label }}</dt><dd>{{ .text }}</dd></div>
+        {{- end }}
+      </dl>
+    </section>
+    {{- end }}
+    {{- with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+  </div>
+
+  {{- /* すがたのバリエーション：作品ページのメイン画像。画像はクリックで拡大、題名は作品ページへ */ -}}
+  {{- with .Params.variations }}
+  <section class="character-section character-wide">
+    <h2>すがたのバリエーション</h2>
+    <ul class="character-variations">
+      {{- range . }}
+      {{- with site.GetPage (printf "/works/%s" .) }}{{ $w := . }}
+      {{- with .Resources.Get .Params.cover }}
+      <li>
+        <figure>
+          {{ partial "image/responsive.html" (dict "res" . "alt" $w.Params.cover_alt "pixel" ($w.Params.pixel | default false) "zoom" true "group" "character" "w" 600 "sizes" "(min-width: 768px) 33vw, 100vw") }}
+          <figcaption><a href="{{ $w.RelPermalink }}">{{ $w.Title }}</a></figcaption>
+        </figure>
+      </li>
+      {{- end }}
+      {{- else }}{{ warnf "すがたのバリエーションの作品が見つかりません: %s（%s）" . $.RelPermalink }}{{ end }}
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+
+  {{- /* デザインの変遷（古い順） */ -}}
+  {{- with .Params.history }}
+  <section class="character-section character-wide">
+    <h2>デザインの変遷</h2>
+    <ol class="character-history">
+      {{- range . }}
+      {{- $item := . -}}
+      {{- $res := "" -}}{{- $alt := .alt | default "" -}}{{- $link := "" -}}{{- $pixel := false -}}
+      {{- if .work -}}
+        {{- with site.GetPage (printf "/works/%s" .work) -}}
+          {{- $res = .Resources.Get .Params.cover -}}{{- $alt = .Params.cover_alt -}}{{- $link = .RelPermalink -}}{{- $pixel = .Params.pixel | default false -}}
+        {{- else -}}{{- warnf "デザインの変遷の作品が見つかりません: %s（%s）" .work $.RelPermalink -}}{{- end -}}
+      {{- else if .image -}}
+        {{- $res = $.Resources.Get .image -}}
+      {{- end }}
+      <li>
+        <figure>
+          {{- with $res }}{{ partial "image/responsive.html" (dict "res" . "alt" $alt "pixel" $pixel "zoom" true "group" "history" "w" 480 "sizes" "(min-width: 768px) 20vw, 50vw") }}{{ end }}
+          <figcaption>
+            {{- $d := time.AsTime $item.date -}}
+            <time datetime="{{ $d.Format "2006-01-02" }}">{{ $d.Format "2006.1.2" }}</time>
+            {{- if $link }}<a href="{{ $link }}">{{ $item.label }}</a>{{ else }}<span>{{ $item.label }}</span>{{ end }}
+          </figcaption>
+        </figure>
+      </li>
+      {{- end }}
+    </ol>
+  </section>
+  {{- end }}
+
+  {{- /* 関連作品：character: <このID> の作品 */ -}}
+  {{- with (where $works "Params.character" $id).ByDate.Reverse }}
+  <section class="character-section character-wide">
+    <h2>関連作品</h2>
+    <ul class="work-grid">
+      {{- range . }}
+      {{ partial "work-card.html" (dict "page" . "current" ($primary.id | default "")) }}
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+</article>
+
+{{ partial "zoom-dialog.html" . }}
+{{ end }}
+
+{{ define "scripts" }}
+{{- with resources.Get "js/zoom.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{ end }}

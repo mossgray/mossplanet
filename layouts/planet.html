@@ -37,6 +37,16 @@
   </div>
   {{- end }}
 
+  {{- /* キャラクター：この惑星に所属するキャラクターページ（第6.7節）。顔のアイコンのカード */ -}}
+  {{- with where (where site.RegularPages "Section" "characters") "Params.planets" "intersect" (slice $id) }}
+  <h2 class="section-title">キャラクター</h2>
+  <ul class="character-cards">
+    {{- range . }}
+    {{ partial "character-card.html" . }}
+    {{- end }}
+  </ul>
+  {{- end }}
+
   {{- /* 代表作：featured_in にこの惑星を書いた作品。3件未満なら新しい作品から補う（第5.4節と同じ選び方） */ -}}
   {{- $featured := where $works "Params.featured_in" "intersect" (slice $id) -}}
   {{- range $works -}}

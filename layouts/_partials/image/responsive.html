@@ -24,10 +24,10 @@
   {{- if gt $r.Width $base }}{{ $one = $r.Resize (printf "%dx webp q82" $base) }}{{ else }}{{ $one = $r.Process "webp q82" }}{{ end -}}
   {{- $src = $one.RelPermalink -}}
   {{- $w = $one.Width -}}{{- $h = $one.Height -}}
-  {{- $srcset = printf "%s %dw" $one.RelPermalink $one.Width -}}
+  {{- /* 表示幅より小さい画像は srcset を付けない（srcset と sizes があると、ブラウザが sizes の幅まで引き伸ばしてぼやけるため） */ -}}
   {{- if gt $r.Width $base -}}
     {{- $two := $r.Resize (printf "%dx webp q78" (math.Min (mul $base 2) $r.Width | int)) -}}
-    {{- $srcset = printf "%s, %s %dw" $srcset $two.RelPermalink $two.Width -}}
+    {{- $srcset = printf "%s %dw, %s %dw" $one.RelPermalink $one.Width $two.RelPermalink $two.Width -}}
   {{- end -}}
   {{- $big := "" -}}
   {{- if gt $r.Width 2400 }}{{ $big = $r.Resize "2400x webp q85" }}{{ else }}{{ $big = $r.Process "webp q85" }}{{ end -}}

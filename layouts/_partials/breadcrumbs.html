@@ -4,6 +4,7 @@
   タイトル帯のないページ（About）は、そのページの色の付いた部分の先頭に置く
   - 作品ページ：トップ › 所属する最初の惑星 › 作品
   - ファンアートのページ：トップ › ファンアート › 作品
+  - キャラクターページ：トップ › 所属する最初の惑星 › キャラクター
   - 惑星の一覧：トップ › 惑星
   - それ以外：トップ › 親ページ › ページ
 */ -}}
@@ -12,6 +13,8 @@
 {{- $items := slice -}}
 {{- $planetId := "" -}}
 {{- if and (eq .Section "works") .IsPage -}}
+  {{- with .Params.planets -}}{{- $planetId = index . 0 -}}{{- end -}}
+{{- else if and (eq .Section "characters") .IsPage -}}
   {{- with .Params.planets -}}{{- $planetId = index . 0 -}}{{- end -}}
 {{- else if and (eq .Section "fanart") .IsPage -}}
   {{- $planetId = "fanart" -}}
