@@ -2596,10 +2596,6 @@ img.is-pixel {
   font-size: 0.8125rem;
 }
 
-.character-history figcaption a {
-  color: var(--link);
-}
-
 /* キャラクターのカード（作品ページの「このキャラクター」） */
 .character-cards {
   display: grid;

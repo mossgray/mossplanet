@@ -100,7 +100,8 @@
           <figcaption>
             {{- $d := time.AsTime $it.date }}
             <time datetime="{{ $d.Format "2006-01-02" }}">{{ $d.Format "2006.1.2" }}</time>
-            {{- if in $looks $it.id }}<a href="#{{ $it.id }}">{{ $it.label }}</a>{{ else }}<span>{{ $it.label }}</span>{{ end }}
+            {{- /* 題名はリンクにしない（すがたに載せた絵も同じ。2026年11月20日、依頼 002） */}}
+            <span>{{ $it.label }}</span>
           </figcaption>
         </figure>
       </li>
