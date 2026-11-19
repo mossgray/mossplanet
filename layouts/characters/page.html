@@ -4,7 +4,8 @@
   見出し（代表ビジュアル・名前・一言紹介）→ プロフィール → すがたのバリエーション → デザインの変遷 → 関連作品
   - 代表ビジュアルとバリエーション：作品ページ（cover_work・variations）のメイン画像を使い、作品ページへリンクする
   - デザインの変遷：history に古い順。作品ページにしない絵（image）は、このページにだけ載せる
-  - 関連作品：front matter に character: <ID> を書いた作品（新しい順）
+  - 関連作品：front matter に character: <ID> を書いた作品のうち、すがたのバリエーションに載せていないもの（新しい順）。
+    該当する作品がなければ節ごと出さない（バリエーションと同じ作品が並ぶのを避ける。2026年11月20日、本人の指示）
 */ -}}
 {{ define "bodyClass" }}page character-page{{ end }}
 
@@ -106,8 +107,13 @@
   </section>
   {{- end }}
 
-  {{- /* 関連作品：character: <このID> の作品 */ -}}
-  {{- with (where $works "Params.character" $id).ByDate.Reverse }}
+  {{- /* 関連作品：character: <このID> の作品のうち、バリエーションに載せていないもの */ -}}
+  {{- $shown := .Params.variations | default slice -}}
+  {{- $related := slice -}}
+  {{- range (where $works "Params.character" $id).ByDate.Reverse -}}
+    {{- if not (in $shown .File.ContentBaseName) }}{{ $related = $related | append . }}{{ end -}}
+  {{- end -}}
+  {{- with $related }}
   <section class="character-section character-wide">
     <h2>関連作品</h2>
     <ul class="work-grid">
