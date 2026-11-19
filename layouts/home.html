@@ -30,22 +30,13 @@
   どれを・どこを切り抜くかは top-bubble.js がランダムに決める。bubble_thumbs: false の惑星（ファンアート）は画像を出さない。
   作品は日本語版にだけあるので、英語版のトップからも日本語版（最初のサイト）の作品を使う
 */ -}}
-{{- $works := where (index hugo.Sites 0).RegularPages "Section" "works" -}}
+{{- /* 作品とキャラクターページ（キャラクターは thumb の画像を使う。第6.7節） */ -}}
+{{- $works := where (index hugo.Sites 0).RegularPages "Section" "in" (slice "works" "characters") -}}
 {{- $data := dict -}}
 {{- range where (partialCached "planets.html" .) "visible" true -}}
   {{- $id := .id -}}
   {{- $imgs := slice -}}
-  {{- /* キャラクターがいる惑星（オリジナル）は、作品の画像の代わりにキャラクターの顔のアイコン（face）を使う（第6.7節） */ -}}
-  {{- $chars := where (where (index hugo.Sites 0).RegularPages "Section" "characters") "Params.planets" "intersect" (slice $id) -}}
-  {{- if and .bubble_thumbs $chars -}}
-    {{- range $chars -}}
-      {{- $c := . -}}
-      {{- with .Params.face }}{{ with $c.Resources.Get . -}}
-        {{- $img := .Process "webp q85" -}}
-        {{- $imgs = $imgs | append (dict "src" $img.RelPermalink "w" $img.Width "h" $img.Height "pixel" false) -}}
-      {{- end }}{{ end -}}
-    {{- end -}}
-  {{- else if and .bubble_thumbs (ne $id "fanart") -}}
+  {{- if and .bubble_thumbs (ne $id "fanart") -}}
     {{- $mine := where $works "Params.planets" "intersect" (slice $id) -}}
     {{- $featured := where $mine "Params.featured_in" "intersect" (slice $id) -}}
     {{- range $mine.ByDate.Reverse -}}
@@ -54,7 +45,7 @@
     {{- range first 3 $featured -}}
       {{- $page := . -}}
       {{- /* 動く画像（GIF）は、吹き出しでは静止画（cover_still）を使う */ -}}
-      {{- with .Resources.Get (.Params.cover_still | default .Params.cover) -}}
+      {{- with .Resources.Get (.Params.cover_still | default .Params.cover | default .Params.thumb) -}}
         {{- $pixel := $page.Params.pixel | default false -}}
         {{- $img := . -}}
         {{- if not $pixel -}}{{- $img = .Resize "480x webp q80" -}}{{- end -}}

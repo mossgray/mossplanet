@@ -11,9 +11,12 @@
 */ -}}
 {{- $min := site.Params.min_works | default 1 -}}
 {{- $counts := dict -}}
-{{- range os.ReadDir "content/works" -}}
+{{- /* 作品（content/works）と、キャラクターページ（content/characters。1キャラクターを1件と数える。第6.7節） */ -}}
+{{- range $dir := slice "content/works" "content/characters" -}}
+{{- if fileExists $dir -}}
+{{- range os.ReadDir $dir -}}
   {{- if .IsDir -}}
-    {{- $file := printf "content/works/%s/index.md" .Name -}}
+    {{- $file := printf "%s/%s/index.md" $dir .Name -}}
     {{- if fileExists $file -}}
       {{- $parts := split (readFile $file) "---" -}}
       {{- if ge (len $parts) 3 -}}
@@ -26,6 +29,8 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{- /*

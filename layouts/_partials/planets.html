@@ -1,7 +1,7 @@
 {{- /*
   惑星の一覧を、表示に必要な情報つきで返す（partialCached で呼ぶ）
   - data/planets.yaml の各惑星に、url・作品数（count）・表示するか（visible）・準備中か（pending）を足す
-  - 作品数：works は planets に惑星IDを含む作品、fanart は /fanart/ 配下のページ
+  - 作品数：works は planets に惑星IDを含む作品とキャラクターページ、fanart は /fanart/ 配下のページ
   - 本番：作品数が min_works 未満の惑星は非表示。確認用URL（本番以外）：すべて表示し、足りない惑星は pending
   - ファンアートエリアを非公開（config.toml の fanart_public = false）にしているときは、fanart を常に非表示
   ※ 一覧ページを作るかどうかは content/_content.gotmpl で同じ規則で決めている
@@ -9,7 +9,8 @@
 {{- $min := site.Params.min_works | default 1 -}}
 {{- /* 作品は日本語版にだけある。英語版のページからも同じ件数を数えるため、日本語版（最初のサイト）から数える */ -}}
 {{- $ja := index hugo.Sites 0 -}}
-{{- $works := where (where $ja.RegularPages "Section" "works") "Params.planets" "!=" nil -}}
+{{- /* 作品と、キャラクターページ（1キャラクターを1件と数える。第6.7節） */ -}}
+{{- $works := where (where $ja.RegularPages "Section" "in" (slice "works" "characters")) "Params.planets" "!=" nil -}}
 {{- $list := slice -}}
 {{- range hugo.Data.planets -}}
   {{- $id := .id -}}

@@ -28,10 +28,17 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- /* キャラクターページ：サムネイル（thumb。480×480の正方形）をそのまま使い、カードは正方形用（summary）にする（第6.7節） */ -}}
+{{- $square := false -}}
+{{- if and .IsPage (eq .Section "characters") -}}
+  {{- with .Resources.Get (.Params.thumb | default "") -}}
+    {{- $ogp = (.Process "jpg q88").Permalink -}}{{- $square = true -}}
+  {{- end -}}
+{{- end -}}
 {{- if not $ogp }}{{ with site.Params.ogp_image }}{{ with resources.Get . }}{{ $ogp = .Permalink }}{{ end }}{{ end }}{{ end -}}
 {{- with $ogp }}
 <meta property="og:image" content="{{ . }}">
-<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:card" content="{{ if $square }}summary{{ else }}summary_large_image{{ end }}">
 {{- else }}
 <meta name="twitter:card" content="summary">
 {{- end }}

@@ -4,7 +4,8 @@
 {{ define "main" }}
 {{- $id := .Params.planet -}}
 {{- $p := index (where (partialCached "planets.html" .) "id" $id) 0 -}}
-{{- $works := (where (where site.RegularPages "Section" "works") "Params.planets" "intersect" (slice $id)).ByDate.Reverse -}}
+{{- /* 作品と、キャラクターページ（カード1枚としてこのページへ。第6.7節） */ -}}
+{{- $works := (where (where site.RegularPages "Section" "in" (slice "works" "characters")) "Params.planets" "intersect" (slice $id)).ByDate.Reverse -}}
 
 {{- /* タイトル帯：惑星の色を薄めた背景、左に回る惑星、右に名前と紹介文 */ -}}
 <header class="title-band planet-band" style="--band: {{ $p.band | safeCSS }};">
@@ -35,16 +36,6 @@
       {{- end }}
     </p>
   </div>
-  {{- end }}
-
-  {{- /* キャラクター：この惑星に所属するキャラクターページ（第6.7節）。顔のアイコンのカード */ -}}
-  {{- with where (where site.RegularPages "Section" "characters") "Params.planets" "intersect" (slice $id) }}
-  <h2 class="section-title">キャラクター</h2>
-  <ul class="character-cards">
-    {{- range . }}
-    {{ partial "character-card.html" . }}
-    {{- end }}
-  </ul>
   {{- end }}
 
   {{- /* 代表作：featured_in にこの惑星を書いた作品。3件未満なら新しい作品から補う（第5.4節と同じ選び方） */ -}}

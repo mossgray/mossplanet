@@ -1,14 +1,18 @@
 ---
+# キャラクターページ（1キャラクター1ページ・設定資料集風）。docs/spec.md 第6.7節。テンプレートは layouts/characters/page.html（共通）
 title: "チィ"
 url: "/original/chii/"
-planets: [original]
-# 一言紹介（見出しに出す）
-lead: "サークル mossplanet の看板娘（2023年から）"
-summary: "モスのオリジナルキャラクター「チィ」の紹介ページ。サークル mossplanet の看板娘で、ウサギのような大きな耳を持つ獣人の少女です。"
-# 代表ビジュアル：この作品のメイン画像を使う
-cover_work: chii-signboard
-# 一覧のカードとトップの吹き出しに使う顔のアイコン
-face: face.webp
+# 一覧での並び順に使う日付（いちばん新しい絵の日付）
+date: 2024-08-20
+# 所属する惑星。どちらの一覧にも、このページへのカードが1枚出る
+planets: [original, illustration]
+# タイトル帯の小見出し「CHARACTER FILE 01」の番号
+file_no: "01"
+summary: "モスのオリジナルキャラクター「チィ」の設定資料。サークル mossplanet の看板娘で、ウサギのような大きな耳を持つ獣人の少女です。"
+# 一覧のカード・トップの吹き出し・OGP 画像（480×480）
+thumb: chii-thumb.webp
+# メインビジュアル（images の id）
+main: ti03
 profile:
   - label: "名前"
     text: "チィ"
@@ -22,25 +26,37 @@ profile:
     text: "植物。いろいろな植物の種を集めている"
   - label: "旅の目的"
     text: "水没してしまった故郷の緑の風景を、いつか再現すること"
-# すがたのバリエーション（作品ID。書いた順に並べる）
-variations: [chii-signboard, chii-thief, chii-archer]
-# デザインの変遷（古い順）。image はこのフォルダの画像、work は作品ページ（その作品のメイン画像を使う）
-history:
-  - date: 2022-10-30
-    label: "初期のデザイン"
+# 02 LOOKS（すがた）に載せる絵（images の id。書いた順）
+looks: [ti03, ti04, ti05]
+# このキャラクターの絵の一覧。デザインの変遷（03 HISTORY）には、すべてを日付の古い順に並べる
+# id はページ内の位置（/original/chii/#ti03 など）。label は絵の名前、scene は使った場面
+images:
+  - id: ti01
     image: ti01.webp
-    alt: "緑の髪に大きなウサギの耳の少女が、白いワンピース姿で、寝袋や袋を下げた大きな背負子を背負っている、初期のデザイン画"
-  - date: 2022-12-10
+    date: 2022-10-30
     label: "初期のデザイン"
+    alt: "緑の髪に大きなウサギの耳の少女が、白いワンピース姿で、寝袋や袋を下げた大きな背負子を背負っている、初期のデザイン画"
+  - id: ti02
     image: ti02.webp
+    date: 2022-12-10
+    label: "初期のデザイン"
     alt: "緑の髪に大きなウサギの耳の少女が、赤い玉の首飾りを着け、芽の出た杖と大きな荷物を背負って笑っている、初期のデザイン画"
-  - date: 2023-08-04
+  - id: ti03
+    image: ti03.webp
+    date: 2023-08-04
     label: "看板娘のすがた"
-    work: chii-signboard
-  - date: 2024-04-14
-    label: "シーフのすがた（TRPG『アリアンロッドRPG』）"
-    work: chii-thief
-  - date: 2024-08-20
-    label: "弓を持つすがた（TRPG『慈悲なきアイオニア』（イチ／フシギ製作所））"
-    work: chii-archer
+    scene: "サークル mossplanet の看板娘として"
+    alt: "ピンクの背景の前で、緑の髪にウサギの耳、褐色の肌の少女が、白いワンピースに茶色の上着を着て木の背負い箱を背負い、片手を差し出して笑っている"
+  - id: ti04
+    image: ti04.webp
+    date: 2024-04-14
+    label: "シーフのすがた"
+    scene: "TRPG『アリアンロッドRPG』のセッションで使用"
+    alt: "茶色の革の服を着たウサギの耳の少女が、短剣を手に、寝袋を付けた大きなリュックを背負って立っている"
+  - id: ti05
+    image: ti05.webp
+    date: 2024-08-20
+    label: "弓を持つすがた"
+    scene: "TRPG『慈悲なきアイオニア』（イチ／フシギ製作所）のセッションで使用"
+    alt: "頭に草の冠を載せたウサギの耳の少女が、弓を背負い、布を巻いた軽装で、腰に手を当てて立っている"
 ---

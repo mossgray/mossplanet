@@ -2409,52 +2409,131 @@ img.is-pixel {
   overflow-wrap: anywhere;
 }
 
-/* ---------- キャラクターページ（第6.7節。/original/<ID>/） ---------- */
-.character-lead {
-  margin: 4px 0 0;
+/* ---------- キャラクターページ（第6.7節。/original/<ID>/。1キャラクター1ページ・設定資料集風） ----------
+   設定資料集らしさは、番号付きの見出しと、プロフィールの表の背景の細い方眼で出す。作品画像のまわりには飾りを置かない */
+.character-file {
+  margin: 0 0 2px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.character {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 16px 56px;
+}
+
+/* メインビジュアルとプロフィール：PCは左右、スマートフォンは縦 */
+.character-intro {
+  display: grid;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .character-intro {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 48px;
+  }
+}
+
+.character-visual {
+  margin: 0;
+  text-align: center;
+}
+
+.character-visual img {
+  display: block;
+  max-width: 100%;
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* 番号付きの見出し（01 PROFILE など） */
+.file-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--text);
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
+}
+
+.file-no {
+  color: var(--link);
+  font-variant-numeric: tabular-nums;
+}
+
+.file-heading small {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* プロフィールの表。背景に細い方眼（8pxの目） */
+.character-profile {
+  margin: 0;
+  border: 1px solid #cfdcd9;
+  background-color: #fff;
+  background-image:
+    linear-gradient(#e8efed 1px, transparent 1px),
+    linear-gradient(90deg, #e8efed 1px, transparent 1px);
+  background-size: 8px 8px;
   font-size: 0.9375rem;
 }
 
-.character-section h2,
-.work-character h2 {
-  margin: 0 0 16px;
-  font-size: 1.125rem;
+.character-profile > div {
+  display: grid;
+  grid-template-columns: 7em 1fr;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #cfdcd9;
 }
 
-.work-character h2 {
-  margin-top: 48px;
+.character-profile > div:last-child {
+  border-bottom: 0;
 }
 
-.character-profile {
-  margin-bottom: 0;
+.character-profile dt {
+  font-weight: 700;
 }
 
-/* バリエーション・変遷・関連作品は、本文より広い幅で並べる */
-.character-wide {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 16px 48px;
+.character-profile dd {
+  margin: 0;
 }
 
-.character-variations,
+.character-body {
+  max-width: 760px;
+  margin: 32px auto 0;
+}
+
+.character-section {
+  margin-top: 56px;
+}
+
+/* 02 LOOKS（すがた）と 03 HISTORY（デザインの変遷） */
+.character-looks,
 .character-history {
   display: grid;
-  gap: 24px 16px;
+  gap: 32px 16px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.character-variations {
-  grid-template-columns: 1fr;
-}
-
 .character-history {
   grid-template-columns: repeat(2, 1fr);
+  gap: 24px 16px;
 }
 
 @media (min-width: 768px) {
-  .character-variations {
+  .character-looks {
     grid-template-columns: repeat(3, 1fr);
     align-items: end;
   }
@@ -2465,49 +2544,63 @@ img.is-pixel {
   }
 }
 
-.character-variations figure,
+/* ページ内リンク（#ti03 など）で飛んだとき、固定のヘッダーに隠れないように */
+.character-looks > li,
+.character-history > li {
+  scroll-margin-top: 80px;
+}
+
+.character-looks figure,
 .character-history figure {
   margin: 0;
   text-align: center;
 }
 
-.character-variations img,
+.character-looks img,
 .character-history img {
   display: block;
   max-width: 100%;
+  width: auto;
   height: auto;
   margin: 0 auto;
 }
 
-.character-variations img {
+.character-looks img {
   max-height: 70vh;
-  width: auto;
 }
 
 .character-history img {
   max-height: 320px;
-  width: auto;
 }
 
-.character-variations figcaption,
+.character-looks figcaption,
 .character-history figcaption {
-  margin-top: 8px;
+  margin-top: 10px;
   font-size: 0.875rem;
   line-height: 1.5;
 }
 
-.character-variations figcaption a,
+.character-looks figcaption > *,
+.character-history figcaption > * {
+  display: block;
+}
+
+.character-looks time,
+.character-history time {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.character-looks figcaption span {
+  font-size: 0.8125rem;
+}
+
 .character-history figcaption a {
   color: var(--link);
 }
 
-.character-history time {
-  display: block;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-
-/* キャラクターのカード（惑星の一覧・作品ページ） */
+/* キャラクターのカード（作品ページの「このキャラクター」） */
 .character-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -2535,10 +2628,9 @@ img.is-pixel {
 
 .character-face {
   flex: none;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  object-fit: cover;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
 }
 
 .character-card-name {
@@ -2548,6 +2640,11 @@ img.is-pixel {
 
 .character-card-text small {
   display: block;
-  font-size: 0.8125rem;
-  line-height: 1.5;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+}
+
+.work-character h2 {
+  margin: 48px 0 16px;
+  font-size: 1.125rem;
 }

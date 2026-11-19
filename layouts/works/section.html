@@ -25,7 +25,8 @@
 
   <h2 class="section-title">すべての作品</h2>
   <ul class="work-grid">
-    {{- range .RegularPages.ByDate.Reverse }}
+    {{- /* 作品と、キャラクターページ（第6.7節） */}}
+    {{- range (where site.RegularPages "Section" "in" (slice "works" "characters")).ByDate.Reverse }}
     {{ partial "work-card.html" (dict "page" .) }}
     {{- end }}
   </ul>

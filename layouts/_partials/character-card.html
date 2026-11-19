@@ -1,16 +1,16 @@
 {{- /*
-  キャラクターのカード（惑星の一覧と作品ページで使う）。docs/spec.md 第6.7節
-  . はキャラクターページ（content/characters/<ID>/）。顔のアイコン（face）・名前・一言紹介
+  キャラクターのカード（作品ページの「このキャラクター」）。docs/spec.md 第6.7節
+  . はキャラクターページ（content/characters/<ID>/）。サムネイル（thumb）・名前・CHARACTER FILE 番号
 */ -}}
 <li class="character-card">
   <a href="{{ .RelPermalink }}">
-    {{- with .Params.face }}{{ with $.Resources.Get . }}
-    {{- $img := . -}}{{- if gt .Width 240 }}{{ $img = .Resize "240x webp q85" }}{{ else }}{{ $img = .Process "webp q85" }}{{ end }}
-    <img class="character-face" src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}" alt="" loading="lazy" decoding="async">
+    {{- with .Params.thumb }}{{ with $.Resources.Get . }}
+    {{- $img := .Fill "160x160 Smart webp q85" }}
+    <img class="character-face" src="{{ $img.RelPermalink }}" width="80" height="80" alt="" loading="lazy" decoding="async">
     {{- end }}{{ end }}
     <span class="character-card-text">
       <span class="character-card-name">{{ .Title }}</span>
-      {{- with .Params.lead }}<small>{{ . }}</small>{{ end }}
+      <small lang="en">CHARACTER FILE {{ .Params.file_no | default "00" }}</small>
     </span>
   </a>
 </li>
