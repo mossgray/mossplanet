@@ -45,7 +45,7 @@
     {{- range first 3 $featured -}}
       {{- $page := . -}}
       {{- /* 動く画像（GIF）は、吹き出しでは静止画（cover_still）を使う */ -}}
-      {{- with .Resources.Get (.Params.cover_still | default .Params.cover | default .Params.thumb) -}}
+      {{- with .Resources.Get (.Params.cover_still | default (partial "work/cover-name.html" .) | default .Params.thumb) -}}
         {{- $pixel := $page.Params.pixel | default false -}}
         {{- $img := . -}}
         {{- if not $pixel -}}{{- $img = .Resize "480x webp q80" -}}{{- end -}}

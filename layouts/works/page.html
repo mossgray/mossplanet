@@ -60,7 +60,14 @@
     {{- with $after }}<div class="prose">{{ . | safeHTML }}</div>{{ end }}
   {{- else }}
   {{- /* 3. 作品情報（値がない項目は出さない） */ -}}
-  {{- if .Params.gallery }}
+  {{- if .Params.sketches }}
+  {{- /* らくがき帳：作品情報 → らくがきの一覧（新しい順。第6.2.2節）→ 本文の文章（あれば） */ -}}
+  <div class="work-body work-body-head">
+    {{ partial "work/info.html" . }}
+  </div>
+  {{ partial "work/sketches.html" . }}
+  <div class="work-body">
+  {{- else if .Params.gallery }}
   {{- /* ギャラリーがあるときは、作品情報 → ギャラリー（本文の画像。横幅を広く取る） → 本文の文章 の順にする */ -}}
   <div class="work-body work-body-head">
     {{ partial "work/info.html" . }}

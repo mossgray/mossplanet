@@ -28,6 +28,7 @@
 ## 作品の追加
 - content/works/<作品ID>/index.md を作り、画像を同じフォルダに置く。ファンアートは content/fanart/<作品ID>/（1枚1ページ）。
 - 作品IDは英小文字とハイフン。Front Matter の項目は docs/spec.md の第7.1節に従う。
+- らくがき帳に落書きを足すときは、画像を content/works/sketchbook/ に置き、index.md の sketches に1項目（id・title・date・image・text・alt）を足して、date をいちばん新しいらくがきの日付にする（docs/spec.md 第6.2.2節）。
 - キャラクターは content/characters/<キャラクターID>/index.md を作り、画像を同じフォルダに置く（1キャラクター1ページ。項目は docs/spec.md の第6.7節に従う）。
 
 ## 仮の文章

@@ -1,0 +1,4 @@
+{{- /* 一覧のサムネイルと OGP 画像を切り抜く位置（Hugo の anchor）。thumb_anchor: top → Top。省略時は Smart */ -}}
+{{- $a := "Smart" -}}
+{{- with .Params.thumb_anchor }}{{ $a = index (dict "top" "Top" "center" "Center" "bottom" "Bottom" "smart" "Smart") (lower .) | default "Smart" }}{{ end -}}
+{{- return $a -}}

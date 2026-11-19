@@ -28,6 +28,11 @@
   {{- with .release }}{{ $rows = $rows | append (dict "dt" "頒布" "dd" (. | htmlEscape)) }}{{ end -}}
 {{- end -}}
 {{- with $p.Params.role }}{{ $rows = $rows | append (dict "dt" "担当範囲" "dd" (. | htmlEscape)) }}{{ end -}}
+{{- /* クレジット（credits）：各項目の role を見出し、name を値にする。url があるときだけリンクにする */ -}}
+{{- range $p.Params.credits -}}
+  {{- $n := .name | htmlEscape }}{{ with .url }}{{ $n = printf "<a href=\"%s\" rel=\"noopener\">%s</a>" . $n }}{{ end -}}
+  {{- $rows = $rows | append (dict "dt" (.role | htmlEscape) "dd" $n) -}}
+{{- end -}}
 {{- with $p.Params.usage }}{{ $rows = $rows | append (dict "dt" "用途・掲載先" "dd" (. | htmlEscape)) }}{{ end -}}
 {{- with $tools }}{{ $t := . }}{{ if reflect.IsSlice . }}{{ $t = delimit . "／" }}{{ end }}{{ $rows = $rows | append (dict "dt" "使用ツール" "dd" ($t | htmlEscape)) }}{{ end -}}
 {{- with $p.Params.duration }}{{ $rows = $rows | append (dict "dt" "作業時間" "dd" (. | htmlEscape)) }}{{ end -}}

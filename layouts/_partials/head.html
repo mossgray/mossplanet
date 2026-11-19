@@ -21,10 +21,10 @@
 */ -}}
 {{- $ogp := "" -}}
 {{- if and .IsPage (eq .Section "works") -}}
-  {{- with .Resources.Get (.Params.cover_still | default .Params.cover) -}}
+  {{- with .Resources.Get (.Params.cover_still | default (partial "work/cover-name.html" .)) -}}
     {{- if in (slice "jpeg" "png" "webp") .MediaType.SubType -}}
       {{- $filter := cond ($.Params.pixel | default false) "NearestNeighbor" "Lanczos" -}}
-      {{- $ogp = (.Fill (printf "1200x630 Smart jpg q85 %s" $filter)).Permalink -}}
+      {{- $ogp = (.Fill (printf "1200x630 %s jpg q85 %s" (partial "work/thumb-anchor.html" $) $filter)).Permalink -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

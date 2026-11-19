@@ -1,0 +1,34 @@
+{{- /*
+  らくがき帳（sketches の項目がある作品）。docs/spec.md 第6.2.2節・第7.1節
+  1つのらくがきごとに、題・日付・短い説明・画像。日付の新しい順に並べる（front matter に書く順番は問わない）
+  クリックで拡大し、拡大表示の中で前後へ移れる（data-zoom-group="sketches"）
+  各らくがきに id（省略時は画像のファイル名）を付け、ページ内の位置へ直接リンクできる
+*/ -}}
+{{- $p := . -}}
+{{- with $p.Params.sketches }}
+<section class="work-sketches" aria-label="らくがき">
+  <ol class="sketch-list">
+    {{- range sort . "date" "desc" }}{{ $it := . }}
+    {{- with $p.Resources.Get $it.image }}
+    {{- $d := time.AsTime $it.date }}
+    <li id="{{ $it.id | default (path.BaseName $it.image) }}">
+      <figure>
+        {{ partial "image/responsive.html" (dict "res" . "alt" ($it.alt | default $it.title) "zoom" true "group" "sketches" "w" 760 "sizes" "(min-width: 792px) 760px, calc(100vw - 32px)") }}
+        <figcaption>
+          <time datetime="{{ $d.Format "2006-01-02" }}">{{ $d.Format "2006.1.2" }}</time>
+          <span class="sketch-title">{{ $it.title }}</span>
+          {{- with $it.text }}<span class="sketch-text">{{ . }}</span>{{ end }}
+        </figcaption>
+      </figure>
+    </li>
+    {{- else }}
+    {{- warnf "らくがきの画像が見つかりません: %s（%s）" $it.image $p.RelPermalink -}}
+    {{- end }}
+    {{- end }}
+  </ol>
+</section>
+{{- /* 一覧の並び順は date で決まるので、いちばん新しいらくがきより古ければ知らせる */ -}}
+{{- with index (sort . "date" "desc") 0 }}
+{{- if lt $p.Date (time.AsTime .date) }}{{ warnf "らくがき帳の date が、いちばん新しいらくがき（%s）より古いです: %s" .date $p.RelPermalink }}{{ end }}
+{{- end }}
+{{- end }}

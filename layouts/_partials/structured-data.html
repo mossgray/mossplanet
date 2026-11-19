@@ -32,7 +32,7 @@
   "author" $person
   "inLanguage" "ja"
 -}}
-{{- with .Resources.Get (.Params.cover_still | default .Params.cover) }}{{ $work = merge $work (dict "image" .Permalink) }}{{ end -}}
+{{- with .Resources.Get (.Params.cover_still | default (partial "work/cover-name.html" .)) }}{{ $work = merge $work (dict "image" .Permalink) }}{{ end -}}
 {{- with .Params.gamebook }}{{ with .genre }}{{ $work = merge $work (dict "genre" .) }}{{ end }}{{ end -}}
 {{- with .Params.fanart }}{{ with .source }}{{ $work = merge $work (dict "isBasedOn" (dict "@type" "CreativeWork" "name" .)) }}{{ end }}{{ end -}}
 <script type="application/ld+json">{{ $work | jsonify | safeJS }}</script>
