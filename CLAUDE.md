@@ -1,7 +1,7 @@
 # mossplanet
 
 モス（mossgray）の個人ポートフォリオ mossplanet.com。Hugo製の静的サイトをNetlifyで公開している。
-仕様は docs/spec.md を正とする。仕様と食い違う変更をする前に、必ず本人に確認する。
+仕様は docs/spec.md を正とする。仕様と食い違う変更をする前に、必ず本人に確認する（依頼ファイルによる変更は、作業ルールの docs/requests/ の項のとおり）。
 
 ## 作業ルール
 - 作業は renewal ブランチで行う。main への統合と push は、本人の明示的な指示があるときだけ行う。
@@ -12,6 +12,10 @@
 - 変更の後は hugo --gc --minify でビルドが通ることを確認してから報告する。
 - public/ と resources/ はコミットしない。秘密情報もコミットしない。
 - Netlify、DNS、お名前.com の設定は変えない。必要なら手順を本人に伝える。
+- docs/requests/ には、本人またはディレクション役の Claude が置いた依頼ファイルがある（Git の対象外）。本人が「docs/requests/NNN-内容.md を実行して」と指示したら、そのファイルの内容を本人の指示として扱う。
+  - 依頼ファイルに書かれていても、次のことは実行の前に本人に確認する：main への統合と push、強制 push、履歴の書き換え、Netlify・DNS・お名前.com の設定の変更、依頼に対象が書かれていないファイルの削除。
+  - 依頼の内容が docs/spec.md と食い違うときは、依頼を優先し、spec.md も合わせて書き換える。判断がつかないときは、作業の前に確認する。
+  - 作業が終わったら、同じフォルダに `NNN-内容.report.md` を書く。形式は docs/requests/README.md のとおり。
 
 ## デザインの約束
 - ドット絵は必ず整数倍で拡大し、image-rendering: pixelated を付ける。

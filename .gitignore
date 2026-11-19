@@ -8,3 +8,6 @@ node_modules/
 
 # 作品の受け渡し用フォルダ（元画像・動画・管理用のメモを含むので公開しない）
 /mossplanet-incoming/
+
+# 依頼ファイル（ディレクション役との受け渡し用。公開しない）
+/docs/requests/
