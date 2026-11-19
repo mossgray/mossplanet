@@ -38,11 +38,11 @@
   </div>
   {{- end }}
 
-  {{- /* 代表作：featured_in にこの惑星を書いた作品。3件未満なら新しい作品から補う（第5.4節と同じ選び方） */ -}}
+  {{- /* 代表作：featured_in にこの惑星を書いた作品（新しい順）。3件未満なら新しい作品から補う。featured_exclude: true の作品は補う対象にしない（第5.4節と同じ選び方） */ -}}
   {{- $featured := where $works "Params.featured_in" "intersect" (slice $id) -}}
   {{- range $works -}}
     {{- if lt (len $featured) 3 -}}
-      {{- if not (in $featured .) -}}{{- $featured = $featured | append . -}}{{- end -}}
+      {{- if and (not (in $featured .)) (not .Params.featured_exclude) -}}{{- $featured = $featured | append . -}}{{- end -}}
     {{- end -}}
   {{- end -}}
   {{- $featured = first 3 $featured -}}

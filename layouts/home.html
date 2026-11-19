@@ -26,7 +26,7 @@
 
 {{- /*
   吹き出しのバナー用の画像（第5.4節。assets/js/top-bubble.js）
-  惑星ごとに代表作（featured_in → 足りなければ新しい順、最大3件）のメイン画像を横480pxに縮めたWebP。
+  惑星ごとに代表作（featured_in → 足りなければ新しい順で補う（featured_exclude の作品は除く）、最大3件）のメイン画像を横480pxに縮めたWebP。
   どれを・どこを切り抜くかは top-bubble.js がランダムに決める。bubble_thumbs: false の惑星（ファンアート）は画像を出さない。
   作品は日本語版にだけあるので、英語版のトップからも日本語版（最初のサイト）の作品を使う
 */ -}}
@@ -37,10 +37,11 @@
   {{- $id := .id -}}
   {{- $imgs := slice -}}
   {{- if and .bubble_thumbs (ne $id "fanart") -}}
-    {{- $mine := where $works "Params.planets" "intersect" (slice $id) -}}
+    {{- $mine := (where $works "Params.planets" "intersect" (slice $id)).ByDate.Reverse -}}
+    {{- /* featured_in の作品（新しい順）→ 足りなければ新しい順で補う。featured_exclude: true の作品は補う対象にしない */ -}}
     {{- $featured := where $mine "Params.featured_in" "intersect" (slice $id) -}}
-    {{- range $mine.ByDate.Reverse -}}
-      {{- if and (lt (len $featured) 3) (not (in $featured .)) -}}{{- $featured = $featured | append . -}}{{- end -}}
+    {{- range $mine -}}
+      {{- if and (lt (len $featured) 3) (not (in $featured .)) (not .Params.featured_exclude) -}}{{- $featured = $featured | append . -}}{{- end -}}
     {{- end -}}
     {{- range first 3 $featured -}}
       {{- $page := . -}}

@@ -2,6 +2,7 @@
 title: "TRPGセッション用イラスト制作"
 date: 2024-05-26
 planets: [illustration]
+featured_in: [illustration]
 cover: void-character.webp
 cover_alt: "長い緑の髪に蛇が混じり、黒い目隠しをした、白いシャツと黒いネクタイ姿の探索者の全身イラスト"
 thumb: void-thumb.webp

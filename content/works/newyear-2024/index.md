@@ -2,6 +2,7 @@
 title: "2024年 年賀イラスト"
 date: 2024-01-01
 planets: [illustration]
+featured_in: [illustration]
 cover: newyear-2024.webp
 cover_alt: "青緑の背景に、透明なレインコートのフードをかぶった紺色の髪の子が、両手でピースをしている。横に「2024 おもしろいコト、さがすぞ。」の文字"
 summary: "2023年と同じ子の、レインコートのフードをかぶった姿。「おもしろいコト、さがすぞ。」の一言を添えて。"

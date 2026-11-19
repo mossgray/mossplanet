@@ -1309,12 +1309,21 @@ img.is-pixel {
   font-size: 0.875rem;
 }
 
+/* 見出しの列は、いちばん長い見出し「キャラクターデザイン」（全角10文字）が1行に入る 10.5em（全作品共通。第7.1節）。
+   スマートフォン（幅480px未満）では値の列が狭くなりすぎるので、見出しを値の上に置く */
 .work-info > div {
   display: grid;
-  grid-template-columns: 7em 1fr;
+  grid-template-columns: 10.5em 1fr;
   gap: 12px;
   padding: 10px 0;
   border-bottom: 1px solid #dfe9e7;
+}
+
+@media (max-width: 479px) {
+  .work-info > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
 }
 
 .work-info dt {
