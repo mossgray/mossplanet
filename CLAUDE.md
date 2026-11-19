@@ -28,6 +28,7 @@
 ## 作品の追加
 - content/works/<作品ID>/index.md を作り、画像を同じフォルダに置く。ファンアートは content/fanart/<作品ID>/（1枚1ページ）。
 - 作品IDは英小文字とハイフン。Front Matter の項目は docs/spec.md の第7.1節に従う。
+- キャラクターは content/characters/<キャラクターID>/index.md を作り、画像を同じフォルダに置く（1キャラクター1ページ。項目は docs/spec.md の第6.7節に従う）。
 
 ## 仮の文章
 - 本人があとで書く文章は、Markdown では `{{< todo >}}…{{< /todo >}}` で囲む。テンプレートやデータの文章は `_partials/todo-text.html` を使う。
