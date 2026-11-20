@@ -8,6 +8,9 @@
       poster: timelapse-poster.webp  ← 再生前に表示する静止画
       label: タイムラプス
   動画は再生ボタンを押すまで読み込まない（preload="none"）。自動再生はしない
+  動画の枠は、ポスターの縦横比（--ar。幅÷高さ）で決め、再生の前後で大きさを変えない（第7.1節）。
+  再生を押した直後、ポスターが外れて動画の情報を読み込むまでの間に枠が既定の大きさ（300×150）へ縮むと、
+  下の前後の作品へのリンクが指の位置まで上がり、同じタップで押されてしまうため（2026年11月21日）
 */ -}}
 {{- $p := . -}}
 {{- with $p.Params.process }}
@@ -20,7 +23,8 @@
     {{- $poster := "" -}}{{- with $step.poster }}{{ with $p.Resources.Get . }}{{ $poster = . }}{{ end }}{{ end }}
     <li class="process-video">
       <figure>
-        <video controls muted playsinline preload="none"{{ with $poster }} poster="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}"{{ end }} aria-label="{{ $p.Title }}：{{ $step.label | default "制作の動画" }}">
+        {{- $ar := "" }}{{ with $poster }}{{ $ar = printf "%.4f" (div (float .Width) .Height) }}{{ else }}{{ warnf "工程の動画に poster がありません。枠の縦横比を決められないので、16:9 にします: %s（%s）" $step.video $p.RelPermalink }}{{ $ar = "1.7778" }}{{ end }}
+        <video controls muted playsinline preload="none" style="--ar: {{ $ar }};"{{ with $poster }} poster="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}"{{ end }} aria-label="{{ $p.Title }}：{{ $step.label | default "制作の動画" }}">
           <source src="{{ .RelPermalink }}" type="{{ .MediaType.Type }}">
           <a href="{{ .RelPermalink }}">{{ $step.label | default "制作の動画" }}を開く</a>
         </video>

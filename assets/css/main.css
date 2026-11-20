@@ -1559,14 +1559,25 @@ img.is-pixel {
   grid-column: 1 / -1;
 }
 
+/* 動画の枠は縦横比（--ar。幅÷高さ。process.html がポスターから渡す）で決め、再生の前後で大きさを変えない（第7.1節）。
+   幅は「横幅いっぱい」と「高さの上限 × 縦横比」の小さいほう。高さの上限は PC は 80vh、スマートフォン・タブレットは
+   変わらない画面の高さ（--stable-vh。第5.6節）の80。動画は object-fit: contain で枠の中に収める */
 .process-list video {
   display: block;
-  width: auto;
+  width: min(100%, calc(80vh * var(--ar, 1.7778)));
   max-width: 100%;
   height: auto;
-  max-height: 80vh;
+  aspect-ratio: var(--ar, 1.7778);
+  object-fit: contain;
   margin: 0 auto;
   background: #f1f5f4;
+}
+
+@media (max-width: 767px) {
+  .process-list video {
+    width: min(100%, calc(80svh * var(--ar, 1.7778)));
+    width: min(100%, calc(var(--stable-vh) * 80 * var(--ar, 1.7778)));
+  }
 }
 
 /* ファンアートの一覧ページの注意書き */
