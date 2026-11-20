@@ -2716,7 +2716,7 @@ img.is-pixel {
    JavaScript が動かないとき：全部の差分を題付きで並べる。動くとき（.is-js）：表示中の1枚だけを見せ、下にボタンの列 */
 .variants {
   max-width: 1100px;
-  margin: 0 auto 32px;
+  margin: 32px auto;
   padding: 0 16px;
 }
 
@@ -2751,6 +2751,12 @@ img.is-pixel {
   content: "／";
 }
 
+/* JavaScript が動くとき：スマートフォンはボタン → 絵の縦並び、PC（幅768px以上）は絵を左・ボタンを右（第6.2.3節） */
+.variants.is-js {
+  display: grid;
+  gap: 24px;
+}
+
 .variants.is-js .variant-list {
   display: block;
 }
@@ -2766,6 +2772,37 @@ img.is-pixel {
 
 .variants.is-js .variant img {
   max-height: 85vh;
+}
+
+@media (min-width: 768px) {
+  .variants.is-js {
+    grid-template-columns: auto minmax(200px, 300px);
+    justify-content: center;
+    align-items: start;
+    gap: 40px;
+  }
+
+  .variants.is-js .variant-list {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .variants.is-js .variant-controls {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    gap: 20px;
+  }
+
+  /* 全身とボタンが一度に見えるよう、絵は画面の高さからヘッダー（60px）と上下の余白を引いた高さに収める */
+  .variants.is-js .variant img {
+    max-height: calc(100vh - 92px);
+  }
+
+  /* 見出しごとに縦に並べる（見出しの下にボタン） */
+  .variants.is-js .variant-axis {
+    grid-template-columns: 1fr;
+  }
 }
 
 .variants.is-js .variant-caption {
@@ -2791,8 +2828,9 @@ img.is-pixel {
 .variant-controls {
   display: grid;
   gap: 10px;
+  width: 100%;
   max-width: 720px;
-  margin: 20px auto 0;
+  margin: 0 auto;
 }
 
 .variant-controls[hidden] {

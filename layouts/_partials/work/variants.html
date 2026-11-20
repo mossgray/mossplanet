@@ -12,7 +12,7 @@
         alt: "…"                   ← 差分ごとに見た目を書く
   - 最初に表示するのは cover と同じ画像の差分（なければ最初の差分）
   - JavaScript が動かないときは、全部の差分を題（各軸の選択肢）付きで並べる
-  - JavaScript が動くと、大きな絵1枚の下にボタンの列を出し、押すと同じ位置で絵を入れ替える（aria-pressed）
+  - JavaScript が動くと、大きな絵1枚とボタンの列（PC は絵の右、スマートフォンは絵の上）を出し、押すと同じ位置で絵を入れ替える（aria-pressed）
   - 表示中以外の絵は遅延読み込み。ボタンのまわりにマウスやフォーカスが来たら、残りを先に読み込む
   - 絵をクリックすると、表示中の差分を拡大する（zoom.js）
 */ -}}
@@ -23,6 +23,20 @@
 {{- $default := 0 -}}
 {{- range $i, $it := $v.items }}{{ if eq $it.image $p.Params.cover }}{{ $default = $i }}{{ end }}{{ end -}}
 <section class="variants" data-variants aria-label="差分の切り替え">
+  {{- /* ボタンの列。JavaScript が動くときだけ見せる（hidden を外す）。PC は絵の右、スマートフォンは絵の上（第6.2.3節）。読み上げ・Tab の順も、ボタン → 絵 */}}
+  {{- $cur := index $v.items $default }}
+  <div class="variant-controls" hidden>
+    {{- range $j, $ax := $axes }}
+    <div class="variant-axis" role="group" aria-label="{{ $ax.label }}">
+      <span class="variant-axis-label" aria-hidden="true">{{ $ax.label }}</span>
+      <span class="variant-buttons">
+        {{- range $ax.options }}
+        <button type="button" class="variant-button" data-axis="{{ $j }}" data-value="{{ . }}" aria-pressed="{{ if eq . (index $cur.values $j) }}true{{ else }}false{{ end }}">{{ . }}</button>
+        {{- end }}
+      </span>
+    </div>
+    {{- end }}
+  </div>
   <ul class="variant-list">
     {{- range $i, $it := $v.items }}
     {{- with $p.Resources.Get $it.image }}
@@ -39,19 +53,5 @@
     {{- end }}
     {{- end }}
   </ul>
-  {{- /* ボタンの列。JavaScript が動くときだけ見せる（hidden を外す） */}}
-  {{- $cur := index $v.items $default }}
-  <div class="variant-controls" hidden>
-    {{- range $j, $ax := $axes }}
-    <div class="variant-axis" role="group" aria-label="{{ $ax.label }}">
-      <span class="variant-axis-label" aria-hidden="true">{{ $ax.label }}</span>
-      <span class="variant-buttons">
-        {{- range $ax.options }}
-        <button type="button" class="variant-button" data-axis="{{ $j }}" data-value="{{ . }}" aria-pressed="{{ if eq . (index $cur.values $j) }}true{{ else }}false{{ end }}">{{ . }}</button>
-        {{- end }}
-      </span>
-    </div>
-    {{- end }}
-  </div>
 </section>
 {{- end }}
