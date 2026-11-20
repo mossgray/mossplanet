@@ -2774,6 +2774,22 @@ img.is-pixel {
   max-height: 85vh;
 }
 
+/* スマートフォン：頭からつま先までが画面に収まる高さ。アドレスバーの出入りで大きさが変わらないよう svh（アドレスバーが出ている状態の画面の高さ）で決める。
+   svh に対応していないブラウザ向けに vh を先に書く。固定のヘッダーとタブバーの高さ、上下の余白（16px）を引く（第6.2.3節） */
+@media (max-width: 599px) {
+  .variants.is-js .variant img {
+    max-height: calc(100vh - 52px - 64px - 16px);
+    max-height: calc(100svh - 52px - 64px - env(safe-area-inset-bottom) - 16px);
+  }
+}
+
+@media (min-width: 600px) and (max-width: 767px) {
+  .variants.is-js .variant img {
+    max-height: calc(100vh - 60px - 16px);
+    max-height: calc(100svh - 60px - 16px);
+  }
+}
+
 @media (min-width: 768px) {
   .variants.is-js {
     grid-template-columns: auto minmax(200px, 300px);
