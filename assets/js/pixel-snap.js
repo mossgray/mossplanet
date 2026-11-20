@@ -5,6 +5,8 @@
  * - 中央寄せや行の高さ（例：16px × 1.8 = 28.8px）でできる端数を打ち消すため
  * - data-pixel-fit を付けたドット絵の作品画像を、枠の幅と画面の高さ（85%）に収まる整数倍の大きさにする
  *   （CSS の max-width: 100% だけだと、狭い画面で 2.3倍 のような半端な倍率に縮んでしまうため）
+ *   画面の高さは「変わらない画面の高さ」（stable-vh.js の window.mossStableHeight。第5.6節）を使い、
+ *   倍率は画面（枠）の幅が変わったときだけ変わる（アドレスバーの出入りで高さだけが変わっても、絵の大きさを変えない）
  * docs/spec.md 第5.3節（ドット絵は必ず整数倍）
  */
 (function () {
@@ -14,7 +16,9 @@
 
   function fit() {
     var imgs = document.querySelectorAll("img[data-pixel-fit]");
-    var maxH = window.innerHeight * 0.85;
+    // 高さは「変わらない画面の高さ」。幅が変わったときだけ変わるので、高さだけの変化では倍率は変わらない
+    // （枠の幅が変わったとき＝読み込み直後のレイアウトの確定や、画面の幅の変化のときだけ、倍率が変わる）
+    var maxH = (window.mossStableHeight || window.innerHeight) * 0.85;
     for (var i = 0; i < imgs.length; i++) {
       var img = imgs[i];
       var w = parseInt(img.dataset.w, 10);

@@ -1,5 +1,8 @@
 /* mossplanet リニューアル 基本スタイル（docs/spec.md 第7.3節） */
 :root {
+  /* 変わらない画面の高さ（1% あたり）。assets/js/stable-vh.js が、開いたときの高さで上書きする（第5.6節）。
+     スクリプトが動かないときは、この初期値（svh に対応していれば 1svh、なければ 1vh）を使う */
+  --stable-vh: 1vh;
   --text: #0b1b1a;
   --brand: #54bdb2;
   --brand-light: #e6f5f2;
@@ -502,6 +505,7 @@ h3 {
     bottom: 0;
     left: 0;
     max-height: 80vh;
+    max-height: 80dvh; /* 見えている範囲に合わせる（第5.6節） */
     overflow-y: auto;
     padding: 8px 12px calc(16px + env(safe-area-inset-bottom));
     border-radius: 16px 16px 0 0;
@@ -1626,6 +1630,7 @@ img.is-pixel {
   width: 100vw;
   max-width: none;
   height: 100vh;
+  height: 100dvh; /* 見えている範囲いっぱいに出す（アドレスバーが出ているときも下が隠れない。第5.6節） */
   max-height: none;
   margin: 0;
   padding: 48px 16px 16px;
@@ -2780,6 +2785,7 @@ img.is-pixel {
   .variants.is-js .variant img {
     max-height: calc(100vh - 52px - 64px - 16px);
     max-height: calc(100svh - 52px - 64px - env(safe-area-inset-bottom) - 16px);
+    max-height: calc(var(--stable-vh) * 100 - 52px - 64px - env(safe-area-inset-bottom) - 16px);
   }
 }
 
@@ -2787,6 +2793,7 @@ img.is-pixel {
   .variants.is-js .variant img {
     max-height: calc(100vh - 60px - 16px);
     max-height: calc(100svh - 60px - 16px);
+    max-height: calc(var(--stable-vh) * 100 - 60px - 16px);
   }
 }
 
@@ -2944,4 +2951,37 @@ img.is-pixel {
 
 .sublist-links a:hover .sublist-name {
   text-decoration: underline;
+}
+
+/* ---------- 変わらない画面の高さ（第5.6節） ----------
+   svh に対応していれば、スクリプトが動かないときの初期値を 1svh にする（JavaScript が動けば stable-vh.js の値で上書き） */
+@supports (height: 1svh) {
+  :root {
+    --stable-vh: 1svh;
+  }
+}
+
+/* スマートフォン・タブレット（幅767px以下）の作品画像の高さ。アドレスバーの出入りでスクロール中に大きさが変わらないよう、
+   変わらない画面の高さ（--stable-vh）で決める。vh → svh → --stable-vh の順に書き、対応していないブラウザは前の指定を使う。
+   PC（幅768px以上）は今までどおり vh */
+@media (max-width: 767px) {
+  .work-main img:not(.is-pixel),
+  .character-visual img {
+    max-height: 85vh;
+    max-height: 85svh;
+    max-height: calc(var(--stable-vh) * 85);
+  }
+
+  .is-gamebook .work-main img:not(.is-pixel),
+  .character-looks img {
+    max-height: 70vh;
+    max-height: 70svh;
+    max-height: calc(var(--stable-vh) * 70);
+  }
+
+  .sketch-list img {
+    max-height: 80vh;
+    max-height: 80svh;
+    max-height: calc(var(--stable-vh) * 80);
+  }
 }

@@ -69,6 +69,10 @@
 {{- with resources.Get "js/motion.js" | minify }}
 <script>{{ .Content | safeJS }}</script>
 {{- end }}
+{{- /* 変わらない画面の高さ（--stable-vh。第5.6節）。描画の前に値を入れるため、ここに直接書く */}}
+{{- with resources.Get "js/stable-vh.js" | minify }}
+<script>{{ .Content | safeJS }}</script>
+{{- end }}
 {{- if and .IsHome (eq site.Language.Lang "ja") }}
 <link rel="preload" href="/fonts/mossplanet-title-pixel.woff" as="font" type="font/woff" crossorigin>
 {{- end }}
