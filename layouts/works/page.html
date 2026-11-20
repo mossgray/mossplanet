@@ -33,11 +33,16 @@
 <article class="work{{ if .Params.gamebook }} is-gamebook{{ end }}">
   {{- /* 2. メイン画像：白背景の中央、最大幅1100px。クリックで画面いっぱいに拡大。周りに装飾を置かない */ -}}
   {{- $still := "" -}}{{- with .Params.cover_still }}{{ $still = $.Resources.Get . }}{{ end }}
+  {{- if .Params.variants }}
+  {{- /* 差分のある作品：メイン画像の代わりに、差分の切り替え（第6.2.3節） */ -}}
+  {{ partial "work/variants.html" . }}
+  {{- else }}
   {{- with .Params.cover }}{{ with $.Resources.Get . }}
   <figure class="work-main">
     {{ partial "image/responsive.html" (dict "res" . "alt" $.Params.cover_alt "pixel" ($.Params.pixel | default false) "zoom" true "eager" true "still" $still) }}
   </figure>
   {{- end }}{{ end }}
+  {{- end }}
 
   {{- $parts := split .Content "<!-- after -->" -}}
   {{- $intro := index $parts 0 -}}
@@ -93,6 +98,25 @@
     {{- /* 4.8 関連作品（related） */ -}}
     {{ partial "work/related.html" . }}
 
+    {{- /* 4.85 同じ卓のキャラクター（session が同じ作品。data/sessions.yaml。第7.1節） */ -}}
+    {{- with .Params.session }}
+    {{- $sid := . -}}
+    {{- $mates := slice -}}
+    {{- range (where (where site.RegularPages "Section" "works") "Params.session" $sid).ByDate.Reverse -}}
+      {{- if ne .RelPermalink $.RelPermalink }}{{ $mates = $mates | append . }}{{ end -}}
+    {{- end }}
+    {{- with $mates }}
+    <section class="work-session">
+      <h2>同じ卓のキャラクター{{ with index hugo.Data.sessions $sid }}<small>{{ .name }}</small>{{ else }}{{ warnf "卓が data/sessions.yaml にありません: %s（%s）" $sid $.RelPermalink }}{{ end }}</h2>
+      <ul class="work-grid">
+        {{- range . }}
+        {{ partial "work-card.html" (dict "page" .) }}
+        {{- end }}
+      </ul>
+    </section>
+    {{- end }}
+    {{- end }}
+
     {{- /* 4.9 キャラクター（character: <ID> の作品は、キャラクターページへのカードを出す。第6.7節） */ -}}
     {{- with .Params.character }}{{ with site.GetPage (printf "/characters/%s" .) }}
     <section class="work-character">
@@ -144,6 +168,11 @@
 {{ define "scripts" }}
 {{- with resources.Get "js/zoom.js" | minify | fingerprint }}
 <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- if .Params.variants }}
+{{- with resources.Get "js/variants.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
 {{- end }}
 {{- if .Params.cards }}
 {{- with resources.Get "js/cards.js" | minify | fingerprint }}

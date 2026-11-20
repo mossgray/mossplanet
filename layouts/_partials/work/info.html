@@ -18,7 +18,10 @@
   "site" "Webサイト"
 -}}
 {{- $rows := slice -}}
-{{- with $p.Params.client }}{{ $c := .name | htmlEscape }}{{ with .url }}{{ $c = printf "<a href=\"%s\" rel=\"noopener\">%s</a>" . $c }}{{ end }}{{ $rows = $rows | append (dict "dt" "依頼主" "dd" $c) }}{{ end -}}
+{{- with $p.Params.client }}{{ $c := .name | htmlEscape }}{{ with .url }}{{ $c = printf "<a href=\"%s\" rel=\"noopener\">%s</a>" . $c }}{{ end }}{{ $rows = $rows | append (dict "dt" "依頼者" "dd" $c) }}{{ end -}}
+{{- /* TRPG の作品：システムとシナリオ（第7.1節） */ -}}
+{{- with $p.Params.system }}{{ $rows = $rows | append (dict "dt" "システム" "dd" (. | htmlEscape)) }}{{ end -}}
+{{- with $p.Params.scenario }}{{ $rows = $rows | append (dict "dt" "シナリオ" "dd" (. | htmlEscape)) }}{{ end -}}
 {{- /* ゲームブック（gamebook）：ジャンル・所要時間・仕様・必要なもの・頒布を先に出す */ -}}
 {{- with $p.Params.gamebook -}}
   {{- with .genre }}{{ $rows = $rows | append (dict "dt" "ジャンル" "dd" (. | htmlEscape)) }}{{ end -}}

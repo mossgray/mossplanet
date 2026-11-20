@@ -18,6 +18,9 @@
   {{- with .Params.planets -}}{{- $planetId = index . 0 -}}{{- end -}}
 {{- else if and (eq .Section "fanart") .IsPage -}}
   {{- $planetId = "fanart" -}}
+{{- else if .Params.parent_planet -}}
+  {{- /* 惑星の下に置く一覧（TRPG立ち絵など。第6.8節）：トップ › 惑星 › 一覧 */ -}}
+  {{- $planetId = .Params.parent_planet -}}
 {{- end -}}
 {{- if $planetId -}}
   {{- range where $planets "id" $planetId -}}

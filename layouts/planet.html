@@ -38,6 +38,15 @@
   </div>
   {{- end }}
 
+  {{- /* この惑星の下に置く一覧（TRPG立ち絵など。parent_planet にこの惑星を書いたページ）への入口（第6.8節） */ -}}
+  {{- with where site.RegularPages "Params.parent_planet" $id }}
+  <ul class="sublist-links">
+    {{- range . }}
+    <li><a href="{{ .RelPermalink }}"><span class="sublist-name">{{ .Title }}</span><span class="sublist-arrow" aria-hidden="true">→</span></a></li>
+    {{- end }}
+  </ul>
+  {{- end }}
+
   {{- /* 代表作：featured_in にこの惑星を書いた作品（新しい順）。3件未満なら新しい作品から補う。featured_exclude: true の作品は補う対象にしない（第5.4節と同じ選び方） */ -}}
   {{- $featured := where $works "Params.featured_in" "intersect" (slice $id) -}}
   {{- range $works -}}

@@ -2711,3 +2711,183 @@ img.is-pixel {
 .sketch-title {
   font-weight: 700;
 }
+
+/* ---------- 差分の切り替え（第6.2.3節。variants の項目がある作品。assets/js/variants.js） ----------
+   JavaScript が動かないとき：全部の差分を題付きで並べる。動くとき（.is-js）：表示中の1枚だけを見せ、下にボタンの列 */
+.variants {
+  max-width: 1100px;
+  margin: 0 auto 32px;
+  padding: 0 16px;
+}
+
+.variant-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.variant figure {
+  margin: 0;
+  text-align: center;
+}
+
+.variant img {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+}
+
+.variant-caption {
+  margin-top: 8px;
+  font-size: 0.8125rem;
+}
+
+.variant-caption span + span::before {
+  content: "／";
+}
+
+.variants.is-js .variant-list {
+  display: block;
+}
+
+.variants.is-js .variant {
+  display: none;
+}
+
+.variants.is-js .variant.is-current {
+  display: block;
+  animation: variant-in 0.2s ease-out;
+}
+
+.variants.is-js .variant img {
+  max-height: 85vh;
+}
+
+.variants.is-js .variant-caption {
+  display: none;
+}
+
+@keyframes variant-in {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+/* 「視差効果を減らす」設定・「動きを止める」ボタンのときは、切り替えのフェードを付けない */
+@media (prefers-reduced-motion: reduce) {
+  .variants.is-js .variant.is-current {
+    animation: none;
+  }
+}
+
+.motion-off .variants.is-js .variant.is-current {
+  animation: none;
+}
+
+.variant-controls {
+  display: grid;
+  gap: 10px;
+  max-width: 720px;
+  margin: 20px auto 0;
+}
+
+.variant-controls[hidden] {
+  display: none;
+}
+
+.variant-axis {
+  display: grid;
+  grid-template-columns: 6em 1fr;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.variant-axis-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.variant-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.variant-button {
+  min-height: 40px;
+  padding: 6px 14px;
+  border: 1px solid #b9cbc7;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.variant-button:hover {
+  border-color: var(--text);
+}
+
+/* 押されているボタン：濃い枠と薄い色の背景、太字（白文字は使わない） */
+.variant-button[aria-pressed="true"] {
+  border: 2px solid var(--text);
+  padding: 5px 13px;
+  background: #d9f0ec;
+  font-weight: 700;
+}
+
+.variant-button:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: 2px;
+}
+
+@media (max-width: 479px) {
+  .variant-axis {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 同じ卓のキャラクター（session） */
+.work-session h2 {
+  margin: 40px 0 16px;
+  font-size: 1.125rem;
+}
+
+.work-session h2 small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+/* ---------- 惑星の下に置く一覧への入口（第6.8節。TRPG立ち絵など） ---------- */
+.sublist-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.sublist-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border: 1px solid #dfe9e7;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.sublist-links a:hover .sublist-name {
+  text-decoration: underline;
+}
