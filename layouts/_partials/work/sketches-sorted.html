@@ -1,0 +1,20 @@
+{{- /*
+  らくがき帳の sketches を、表示の順に並べて返す。. は sketches（front matter の配列）。docs/spec.md 第6.2.2節
+  日付の新しい順。同じ日付の中は order の小さい順（order を書かないものは 0。order が同じなら front matter に書いた順）
+  らくがきの一覧・代表画像（いちばん新しいらくがきのうち先頭）の両方で使い、並びを揃える
+*/ -}}
+{{- $items := . -}}
+{{- $days := slice -}}
+{{- range $items }}{{ $days = $days | append ((time.AsTime .date).Format "2006-01-02") }}{{ end -}}
+{{- $out := slice -}}
+{{- range sort (uniq $days) "value" "desc" }}{{ $day := . }}
+  {{- $same := slice -}}
+  {{- range $i, $it := $items }}
+    {{- if eq ((time.AsTime $it.date).Format "2006-01-02") $day }}
+      {{- /* 並べ替えの鍵：order を主に、書いた順（$i）を従にする */ -}}
+      {{- $same = $same | append (dict "it" $it "key" (add (mul (int ($it.order | default 0)) 10000) $i)) -}}
+    {{- end }}
+  {{- end }}
+  {{- range sort $same "key" }}{{ $out = $out | append .it }}{{ end -}}
+{{- end -}}
+{{- return $out -}}

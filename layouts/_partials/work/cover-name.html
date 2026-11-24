@@ -1,9 +1,9 @@
 {{- /*
   作品の代表画像のファイル名を返す（サムネイル・OGP 画像・構造化データ・トップの吹き出しで使う）。. は作品ページ
-  cover があればそれ。なければ、らくがき帳（sketches）のいちばん新しいらくがきの画像（第6.2.2節）
+  cover があればそれ。なければ、らくがき帳（sketches）のいちばん新しいらくがきの画像（同じ日付が複数あるときは、表示の順で先頭のもの。第6.2.2節）
 */ -}}
 {{- $name := .Params.cover | default "" -}}
 {{- if and (not $name) .Params.sketches -}}
-  {{- with index (sort .Params.sketches "date" "desc") 0 }}{{ $name = .image }}{{ end -}}
+  {{- with index (partial "work/sketches-sorted.html" .Params.sketches) 0 }}{{ $name = .image }}{{ end -}}
 {{- end -}}
 {{- return $name -}}

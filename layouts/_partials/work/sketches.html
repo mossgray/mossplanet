@@ -1,6 +1,6 @@
 {{- /*
   らくがき帳（sketches の項目がある作品）。docs/spec.md 第6.2.2節・第7.1節
-  1つのらくがきごとに、題・日付・短い説明・画像。日付の新しい順に並べる（front matter に書く順番は問わない）
+  1つのらくがきごとに、題・日付・短い説明・画像。日付の新しい順に並べる。同じ日付の中は order の小さい順（並べ方は work/sketches-sorted.html）
   クリックで拡大し、拡大表示の中で前後へ移れる（data-zoom-group="sketches"）
   各らくがきに id（省略時は画像のファイル名）を付け、ページ内の位置へ直接リンクできる
 */ -}}
@@ -8,7 +8,7 @@
 {{- with $p.Params.sketches }}
 <section class="work-sketches" aria-label="らくがき">
   <ol class="sketch-list">
-    {{- range sort . "date" "desc" }}{{ $it := . }}
+    {{- range partial "work/sketches-sorted.html" . }}{{ $it := . }}
     {{- with $p.Resources.Get $it.image }}
     {{- $d := time.AsTime $it.date }}
     <li id="{{ $it.id | default (path.BaseName $it.image) }}">
