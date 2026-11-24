@@ -1,5 +1,5 @@
 ---
-title: "Commissions & Contact"
+title: "Contact"
 linkTitle: "Contact"
 description: "Commission character illustrations, pixel art or Live2D models from moss, or send an inquiry."
 ---

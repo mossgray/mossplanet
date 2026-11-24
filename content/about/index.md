@@ -1,5 +1,5 @@
 ---
-title: "About"
+title: "プロフィール"
 description: "モス（moss）の自己紹介。イラスト、ピクセルアート、ゲームブック、Live2Dなどの活動と、SNS・頒布物を紹介しています。"
 name: "モス"
 name_en: "moss"
