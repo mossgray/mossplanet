@@ -3,6 +3,7 @@
  * - 惑星にマウスを乗せて150ミリ秒たつと、ドット絵の枠の吹き出しが惑星の上に出る（上に入らなければ下）
  * - 枠としっぽの色は、惑星の色の明るさを35%落とした色
  * - 中身：代表作の画像の一部をランダムに切り抜いた横長の小さなバナーと、作品数（0から数え上がる）
+ *   作品に thumb_bg（色か ccfolia-grid）があれば、画像の後ろにその背景を敷く（2026年11月24日）
  * - 隣の惑星へ移ったときは、待たずに・動かさずに中身だけ替える
  * - キーボードで選んだときはすぐ出し、Escキーで閉じる
  * - スマートフォン：短いタップは今までどおり一覧ページへ。長押し（約0.45秒）で吹き出しを出し、その回は移動しない
@@ -130,8 +131,7 @@
   // 代表作から1枚選び、ランダムな場所を横長に切り抜く
   function fillBanner(id) {
     var list = (images[id] || []).filter(function (info) { return loaded[info.src]; });
-    elBanner.style.backgroundImage = "";
-    elBanner.classList.remove("is-pixel");
+    resetBanner();
     if (!(images[id] || []).length) {
       elBanner.hidden = true;
       return;
@@ -152,9 +152,34 @@
     // 端は余白（背景）のことが多いので、横は中央6割・縦は上寄りの範囲から選ぶ（人物の顔や上半身が入りやすい）
     var x = -Math.round((0.2 + Math.random() * 0.6) * Math.max(0, w - BANNER_W));
     var y = -Math.round((0.1 + Math.random() * 0.5) * Math.max(0, h - BANNER_H));
-    elBanner.style.backgroundImage = "url(" + info.src + ")";
+    var img = "url(" + info.src + ")";
+    if (info.bg === "ccfolia-grid") {
+      // 方眼（作品カードと同じ。色と間隔は CSS の :root の --ccfolia-grid-*）を画像の後ろに敷く
+      elBanner.style.backgroundColor = "var(--ccfolia-grid-bg)";
+      elBanner.style.backgroundImage = img +
+        ", linear-gradient(to right, var(--ccfolia-grid-line) 1px, transparent 1px)" +
+        ", linear-gradient(to bottom, var(--ccfolia-grid-line) 1px, transparent 1px)";
+      elBanner.style.backgroundSize = w + "px " + h + "px, var(--ccfolia-grid-size), var(--ccfolia-grid-size)";
+      elBanner.style.backgroundPosition = x + "px " + y + "px, 0 0, 0 0";
+      elBanner.style.backgroundRepeat = "no-repeat, repeat, repeat";
+      return;
+    }
+    // 色の指定があれば、透明部分にその色を敷く（無ければ CSS の灰色のまま）
+    if (info.bg) elBanner.style.backgroundColor = info.bg;
+    elBanner.style.backgroundImage = img;
     elBanner.style.backgroundSize = w + "px " + h + "px";
     elBanner.style.backgroundPosition = x + "px " + y + "px";
+  }
+
+  // 前の作品の背景（thumb_bg）や位置を残さない
+  function resetBanner() {
+    var st = elBanner.style;
+    st.backgroundImage = "";
+    st.backgroundColor = "";
+    st.backgroundSize = "";
+    st.backgroundPosition = "";
+    st.backgroundRepeat = "";
+    elBanner.classList.remove("is-pixel");
   }
 
   /* ---------- 数え上げ ---------- */

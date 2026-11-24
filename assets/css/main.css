@@ -11,6 +11,10 @@
   /* ヘッダー・タブバーの区切り線 */
   --line: #e3eaee;
   --radius: 14px;
+  /* サムネイルの背景 thumb_bg: ccfolia-grid の方眼（第7.1節）。作品カード（.thumb-bg-ccfolia-grid）とトップの吹き出し（top-bubble.js）で共用 */
+  --ccfolia-grid-bg: #2a2a2a;
+  --ccfolia-grid-line: #464646;
+  --ccfolia-grid-size: 15px 15px;
 }
 
 *,
@@ -618,13 +622,13 @@ h3 {
   background: #f2f5f5;
 }
 
-/* サムネイルの背景 thumb_bg: ccfolia-grid（第7.1節）。ココフォリアの盤面に似せた方眼：#202020 の地に #464646 の 1px の線、間隔 15px */
+/* サムネイルの背景 thumb_bg: ccfolia-grid（第7.1節）。ココフォリアの盤面に似せた方眼：#2a2a2a の地に #464646 の 1px の線、間隔 15px（色と間隔は :root の --ccfolia-grid-*） */
 .work-thumb.thumb-bg-ccfolia-grid {
-  background-color: #202020;
+  background-color: var(--ccfolia-grid-bg);
   background-image:
-    linear-gradient(to right, #464646 1px, transparent 1px),
-    linear-gradient(to bottom, #464646 1px, transparent 1px);
-  background-size: 15px 15px;
+    linear-gradient(to right, var(--ccfolia-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--ccfolia-grid-line) 1px, transparent 1px);
+  background-size: var(--ccfolia-grid-size);
 }
 
 .work-thumb img {

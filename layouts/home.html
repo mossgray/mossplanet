@@ -50,7 +50,11 @@
         {{- $pixel := $page.Params.pixel | default false -}}
         {{- $img := . -}}
         {{- if not $pixel -}}{{- $img = .Resize "480x webp q80" -}}{{- end -}}
-        {{- $imgs = $imgs | append (dict "src" $img.RelPermalink "w" $img.Width "h" $img.Height "pixel" $pixel) -}}
+        {{- $info := dict "src" $img.RelPermalink "w" $img.Width "h" $img.Height "pixel" $pixel -}}
+        {{- /* thumb_bg があれば、吹き出しでも画像の後ろに敷く（"grid" か色。第5.4節・第7.1節） */ -}}
+        {{- $bg := partial "work/thumb-bg.html" $page -}}
+        {{- if isset $bg "grid" }}{{ $info = merge $info (dict "bg" "ccfolia-grid") }}{{ else }}{{ with $bg.color }}{{ $info = merge $info (dict "bg" .) }}{{ end }}{{ end -}}
+        {{- $imgs = $imgs | append $info -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

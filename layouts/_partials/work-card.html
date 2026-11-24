@@ -6,13 +6,9 @@
 {{- $current := .current | default "" -}}
 {{- $planets := partialCached "planets.html" $p -}}
 {{- /* サムネイルの背景（thumb_bg。第7.1節）：ccfolia-grid は方眼の背景、色（#rgb / #rrggbb）はベタ塗り。透明部分のあるサムネイル用 */ -}}
-{{- $bgClass := "" -}}{{- $bgStyle := "" -}}
-{{- with $p.Params.thumb_bg -}}
-  {{- if eq . "ccfolia-grid" }}{{ $bgClass = " thumb-bg-ccfolia-grid" -}}
-  {{- else if findRE `^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$` . }}{{ $bgStyle = printf "background: %s;" . -}}
-  {{- else }}{{ warnf "thumb_bg の値が読めません: %q（%s）" . $p.RelPermalink -}}
-  {{- end -}}
-{{- end -}}
+{{- $bg := partial "work/thumb-bg.html" $p -}}
+{{- $bgClass := cond (isset $bg "grid") " thumb-bg-ccfolia-grid" "" -}}
+{{- $bgStyle := "" }}{{ with $bg.color }}{{ $bgStyle = printf "background: %s;" . }}{{ end -}}
 <li class="work-card">
   <a href="{{ $p.RelPermalink }}">
     <span class="work-thumb{{ if $p.Params.pixel }} is-pixel{{ end }}{{ $bgClass }}"{{ with $bgStyle }} style="{{ . | safeCSS }}"{{ end }}>
