@@ -17,7 +17,7 @@
           {{- /* 日本語版：惑星の前面に重ねる、ドット絵フォントのタイトル（回転しない。planets.js が描く） */}}
           {{- if not $en }}
           <canvas class="planet-title" width="1" height="1" hidden
-            data-title="{{ $p.name }}" data-break="{{ $p.title_break }}" data-color="{{ $p.color }}"></canvas>
+            data-title="{{ $p.title | default $p.name }}" data-break="{{ $p.title_break }}" data-color="{{ $p.color }}"></canvas>
           {{- end }}
         </span>
         {{- /* 惑星の名前は HTML の文字としても置く（読み上げと検索のため）。ドット絵のタイトルを描けたら、日本語名は見えなくし、英語名を小さく添える */}}

@@ -3,6 +3,7 @@
 # outline は道案内の小アイコン（pixel-icon.html）の外枠の色。影は基本色と outline を45%混ぜた色になる。
 # seed / surface / offset はフェーズ0の自動生成の仮素材用（surface: noise=まだら, bands=縞模様）。
 # offset はトップでの上下のずらし量（惑星1ドット単位、0〜6。段の間隔が8ドットなので重ならない）。
+# title はトップの惑星に重ねるドット絵フォントのタイトル（無ければ name）。名前が長い惑星だけ短くする。
 # title_break はトップの惑星に重ねるドット絵フォントのタイトルの改行位置（| で区切る。惑星に1行で収まらないときだけ改行する）。
 # intro は一覧ページの紹介文（2〜3行）。「惑星」に「ページ」とルビを振るため <ruby>惑星<rt>ページ</rt></ruby> を HTML のまま書く
 # （テンプレートで HTML として出す。meta description ではルビを外す）。intro_en はその英語版（ルビなし）。
@@ -59,7 +60,7 @@
   intro_en: "A planet of Live2D models made for VTubers and streamers. I pay special attention to natural, seamless movement."
 - id: original
   name: オリジナルキャラクター
-  title_break: "オリジナル|キャラクター"
+  title: オリジナル   # トップのドット絵フォントのタイトルだけ短く（2026年11月24日、本人の指示）
   name_en: Original Characters
   color: "#5b8def"
   outline: "#19418f"   # 小アイコンの外枠（基本色と同じ色相で、明るさを約33%に。2026年11月24日）
