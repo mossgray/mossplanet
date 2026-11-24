@@ -618,6 +618,15 @@ h3 {
   background: #f2f5f5;
 }
 
+/* サムネイルの背景 thumb_bg: ccfolia-grid（第7.1節）。ココフォリアの盤面に似せた方眼：#202020 の地に #464646 の 1px の線、間隔 15px */
+.work-thumb.thumb-bg-ccfolia-grid {
+  background-color: #202020;
+  background-image:
+    linear-gradient(to right, #464646 1px, transparent 1px),
+    linear-gradient(to bottom, #464646 1px, transparent 1px);
+  background-size: 15px 15px;
+}
+
 .work-thumb img {
   display: block;
   width: 100%;
@@ -2836,6 +2845,12 @@ img.is-pixel {
   /* 見出しごとに縦に並べる（見出しの下にボタン） */
   .variants.is-js .variant-axis {
     grid-template-columns: 1fr;
+  }
+
+  /* 選択肢のボタンは縦1列に並べる（2026年11月24日。5つ以上で「4つ＋1つ」のように折り返さないように） */
+  .variants.is-js .variant-buttons {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 

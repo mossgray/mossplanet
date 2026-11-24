@@ -2,7 +2,6 @@
 title: "よるむん 配信ビジュアルデザイン制作"
 date: 2023-04-16
 planets: [illustration]
-featured_in: [illustration]
 cover: yorumun-design-sheet.webp
 cover_alt: "紫の髪をお団子にまとめた、和洋折衷の衣装の女性キャラクターの立ち絵・表情差分・YouTubeバナー・デフォルメイラストをまとめたデザインシート"
 thumb: yorumun-thumb.webp

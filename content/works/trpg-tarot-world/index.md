@@ -1,5 +1,5 @@
 ---
-title: "TRPG立ち絵（モチーフ：「世界」と土星）"
+title: "TRPG立ち絵"
 date: 2026-09-26
 planets: [illustration]
 # 公開の方針：依頼者名・シナリオ名・キャラクター名は書かない（client・scenario・session も書かない）
@@ -10,6 +10,8 @@ cover_alt: "長いウェーブの金髪に光輪と金の葉の髪飾りを付�
 thumb: world-thumb.webp
 # OGP は cover から上寄りで切り抜く（顔が切れないように）
 thumb_anchor: top
+# サムネイルの背景（第7.1節）。ココフォリア用の立ち絵なので盤面に似せた方眼
+thumb_bg: ccfolia-grid
 summary: "個人の方からご依頼いただいた、クトゥルフ神話TRPGのセッション用の立ち絵です。タロットカードの「世界」と土星をモチーフに、設定からキャラクターをデザインしました。表情（目隠し・閉眼・開眼）と、ライフルの有無の差分を制作しています。"
 role: "キャラクターデザイン（設定からの造形設計）、ラフ、線画、着彩、差分制作"
 tools: "Procreate"

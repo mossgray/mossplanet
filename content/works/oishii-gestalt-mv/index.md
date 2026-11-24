@@ -2,11 +2,14 @@
 title: "「おいしいゲシュタルト」楽曲MV用イラスト制作"
 date: 2025-02-22
 planets: [illustration]
+featured_in: [illustration]
 # メイン画像（差分の最初の表示・OGP）。variants の中の1枚
 cover: oishii-01-normal.webp
 cover_alt: "白い角とこうもりの羽、悪魔の尻尾をもつ白い髪に赤い目の少女が、目を開いて口を閉じた表情で、黒いエプロン姿で人差し指を立てているイラスト"
 # 一覧のサムネイルはウインクのデフォルメ（ギャラリーの2枚目と同じファイル）
 thumb: oishii-gestalt-sd.webp
+# サムネイルの背景（第7.1節）
+thumb_bg: "#fdf1a0"
 summary: "ゆうゆさんにご依頼いただき、楽曲「おいしいゲシュタルト / 鏡音リン」のMV用イラストを制作しました。表情違いの5種類と、デフォルメイラスト2種もあわせて制作しています。"
 role: "楽曲MV用イラスト"
 client:

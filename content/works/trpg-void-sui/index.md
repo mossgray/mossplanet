@@ -2,7 +2,6 @@
 title: "探索者 スイ"
 date: 2024-05-10
 planets: [illustration]
-featured_in: [illustration]
 # メイン画像（差分の最初の表示・サムネイル・OGP）。variants の中の1枚
 cover: sui-1-on.webp
 cover_alt: "長い緑の髪に小さな蛇が混じり、黒い目隠しをした探索者が、白いシャツに黒いネクタイ、黒いショートパンツ姿で、肩に黒いジャケットを掛けて立っている全身の立ち絵"

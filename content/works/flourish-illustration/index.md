@@ -3,6 +3,7 @@ title: "『Flourish』イラスト"
 seo_title: "『Flourish』イラスト（ドット絵・ピクセルアート）"
 date: 2024-11-17
 planets: [illustration, pixel-art]
+featured_in: [illustration]
 related: [flourish-gamebook, flourish-artbook-cover]
 cover: flourish-cover.gif
 cover_alt: "緑がかった髪に青い魔女帽子とマントの少女が、草の上に座って本を開き、手元に光る精霊の玉を浮かべている。そばには白いうさぎのような精霊がいる、表紙のドット絵"
