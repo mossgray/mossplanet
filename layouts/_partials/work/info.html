@@ -1,6 +1,6 @@
 {{- /*
   作品情報の表（作品ページとファンアートのページで共用）。docs/spec.md 第7.1節
-  値がない項目は出さない。permission（掲載許可の状況）は管理用なので出さない。
+  値がない項目は出さない。依頼者の次に依頼の窓口（channel）を出す。permission（掲載許可の状況）は管理用なので出さない。
   使用ツール：tools がなければ config.toml の default_tools を出す
   関連リンク：links の type から自動でラベルを付ける（label があればそちらを優先）。埋め込みはせず、普通の文字リンクにする
 */ -}}
@@ -19,6 +19,8 @@
 -}}
 {{- $rows := slice -}}
 {{- with $p.Params.client }}{{ $c := .name | htmlEscape }}{{ with .url }}{{ $c = printf "<a href=\"%s\" rel=\"noopener\">%s</a>" . $c }}{{ end }}{{ $rows = $rows | append (dict "dt" "依頼者" "dd" $c) }}{{ end -}}
+{{- /* 依頼の窓口（channel）：skeb などの決まった値は表記名にし、それ以外は書いたまま出す。リンクは付けない（第7.1節） */ -}}
+{{- with $p.Params.channel }}{{ $ch := index (dict "skeb" "Skeb" "vgen" "VGen" "coconala" "ココナラ" "direct" "直接のご依頼") (lower .) | default . }}{{ $rows = $rows | append (dict "dt" "依頼の窓口" "dd" ($ch | htmlEscape)) }}{{ end -}}
 {{- /* TRPG の作品：システムとシナリオ（第7.1節） */ -}}
 {{- with $p.Params.system }}{{ $rows = $rows | append (dict "dt" "システム" "dd" (. | htmlEscape)) }}{{ end -}}
 {{- with $p.Params.scenario }}{{ $rows = $rows | append (dict "dt" "シナリオ" "dd" (. | htmlEscape)) }}{{ end -}}
