@@ -1,8 +1,8 @@
-{{- /* 惑星の一覧メニュー（ヘッダーの Works メニューと、スマートフォンの下から開く一覧で共用） */ -}}
+{{- /* 惑星の一覧メニュー（ヘッダーの作品のメニューと、スマートフォンの下から開く一覧で共用）。アイコンの丸は直径13ドット（枠は32×32pxのまま。2026年11月24日） */ -}}
 {{- $planets := partialCached "planets.html" . -}}
 <ul class="planet-menu">
   {{- range where $planets "visible" true }}
-  <li><a href="{{ .url | relURL }}">{{ partial "pixel-icon.html" (dict "color" .color "size" 16 "scale" 2) }}<span>{{ cond (eq site.Language.Lang "en") .name_en .name }}</span>{{ if .pending }}<small class="pending-badge">{{ T "pending" }}</small>{{ end }}</a></li>
+  <li><a href="{{ .url | relURL }}">{{ partial "pixel-icon.html" (dict "color" .color "size" 16 "scale" 2 "dots" 13) }}<span>{{ cond (eq site.Language.Lang "en") .name_en .name }}</span>{{ if .pending }}<small class="pending-badge">{{ T "pending" }}</small>{{ end }}</a></li>
   {{- end }}
 </ul>
 <a class="planet-menu-all" href="{{ "/works/" | relURL }}">{{ T "nav_all_planets" }}</a>

@@ -1670,12 +1670,6 @@ img.is-pixel {
   text-align: right;
 }
 
-.work-request {
-  margin: 40px 0 0;
-  font-size: 0.875rem;
-  text-align: right;
-}
-
 /* 拡大表示 */
 .zoom-dialog {
   width: 100vw;

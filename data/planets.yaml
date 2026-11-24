@@ -1,5 +1,6 @@
 # 惑星の設定（docs/spec.md 第7.2節）
 # 色は仮。ドット絵ができたら実際の色に差し替える。
+# outline は道案内の小アイコン（pixel-icon.html）の外枠の色。影は基本色と outline を45%混ぜた色になる。
 # seed / surface / offset はフェーズ0の自動生成の仮素材用（surface: noise=まだら, bands=縞模様）。
 # offset はトップでの上下のずらし量（惑星1ドット単位、0〜6。段の間隔が8ドットなので重ならない）。
 # title_break はトップの惑星に重ねるドット絵フォントのタイトルの改行位置（| で区切る。惑星に1行で収まらないときだけ改行する）。
@@ -10,6 +11,7 @@
   name: イラスト
   name_en: Illustration
   color: "#f3c94f"
+  outline: "#935c16"   # 小アイコンの外枠（基本色と同じ色相で、明るさを約33%に。2026年11月24日）
   band: "#fdf4d6"
   bubble_thumbs: true
   seed: 11
@@ -22,6 +24,7 @@
   title_break: "ピクセル|アート"
   name_en: Pixel Art
   color: "#f08cb4"
+  outline: "#8b1d49"   # 小アイコンの外枠（基本色と同じ色相で、明るさを約33%に。2026年11月24日）
   band: "#fde7f0"
   bubble_thumbs: true
   seed: 23
@@ -34,6 +37,7 @@
   title_break: "ゲーム|ブック"
   name_en: Gamebook
   color: "#8cc63f"
+  outline: "#5a7b2d"   # 小アイコンの外枠（基本色と同じ色相で、明るさを約33%に。2026年11月24日）
   band: "#eef7e0"
   bubble_thumbs: true
   seed: 37
@@ -45,6 +49,7 @@
   name: Live2D
   name_en: Live2D
   color: "#f39a4a"
+  outline: "#933a16"   # 小アイコンの外枠（基本色と同じ色相で、明るさを約33%に。2026年11月24日）
   band: "#fdebd9"
   bubble_thumbs: true
   seed: 41
@@ -57,6 +62,7 @@
   title_break: "オリジナル|キャラクター"
   name_en: Original Characters
   color: "#5b8def"
+  outline: "#19418f"   # 小アイコンの外枠（基本色と同じ色相で、明るさを約33%に。2026年11月24日）
   band: "#e5edfd"
   bubble_thumbs: true
   seed: 53
@@ -71,6 +77,7 @@
   # title タグに使う名前（表示名は name。URL・ID・front matter の fanart はそのまま）
   seo_title: ファンアート（二次創作）
   color: "#9b7fe0"
+  outline: "#422980"   # 小アイコンの外枠（基本色と同じ色相で、明るさを約33%に。2026年11月24日）
   band: "#efe9fb"
   bubble_thumbs: false
   seed: 67

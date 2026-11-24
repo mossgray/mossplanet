@@ -1,7 +1,11 @@
 {{- /*
   道案内のドット絵アイコン（仮素材）。本番の素材（planet-<id>-16.png / -32.png）ができたら差し替える。
-  dict "kind" "planet|moss|satellite|space" "color" "#rrggbb" "size" 16|32 "scale" 2 "label" "代替テキスト（空なら装飾扱い）"
+  dict "kind" "planet|moss|satellite|space" "color" "#rrggbb" "size" 16|32 "scale" 2 "label" "代替テキスト（空なら装飾扱い）" "dots" 13
   - 惑星：縁取り・影・基本色・ハイライトの4層を、行ごとの横長の矩形で描く
+  - 惑星の外枠：data/planets.yaml の outline（color が同じ惑星のもの）。影は基本色と外枠を45%混ぜた色。
+    outline のない色（モスの星など）は、今までどおり黒（#0b1b1a）の外枠と、黒を30%混ぜた影（2026年11月24日）
+  - dots（任意）：丸の直径（16マス基準のドット数）。省略時は枠いっぱい（16）。枠の大きさ（size×scale）は変えずに丸だけ小さくする。
+    作品のメニュー（planet-menu.html）は 13
   - SVG を整数倍で表示し、shape-rendering="crispEdges" でドットをぼかさない
 */ -}}
 {{- $size := .size | default 16 -}}
@@ -11,23 +15,35 @@
 {{- $px := div (float $size) 16 -}}
 {{- $ink := "#0b1b1a" -}}
 {{- $shadow := partial "color-mix.html" (dict "a" $color "b" $ink "t" 0.3) -}}
+{{- /* 惑星の外枠（outline）：基本色が同じ惑星の outline。見つかれば、外枠をその色に、影を基本色と外枠を45%混ぜた色にする */ -}}
+{{- $edge := $ink -}}
+{{- if or (eq $kind "planet") (eq $kind "moss") -}}
+  {{- range where hugo.Data.planets "color" $color -}}
+    {{- with .outline }}{{ $edge = . }}{{ $shadow = partial "color-mix.html" (dict "a" $color "b" . "t" 0.45) }}{{ end -}}
+  {{- end -}}
+{{- end -}}
 {{- $light := partial "color-mix.html" (dict "a" $color "b" "#ffffff" "t" 0.55) -}}
 {{- $c := div (float $size) 2 -}}
 {{- $rects := slice -}}
 
 {{- if or (eq $kind "planet") (eq $kind "moss") -}}
-  {{- $R := $c -}}
+  {{- /* 丸の直径（dots。16マス基準）。左上の余白は整数のドットにする（13なら左上1ドット・右下2ドット） */ -}}
+  {{- $dots := .dots | default 16 -}}
+  {{- $k := div (float $dots) 16 -}}
+  {{- $o := mul (math.Floor (div (sub 16 $dots) 2.0)) $px -}}
+  {{- $R := mul $c $k -}}
+  {{- $c = add $o $R -}}
   {{- $Ri := sub $R $px -}}
-  {{- $off := mul $px 2 -}}
-  {{- $hr := mul $px 1.6 -}}
-  {{- $hc := sub $c (mul $px 3.2) -}}
+  {{- $off := mul $px 2 $k -}}
+  {{- $hr := mul $px 1.6 $k -}}
+  {{- $hc := sub $c (mul $px 3.2 $k) -}}
   {{- range $y := seq 0 (sub $size 1) -}}
     {{- $dy := sub (add (float $y) 0.5) $c -}}
     {{- /* 縁取り */ -}}
     {{- if lt (math.Abs $dy) $R -}}
       {{- $w := math.Sqrt (sub (mul $R $R) (mul $dy $dy)) -}}
       {{- $x0 := math.Round (sub $c $w) -}}{{- $x1 := math.Round (add $c $w) -}}
-      {{- if gt $x1 $x0 -}}{{- $rects = $rects | append (dict "x" $x0 "y" $y "w" (sub $x1 $x0) "f" $ink) -}}{{- end -}}
+      {{- if gt $x1 $x0 -}}{{- $rects = $rects | append (dict "x" $x0 "y" $y "w" (sub $x1 $x0) "f" $edge) -}}{{- end -}}
     {{- end -}}
     {{- /* 影（内側の円） */ -}}
     {{- if lt (math.Abs $dy) $Ri -}}
