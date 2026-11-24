@@ -1,0 +1,100 @@
+{{- /*
+  ファンアートの作品ページ（content/fanart/<作品ID>/）。docs/spec.md 第6.5節
+  - 1枚1ページ。/fanart/ では原作シリーズ（fanart.series）ごとの節に分けて並べる
+  - fanart.source（原作名）と fanart.copyright（権利表記）から、権利表記を自動で表示する
+  - 依頼への導線は置かない
+  - 画像：cover を先頭に、フォルダ内のほかの画像をファイル名順に並べる
+*/ -}}
+{{ define "main" }}
+{{- $p := index (where (partialCached "planets.html" .) "id" "fanart") 0 -}}
+<header class="title-band" style="--band: {{ $p.band | safeCSS }};">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    <a class="title-band-icon" href="{{ "/fanart/" | relURL }}">{{ partial "pixel-icon.html" (dict "color" $p.color "size" 32 "scale" 2 "label" (printf "%sの一覧へ" $p.name)) }}</a>
+    <div>
+      <h1 class="title-band-title">{{ .Title }}</h1>
+      <p class="title-band-meta">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006" }}</time>
+        {{- with .Params.fanart.source }}<span>原作：{{ . }}</span>{{ end }}
+      </p>
+    </div>
+  </div>
+</header>
+
+<article class="work">
+  {{- $images := slice -}}
+  {{- with .Params.cover }}{{ with $.Resources.Get . }}{{ $images = $images | append . }}{{ end }}{{ end -}}
+  {{- /* 工程の画像（process）は下の「制作工程」に出すので、ここには並べない */ -}}
+  {{- $processImages := slice -}}
+  {{- range .Params.process }}{{ $processImages = $processImages | append (slice .image .poster) }}{{ end -}}
+  {{- /* ギャラリー（gallery）の画像も、下のギャラリーに出すので除く */ -}}
+  {{- range .Params.gallery }}{{ $processImages = $processImages | append .image }}{{ end -}}
+  {{- range sort (.Resources.ByType "image") "Name" -}}
+    {{- if and (ne .Name $.Params.cover) (not (in $processImages .Name)) -}}{{- $images = $images | append . -}}{{- end -}}
+  {{- end -}}
+  {{- range $i, $img := $images }}
+  <figure class="work-main">
+    {{ partial "image/responsive.html" (dict "res" $img "alt" (cond (eq $i 0) ($.Params.cover_alt | default $.Title) (printf "%s（%d枚目）" $.Title (add $i 1))) "pixel" ($.Params.pixel | default false) "zoom" true "eager" (eq $i 0)) }}
+  </figure>
+  {{- end }}
+
+  {{- if .Params.gallery }}
+  <div class="work-body work-body-head">
+    {{ partial "work/info.html" . }}
+  </div>
+  {{ partial "work/gallery.html" . }}
+  <div class="work-body">
+  {{- else }}
+  <div class="work-body">
+    {{ partial "work/info.html" . }}
+  {{- end }}
+
+    <div class="prose">
+      {{ .Content }}
+    </div>
+
+    {{ partial "work/process.html" . }}
+
+    {{- /* 前後の作品（同じ原作シリーズの中で、新しい順。シリーズに1作しかないときは、ファンアート全体の中で） */ -}}
+    {{- $series := .Params.fanart.series | default .Params.fanart.source -}}
+    {{- $all := (where site.RegularPages "Section" "fanart").ByDate.Reverse -}}
+    {{- $same := slice -}}
+    {{- range $all }}{{ if eq (.Params.fanart.series | default .Params.fanart.source) $series }}{{ $same = $same | append . }}{{ end }}{{ end -}}
+    {{- $list := cond (gt (len $same) 1) $same $all -}}
+    {{- $newer := "" -}}{{- $older := "" -}}{{- $found := false -}}
+    {{- range $list -}}
+      {{- if $found -}}{{- if not $older -}}{{- $older = . -}}{{- end -}}
+      {{- else if eq .RelPermalink $.RelPermalink -}}{{- $found = true -}}
+      {{- else -}}{{- $newer = . -}}{{- end -}}
+    {{- end }}
+    {{- if or $newer $older }}
+    <nav class="work-pager" aria-label="前後のファンアート">
+      {{- with $newer }}<a class="work-pager-newer" href="{{ .RelPermalink }}"><span>新しい作品</span>{{ .Title }}</a>{{ else }}<span></span>{{ end }}
+      {{- with $older }}<a class="work-pager-older" href="{{ .RelPermalink }}"><span>前の作品</span>{{ .Title }}</a>{{ end }}
+    </nav>
+    {{- end }}
+
+    {{- with .Params.fanart }}
+    <p class="fanart-copyright">
+      {{- with .source }}原作：{{ . }}{{ end -}}
+      {{- with .copyright }}<br>{{ . }}{{ end -}}
+    </p>
+    {{- else }}
+    {{- warnf "ファンアートのページに fanart.source / fanart.copyright がありません: %s" .RelPermalink -}}
+    {{- end }}
+  </div>
+</article>
+
+{{ partial "zoom-dialog.html" . }}
+{{ end }}
+
+{{ define "scripts" }}
+{{- with resources.Get "js/zoom.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- if .HasShortcode "youtube" }}
+{{- with resources.Get "js/youtube.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- end }}
+{{ end }}

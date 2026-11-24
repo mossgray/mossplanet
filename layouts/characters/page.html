@@ -1,0 +1,134 @@
+{{- /*
+  キャラクターページ（1キャラクター1ページ・設定資料集風）。docs/spec.md 第6.7節
+  データは content/characters/<ID>/index.md の front matter（名前・プロフィール・絵の一覧）。テンプレートはどのキャラクターでも共通
+  タイトル帯（CHARACTER FILE 番号）→ メインビジュアルとプロフィール（PCは左右、スマートフォンは縦）→ 02 LOOKS（すがた）
+  → 03 HISTORY（デザインの変遷、日付の古い順）→ 関連作品（このキャラクターが出てくる作品があるときだけ）
+  - 絵はすべてこのページに載せる（作品ページは作らない）。各絵に id（images の id）を付け、ページ内の位置へ直接リンクできる
+  - 絵はクリックで拡大。拡大表示の中で前後へ移れる（すがた・変遷それぞれのまとまりで）
+  - 作品画像のまわりには飾りを置かない。設定資料集らしさは、番号付きの見出しとプロフィールの表の方眼で出す
+*/ -}}
+{{ define "bodyClass" }}page character-page{{ end }}
+
+{{ define "main" }}
+{{- $id := .File.ContentBaseName -}}
+{{- $planets := partialCached "planets.html" . -}}
+{{- $primary := dict -}}
+{{- with .Params.planets }}{{ range where $planets "id" (index . 0) }}{{ $primary = . }}{{ end }}{{ end -}}
+
+{{- /* 絵の一覧（id → 項目）。日付の古い順にも並べておく */ -}}
+{{- $byId := dict -}}
+{{- range .Params.images }}{{ $byId = merge $byId (dict .id .) }}{{ end -}}
+{{- $history := sort (.Params.images | default slice) "date" -}}
+
+{{- /* タイトル帯：オリジナルの惑星の色。名前と CHARACTER FILE の小見出し */ -}}
+<header class="title-band planet-band character-band" style="--band: {{ $primary.band | default "#e6f5f2" | safeCSS }};">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    {{- with $primary }}
+    {{- $icon := partial "pixel-icon.html" (dict "color" .color "size" 32 "scale" 2 "label" (printf "%sの一覧へ" .name)) -}}
+    {{- if .visible }}<a class="title-band-icon" href="{{ .url | relURL }}">{{ $icon }}</a>{{ else }}<span class="title-band-icon">{{ $icon }}</span>{{ end }}
+    {{- end }}
+    <div>
+      <p class="character-file" lang="en">CHARACTER FILE {{ .Params.file_no | default "00" }}</p>
+      <h1 class="title-band-title">{{ .Title }}</h1>
+    </div>
+  </div>
+</header>
+
+<article class="character">
+  {{- /* メインビジュアルとプロフィール */ -}}
+  <div class="character-intro">
+    {{- with index $byId (.Params.main | default "") }}
+    {{- with $.Resources.Get .image }}
+    <figure class="character-visual">
+      {{ partial "image/responsive.html" (dict "res" . "alt" (index $byId $.Params.main).alt "zoom" true "eager" true "w" 720 "sizes" "(min-width: 1024px) 50vw, calc(100vw - 32px)") }}
+    </figure>
+    {{- end }}
+    {{- end }}
+
+    {{- with .Params.profile }}
+    <section class="character-profile-section" aria-labelledby="profile">
+      <h2 class="file-heading" id="profile"><span class="file-no">01</span><span lang="en">PROFILE</span><small>プロフィール</small></h2>
+      <dl class="character-profile">
+        {{- range . }}
+        <div><dt>{{ .label }}</dt><dd>{{ .text }}</dd></div>
+        {{- end }}
+      </dl>
+    </section>
+    {{- end }}
+  </div>
+
+  {{- with .Content }}<div class="character-body prose">{{ . }}</div>{{ end }}
+
+  {{- /* 02 LOOKS：すがた。日付と使った場面を添える。id はこちらに付ける */ -}}
+  {{- with .Params.looks }}
+  <section class="character-section" aria-labelledby="looks">
+    <h2 class="file-heading" id="looks"><span class="file-no">02</span><span lang="en">LOOKS</span><small>すがた</small></h2>
+    <ul class="character-looks">
+      {{- range . }}
+      {{- with index $byId . }}{{ $it := . }}
+      {{- with $.Resources.Get .image }}
+      <li id="{{ $it.id }}">
+        <figure>
+          {{ partial "image/responsive.html" (dict "res" . "alt" $it.alt "zoom" true "group" "looks" "w" 600 "sizes" "(min-width: 768px) 33vw, calc(100vw - 32px)") }}
+          <figcaption>
+            {{- $d := time.AsTime $it.date }}
+            <time datetime="{{ $d.Format "2006-01-02" }}">{{ $d.Format "2006.1.2" }}</time>
+            <strong>{{ $it.label }}</strong>
+            {{- with $it.scene }}<span>{{ . }}</span>{{ end }}
+          </figcaption>
+        </figure>
+      </li>
+      {{- end }}
+      {{- else }}{{ warnf "looks の絵が images にありません: %s（%s）" . $.RelPermalink }}{{ end }}
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+
+  {{- /* 03 HISTORY：デザインの変遷（すべての絵を日付の古い順）。LOOKS に載せていない絵の id はこちらに付ける */ -}}
+  {{- with $history }}
+  {{- $looks := $.Params.looks | default slice }}
+  <section class="character-section" aria-labelledby="history">
+    <h2 class="file-heading" id="history"><span class="file-no">03</span><span lang="en">HISTORY</span><small>デザインの変遷</small></h2>
+    <ol class="character-history">
+      {{- range . }}{{ $it := . }}
+      {{- with $.Resources.Get .image }}
+      <li{{ if not (in $looks $it.id) }} id="{{ $it.id }}"{{ end }}>
+        <figure>
+          {{ partial "image/responsive.html" (dict "res" . "alt" $it.alt "zoom" true "group" "history" "w" 480 "sizes" "(min-width: 768px) 20vw, 50vw") }}
+          <figcaption>
+            {{- $d := time.AsTime $it.date }}
+            <time datetime="{{ $d.Format "2006-01-02" }}">{{ $d.Format "2006.1.2" }}</time>
+            {{- /* 題名はリンクにしない（すがたに載せた絵も同じ。2026年11月20日、依頼 002） */}}
+            <span>{{ $it.label }}</span>
+          </figcaption>
+        </figure>
+      </li>
+      {{- end }}
+      {{- end }}
+    </ol>
+  </section>
+  {{- end }}
+
+  {{- /* 関連作品：作品ページの front matter に character: <このID> を書いた作品。ないときは節ごと出さない（絵が増えるまで隠す） */ -}}
+  {{- with (where (where site.RegularPages "Section" "works") "Params.character" $id).ByDate.Reverse }}
+  <section class="character-section" aria-labelledby="related">
+    <h2 class="file-heading" id="related"><span lang="en">WORKS</span><small>関連作品</small></h2>
+    <ul class="work-grid">
+      {{- range . }}
+      {{ partial "work-card.html" (dict "page" . "current" ($primary.id | default "")) }}
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+</article>
+
+{{ partial "zoom-dialog.html" . }}
+{{ end }}
+
+{{ define "scripts" }}
+{{- with resources.Get "js/zoom.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{ end }}

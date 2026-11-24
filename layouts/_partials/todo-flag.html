@@ -1,0 +1,12 @@
+{{- /*
+  仮の文章（todo）が残っていることを知らせる。. はページ（または場所を表す文字列）
+  - Netlify の本番（CONTEXT=production）では、ビルドをエラーで止めて公開させない
+  - それ以外（手元・確認用URL）では警告を出すだけ
+*/ -}}
+{{- $where := . -}}
+{{- with .RelPermalink -}}{{- $where = . -}}{{- end -}}
+{{- if eq (getenv "CONTEXT") "production" -}}
+  {{- errorf "仮の文章（todo）が残っています: %s" $where -}}
+{{- else -}}
+  {{- warnf "todo: 仮の文章が残っています: %s" $where -}}
+{{- end -}}

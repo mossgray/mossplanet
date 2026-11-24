@@ -1,0 +1,11 @@
+{{ define "main" }}
+<header class="title-band page-band">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    <h1 class="title-band-title">{{ .Title }}</h1>
+  </div>
+</header>
+<article class="container">
+  {{ .Content }}
+</article>
+{{ end }}

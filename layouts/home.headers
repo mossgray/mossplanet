@@ -1,0 +1,4 @@
+{{- if not hugo.IsProduction -}}
+/*
+  X-Robots-Tag: noindex, nofollow
+{{ end -}}

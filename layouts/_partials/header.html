@@ -1,0 +1,27 @@
+{{- $planets := partialCached "planets.html" . -}}
+{{- $full := (resources.Get "images/logo/logo-full.png").Resize "x72 webp q90" -}}
+{{- $mark := (resources.Get "images/logo/logo-mark.png").Resize "x72 webp q90" -}}
+<a class="skip-link" href="#main">{{ T "skip_to_content" }}</a>
+<header class="site-header">
+  <a class="site-logo" href="{{ "/" | relLangURL }}">
+    <picture>
+      <source media="(max-width: 599px)" srcset="{{ $mark.RelPermalink }}" width="{{ div $mark.Width 2 }}" height="36">
+      <img src="{{ $full.RelPermalink }}" width="{{ div $full.Width 2 }}" height="36" alt="mossplanet">
+    </picture>
+  </a>
+  <nav class="site-nav" aria-label="{{ T "nav_main" }}">
+    <ul class="site-nav-list">
+      <li class="nav-works">
+        <a class="nav-works-toggle" href="{{ "/works/" | relURL }}" aria-haspopup="true" aria-expanded="false" aria-controls="works-menu">{{ T "nav_works" }}<span class="caret" aria-hidden="true"></span></a>
+        <div class="works-menu" id="works-menu" hidden>
+          {{ partial "planet-menu.html" . }}
+        </div>
+      </li>
+      <li><a href="{{ "/about/" | relLangURL }}"{{ if hasPrefix .RelPermalink ("/about/" | relLangURL) }} aria-current="page"{{ end }}>{{ T "nav_about" }}</a></li>
+      <li><a href="{{ "/contact/" | relLangURL }}"{{ if hasPrefix .RelPermalink ("/contact/" | relLangURL) }} aria-current="page"{{ end }}>{{ T "nav_contact" }}</a></li>
+    </ul>
+    {{- /* 「動きを止める」ボタン（assets/js/motion.js）。言語切替えの左隣に置く。JavaScript がないときは出さない */}}
+    <button type="button" class="motion-toggle" hidden data-stop="{{ T "motion_stop" }}" data-start="{{ T "motion_start" }}" data-os="{{ T "motion_os" }}" data-os-title="{{ T "motion_os_title" }}">{{ T "motion_stop" }}</button>
+    {{ partial "lang-switch.html" . }}
+  </nav>
+</header>

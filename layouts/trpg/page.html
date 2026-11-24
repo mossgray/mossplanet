@@ -1,0 +1,35 @@
+{{- /*
+  TRPG立ち絵の一覧（/illustration/trpg/）。docs/spec.md 第6.8節
+  system の項目がある作品（TRPG の作品）を、新しい順にカードで並べる。
+  ファンアートの一覧と同じ部品（惑星の色のタイトル帯・作品カードのグリッド・節の見出し）を使う。
+  入口はイラストの惑星の一覧の冒頭（layouts/planet.html。parent_planet で決まる）
+*/ -}}
+{{ define "bodyClass" }}page planet-page trpg-page{{ end }}
+
+{{ define "main" }}
+{{- $p := dict -}}
+{{- range where (partialCached "planets.html" .) "id" (.Params.parent_planet | default "illustration") }}{{ $p = . }}{{ end -}}
+{{- $works := (where (where site.RegularPages "Section" "works") "Params.system" "!=" nil).ByDate.Reverse -}}
+<header class="title-band" style="--band: {{ $p.band | default "#e6f5f2" | safeCSS }};">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    {{- with $p }}
+    {{- $icon := partial "pixel-icon.html" (dict "color" .color "size" 32 "scale" 2 "label" (printf "%sの一覧へ" .name)) -}}
+    {{- if .visible }}<a class="title-band-icon" href="{{ .url | relURL }}">{{ $icon }}</a>{{ else }}<span class="title-band-icon">{{ $icon }}</span>{{ end }}
+    {{- end }}
+    <div>
+      <h1 class="title-band-title">{{ .Title }}</h1>
+      {{- with .Content }}<div class="planet-intro">{{ . }}</div>{{ end }}
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <h2 class="section-title">すべての作品<small>{{ len $works }} works</small></h2>
+  <ul class="work-grid">
+    {{- range $works }}
+    {{ partial "work-card.html" (dict "page" . "current" ($p.id | default "")) }}
+    {{- end }}
+  </ul>
+</div>
+{{ end }}

@@ -1,0 +1,17 @@
+{{- /*
+  本文中の画像 ![説明](ファイル名) を、作品フォルダの画像なら軽量化して表示する
+  作品フォルダにない画像（外部URLなど）は、そのまま表示する
+  1行だけの画像は <figure> にし、文中の画像はそのまま <img> にする
+*/ -}}
+{{- $res := .Page.Resources.Get .Destination -}}
+{{- $out := "" -}}
+{{- with $res -}}
+  {{- $out = partial "image/responsive.html" (dict "res" . "alt" $.PlainText "pixel" ($.Page.Params.pixel | default false) "zoom" $.IsBlock) -}}
+{{- else -}}
+  {{- $out = printf `<img src="%s" alt="%s" loading="lazy" decoding="async">` (.Destination | safeURL) (.PlainText | htmlEscape) | safeHTML -}}
+{{- end -}}
+{{- if .IsBlock -}}
+<figure class="work-figure">{{ $out }}{{ with .Title }}<figcaption>{{ . }}</figcaption>{{ end }}</figure>
+{{- else -}}
+{{ $out }}
+{{- end -}}

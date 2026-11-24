@@ -1,0 +1,187 @@
+# ゲームブックのカードの文章データ（docs/spec.md 第7.4節）
+# 紙面の画像から書き起こしたもの（元：mossplanet-incoming/gamebook_flourish/flourish_cards.yaml）。ふりがなは省いています。
+# 作品ページの front matter に cards: flourish と書くと、layouts/_partials/work/cards.html がこのファイルを読む。
+# カードの画像は作品フォルダの cards/<グループのid>-<カードのid>.webp（表裏のあるカードは -front / -back を付ける）
+#
+# attributes：得意属性の印に使う名前と色（文字は濃い色のまま、色は印の縁と薄い背景に使う）
+# groups：カードの種類ごとのまとまり。並べた順にページに出す
+#   type: flip（タップで表と裏が入れ替わる）／ event（得意属性の印とシーンへのリンク）／ simple（画像と文章だけ）
+#   heading：見出しに添える短い説明（例：成功したら引く）
+#   scene_page：event のカードの scene（イラストのページのシーンのid）のリンク先の作品ID
+# 表と裏の対応：属性カードの裏面の印刷シートは左右が反転して並んでいるので、
+#   切り出した画像は並び位置ではなく精霊の名前（id）で対応させた
+
+title: "Flourish"
+attributes:
+  fire: { name: "火", color: "#d9472b" }
+  water: { name: "水", color: "#3a8fd0" }
+  wind: { name: "風", color: "#7fb83a" }
+  earth: { name: "地", color: "#d99a1c" }
+  light: { name: "光", color: "#e5b81c" }
+  flower: { name: "花", color: "#e06a8a" }
+groups:
+  - id: attribute
+    title: "属性カード"
+    type: flip
+    lead: "精霊の属性を決めるカード。表は精霊のドット絵、裏は属性の説明です。カードをタップすると、表と裏が入れ替わります。"
+    cards:
+      - id: fire
+        name: "火の精霊"
+        name_en: "Fire"
+        text: "炎に宿り、熱の操作が得意な精霊。情熱、エネルギー、力を象徴し、瞬間的に大きな力を発揮することが出来る。 燃え盛る炎のような姿を好む。積極的でわんぱくなものが多く、熱しやすくて冷めやすいが、基本的に素直。"
+      - id: water
+        name: "水の精霊"
+        name_en: "Water"
+        text: "水場に宿り、液体の操作が得意な精霊。流動性、癒し、変化を象徴し、柔軟性を活かして様々な場面で活躍する。 水の塊や雲の姿を好む。優しく穏やかな気性のものが多いが、その優しさが裏目に出てここ一番の押しが弱い……そんなところも。"
+      - id: wind
+        name: "風の精霊"
+        name_en: "Wind"
+        text: "空気に宿り、無形の操作が得意な精霊。自由、スピード、変化の力を象徴し、広範囲に継続的な影響を及ぼす。 小さな竜巻や鳥を真似た姿を好む。発想が自由で大胆不敵な精霊が多く、気まぐれな行動もよく見られる。"
+      - id: earth
+        name: "地の精霊"
+        name_en: "Earth"
+        text: "大地に宿り、物体の操作が得意な精霊。安定、頑丈、持久を象徴し、持久力に優れ大きなものも動かせる。 岩の塊や獣などを真似た姿を取る事が多い。縁の下の力持ち。鈍感で慎重すぎるきらいがあるが、最後の最後に頼りになる精霊でもある。"
+      - id: light
+        name: "光の精霊"
+        name_en: "Light"
+        text: "光源に宿り、明暗の操作が得意な精霊。希望、知恵、神聖さを象徴し、闇を照らし隠されたものを暴くことが出来る。 光り輝くものの姿を取り、太陽や星々を思わせるような存在感を持つ。明るく前向きな性格だが、その光は時に強すぎて、相手をまどわしてしまうことも。"
+      - id: flower
+        name: "花の精霊"
+        name_en: "Flower"
+        text: "自然に宿り、環境の操作が得意な精霊。循環、生命力、美しさを象徴し、植物の成長を司り、静かに、確実に力を発揮する。 花びらやつるに似た姿を取ることが多い。季節や環境によって姿を変え、献身的な性格が多いが急いだ結果を求めるのが苦手。"
+  - id: event
+    title: "イベントカード"
+    type: event
+    lead: "魔法学校での出来事のカード。印は、そのイベントが得意な精霊の属性です。"
+    scene_page: flourish-illustration
+    cards:
+      - id: herb-garden
+        title: "魔法薬草園のお世話"
+        good: [water, flower]
+        text: "魔法薬草園でお手伝い。水やり、雑草抜き、植え替え、収穫と、やることはいっぱいだ。"
+        note: "意外と体力勝負。"
+        scene: herb-garden
+      - id: cleaning-courtyard
+        title: "お掃除の時間！〜中庭〜"
+        good: [wind, flower]
+        text: "広〜い学校の庭園のお掃除だ。葉っぱを集め、用務員のスライムさんに食べてもらおう。"
+        note: "スライムさん：学校と同い年くらいの大ベテラン。いつもぷるぷるしてるぞ。"
+        scene: cleaning-courtyard
+      - id: potion
+        title: "ポーションをつくろう！"
+        good: [water, wind]
+        text: "魔法の力が宿ったお薬「ポーション」を調合する授業。傷を癒したり、お肌がつるつるになったり、生活必需品だ。"
+        note: "注意：つくり方を間違えると教室が爆発するかもしれないぞ。"
+        scene: potion
+      - id: stargazing
+        title: "星空観察"
+        good: [earth, light]
+        text: "夜間の課外授業。星の下で語り合い、天文学をはじめよう。精霊と一緒に見つけた星座は何座かな？"
+        note: "ちゃんと晴れるように、てるてる坊主をつくっておこう。"
+        scene: stargazing
+      - id: cleaning-hallway
+        title: "お掃除の時間！〜校舎〜"
+        good: [water, earth]
+        text: "魔法のほうきで廊下を掃除。果ての見えない廊下でも、精霊の力を借りればあっという間に終わるかも。"
+        note: "不思議な力で無限に伸びる廊下。いったいどこに繋がってるんだろう？"
+        scene: cleaning-hallway
+      - id: fairy-prank
+        title: "妖精のいたずら？！"
+        good: [light, flower]
+        text: "妖精の仕業で、大事なものが消えちゃった！？精霊の力を借りて探し出そう！なくしたものは何だろう？"
+        note: "灯台下暗し。意外と近くに隠されているかも……？"
+        scene: fairy-prank
+      - id: lost-cat
+        title: "迷子の猫を探せ！"
+        good: [light, flower]
+        text: "使い魔の猫が迷子になっちゃった！学校の中、猫の居場所を魔法で探そう。"
+        note: "捕まえたらご褒美に、もふもふさせてもらえるかも。"
+        scene: lost-cat
+      - id: barrier
+        title: "バリアー！"
+        good: [fire, earth]
+        text: "自分の身を守れるのは自分だけだ！今後のことも考えて、結界を張る練習だ！バリアー！"
+        note: "堅〜く、長〜く結界を張ることができたら好成績。"
+        scene: barrier
+      - id: night-patrol
+        title: "深夜のパトロール"
+        good: [fire, light]
+        text: "夜の学校を見回り。魔法ランタンの明かりを絶やさないように気をつけよう。"
+        note: "隠れているいたずら妖精や、さみしがりのゴーストがいるかも。"
+        scene: night-patrol
+      - id: broom-race
+        title: "空飛ぶほうきレース！"
+        good: [fire, wind]
+        text: "今日は運動会。空飛ぶほうきで学校の空を一周！精霊の手助けも借りて、大空に飛び立とう。"
+        note: "目指すは学校イチのほうき使い！"
+        scene: broom-race
+      - id: summer-festival
+        title: "夏まつりを楽しもう！"
+        good: [fire, earth]
+        text: "夏のお祭り。夜まで学校じゅうが踊って歌って大騒ぎ。世界のミュージシャンやアーティストが集まるぞ。"
+        note: "屋台がたくさん並ぶので料理上手は大活躍だ。暑さに負けるな！"
+        scene: summer-festival
+      - id: snow-festival
+        title: "雪まつりを楽しもう！"
+        good: [water, wind]
+        text: "冬のお祭り。大通りに雪でつくった像が並ぶぞ。精霊と協力して、いちばん大きな雪像を作り上げよう。"
+        note: "町が白に染まる。風邪をひかないように。寒さに負けるな！"
+        scene: snow-festival
+  - id: growth-success
+    title: "成長！カード"
+    heading: "成功したら引く"
+    type: simple
+    cards:
+      - id: strong
+        title: "ちからもち"
+        text: "より大きなものを遠くまで動かせる！毎日の訓練のたまもの。"
+      - id: clever
+        title: "かしこい"
+        text: "力の加減が上手。数をかぞえたり、文字も書けるかも？"
+      - id: quick
+        title: "すばやい"
+        text: "スピード1等賞！お掃除もおつかいもあっという間。"
+      - id: hardworking
+        title: "がんばりや"
+        text: "まだまだ成長途中！努力だけは誰にも負けない！"
+      - id: beautiful
+        title: "うつくしい"
+        text: "きらきら輝くその姿は、まるでお空の一番星！"
+      - id: patient
+        title: "がまん強い"
+        text: "人生、ときには我慢も必要……！あなたのそばで、寄り添います。"
+      - id: honest
+        title: "すなお"
+        text: "いつもまっすぐ。褒めたら褒めたぶんだけ伸びます。"
+      - id: kind
+        title: "やさしい"
+        text: "いつもこころに思いやり。困っている人がいたら真っ先に駆けつけます。"
+  - id: growth-fail
+    title: "成長？カード"
+    heading: "成功しなかったら引く"
+    type: simple
+    cards:
+      - id: restless
+        title: "そわそわ"
+        text: "好奇心いっぱい！気になるものがあると、ついついよそ見をしちゃうかも。"
+      - id: easygoing
+        title: "どんかん"
+        text: "細かいことは気にしない！大物の風格？！"
+      - id: forgetful
+        title: "わすれんぼ"
+        text: "よく首を傾げてる。わすれたぶん、新しいことをたくさん覚えるぞ！"
+      - id: contrary
+        title: "あまのじゃく"
+        text: "本当はあなたに甘えたいけど……なかなか言い出せない！"
+      - id: timid
+        title: "こわがり"
+        text: "大きな音が鳴ったりすると、あなたの背中に隠れちゃう。"
+      - id: whimsical
+        title: "きまぐれ"
+        text: "のんびりマイペース。でも、やる気になったときのパワーはピカイチ！"
+      - id: no-sense-of-direction
+        title: "方向おんち"
+        text: "方角は分からないけど、あなたのことだけは見失わない。"
+      - id: mischievous
+        title: "いじわる"
+        text: "いたずら大好き！妖精に似たのかも。本当に嫌なことはやらないよ。"

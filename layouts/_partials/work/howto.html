@@ -1,0 +1,13 @@
+{{- /*
+  遊び方の流れ（ゲームブック）。howto に書いた順に番号付きで並べる。各項目は title と text（Markdown 可）
+*/ -}}
+{{- with .Params.howto }}
+<section class="work-howto">
+  <h2>遊び方の流れ</h2>
+  <ol class="howto-list">
+    {{- range . }}
+    <li><strong>{{ .title }}</strong>{{ with .text }}<span>{{ . | markdownify }}</span>{{ end }}</li>
+    {{- end }}
+  </ol>
+</section>
+{{- end }}

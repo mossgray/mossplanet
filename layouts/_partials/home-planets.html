@@ -1,0 +1,51 @@
+{{- /*
+  トップの惑星の並び（トップと、試作ページ /lab/ で共通）。docs/spec.md 第5章
+  本番では作品数が min_works 未満の惑星を出さない（_partials/planets.html）
+  data-* は試作ページのスクリプト（観測カードなど）が読む
+*/ -}}
+{{- $en := eq site.Language.Lang "en" -}}
+<div class="space"{{ if not hugo.IsProduction }} data-preview{{ end }}>
+  <ul class="planets">
+    {{- range $i, $p := where (partialCached "planets.html" .) "visible" true }}
+    {{- $name := cond $en $p.name_en $p.name }}
+    <li class="planet" data-pixel-snap style="--i: {{ $i }}; --dy: {{ $p.offset | default 0 }}; --planet: {{ $p.color | safeCSS }};"
+      data-id="{{ $p.id }}" data-name="{{ $name }}" data-color="{{ $p.color }}" data-count="{{ $p.count }}"{{ if $p.pending }} data-pending{{ end }}>
+      <a class="planet-link" href="{{ $p.url | relURL }}">
+        <span class="planet-body" aria-hidden="true">
+          <canvas class="planet-canvas" width="64" height="64"
+            data-color="{{ $p.color }}" data-seed="{{ $p.seed }}" data-surface="{{ $p.surface }}"></canvas>
+          {{- /* 日本語版：惑星の前面に重ねる、ドット絵フォントのタイトル（回転しない。planets.js が描く） */}}
+          {{- if not $en }}
+          <canvas class="planet-title" width="1" height="1" hidden
+            data-title="{{ $p.title | default $p.name }}" data-break="{{ $p.title_break }}" data-color="{{ $p.color }}"></canvas>
+          {{- end }}
+        </span>
+        {{- /* 惑星の名前は HTML の文字としても置く（読み上げと検索のため）。ドット絵のタイトルを描けたら、日本語名は見えなくし、英語名を小さく添える */}}
+        <span class="planet-name">
+          <span class="planet-name-main">{{ $name }}</span>
+          {{- if not $en }}<span class="planet-name-en" lang="en">{{ $p.name_en }}</span>{{ end }}
+          {{- if $p.pending }}<small class="pending-badge">{{ T "pending" }}</small>{{ end -}}
+        </span>
+      </a>
+    </li>
+    {{- end }}
+    {{- /*
+      モスの星（第5.1節）。PC（幅1024px以上）だけ、六角形に並べた惑星の中心に置く。スマートフォン・タブレットでは出さない
+      - 絵は static/images/moss-star.png（64×64）。惑星より1段小さい整数倍で拡大し、回転しない。下に「About」の文字を添える
+      - まばたき：目を閉じた絵（static/images/moss-star-blink.png、64×64）を目を開いた絵に重ね、moss-blink.js が .is-blinking を付けている4〜6秒に一度の0.15秒だけ見せる
+        （タブバーのプロフィールのアイコンと同じ、2枚の img の重ね方式。2026年11月24日）
+      - 惑星と同じく、ホバー・キーボードで跳ね（top-forge.js）、吹き出しには data-bubble の文字だけを出す（top-bubble.js）
+    */}}
+    <li class="planet moss-star" data-pixel-snap style="--i: 0; --planet: #54bdb2;"
+      data-id="moss" data-color="#54bdb2" data-bubble="About">
+      <a class="planet-link" href="{{ "/about/" | relLangURL }}">
+        <span class="planet-body moss-star-body moss-blink">
+          <img class="moss-star-img" src="/images/moss-star.png" width="64" height="64" alt="{{ T "moss_star_alt" }}">
+          <img class="moss-star-shut" src="/images/moss-star-blink.png" width="64" height="64" alt="" aria-hidden="true">
+        </span>
+        {{- /* 星の下の文字。リンクの名前は画像の代替テキストで伝えるので、読み上げでは重ねない */}}
+        <span class="planet-name moss-star-name" aria-hidden="true">About</span>
+      </a>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,83 @@
+{{- /*
+  惑星の一覧ページ（/illustration/ など5つ）を data/planets.yaml から作る（Hugo の content adapter）
+  docs/spec.md 第3章・第6.1節
+
+  作品が足りない惑星の扱い（_partials/planets.html と同じ規則）：
+  - 本番：作品数が config.toml の min_works 未満の惑星は、ページを作らない
+  - 確認用URL（本番以外）：すべて作る（ページ内に「準備中」と出す）
+
+  ここではまだ作品ページの一覧が使えないため、content/works の各フォルダの index.md の Front Matter を直接読んで数える。
+  ファンアート（fanart）は惑星の一覧ページではなく、下の /fanart/ の節として作る。
+*/ -}}
+{{- $min := site.Params.min_works | default 1 -}}
+{{- $counts := dict -}}
+{{- /* 作品（content/works）と、キャラクターページ（content/characters。1キャラクターを1件と数える。第6.7節） */ -}}
+{{- range $dir := slice "content/works" "content/characters" -}}
+{{- if fileExists $dir -}}
+{{- range os.ReadDir $dir -}}
+  {{- if .IsDir -}}
+    {{- $file := printf "%s/%s/index.md" $dir .Name -}}
+    {{- if fileExists $file -}}
+      {{- $parts := split (readFile $file) "---" -}}
+      {{- if ge (len $parts) 3 -}}
+        {{- $fm := index $parts 1 | transform.Unmarshal -}}
+        {{- if not $fm.draft -}}
+          {{- range $fm.planets -}}
+            {{- $counts = merge $counts (dict . (add (index $counts . | default 0) 1)) -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- /*
+  ファンアートの節（/fanart/）もここで作る。config.toml の fanart_public の1行で、
+  /fanart/ と、その下の作品ページ（content/fanart/）をまとめて出力しないようにできる（第6.5節）
+  本番では、作品が min_works 未満のときも出力しない
+*/ -}}
+{{- $fanartCount := 0 -}}
+{{- if fileExists "content/fanart" -}}
+  {{- range os.ReadDir "content/fanart" -}}
+    {{- if .IsDir -}}
+      {{- $file := printf "content/fanart/%s/index.md" .Name -}}
+      {{- if fileExists $file -}}
+        {{- $parts := split (readFile $file) "---" -}}
+        {{- if ge (len $parts) 3 -}}
+          {{- if not (index $parts 1 | transform.Unmarshal).draft -}}{{- $fanartCount = add $fanartCount 1 -}}{{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $fanartPublish := and (site.Params.fanart_public | default false) (or (ge $fanartCount $min) (not hugo.IsProduction)) -}}
+{{- $fanartRender := cond $fanartPublish "always" "never" -}}
+{{- range where hugo.Data.planets "id" "fanart" -}}
+  {{- $.AddPage (dict
+    "path" "fanart"
+    "kind" "section"
+    "title" .name
+    "params" (dict "color" .color "band" .band "name_en" .name_en "description" (.intro | replaceRE `<rt>.*?</rt>` "" | plainify) "seo_title" .seo_title)
+    "build" (dict "render" $fanartRender "list" $fanartRender)
+    "cascade" (dict "build" (dict "render" $fanartRender "list" $fanartRender "publishResources" false))
+  ) -}}
+{{- end -}}
+
+{{- range hugo.Data.planets -}}
+  {{- if ne .id "fanart" -}}
+    {{- $count := index $counts .id | default 0 -}}
+    {{- $publish := or (ge $count $min) (not hugo.IsProduction) -}}
+    {{- $render := cond $publish "always" "never" -}}
+    {{- $.AddPage (dict
+      "path" .id
+      "kind" "page"
+      "title" .name
+      "layout" "planet"
+      "params" (dict "planet" .id "color" .color "band" .band "name_en" .name_en "description" (.intro | replaceRE `<rt>.*?</rt>` "" | plainify))
+      "build" (dict "render" $render "list" $render)
+    ) -}}
+  {{- end -}}
+{{- end -}}
+

@@ -1,0 +1,186 @@
+{{- /*
+  作品ページ。docs/spec.md 第6.2節
+  ゲームブック（gamebook の項目がある作品）は、第6.2.1節の並びにする：
+  表紙 → 実物の写真 → 紹介文 → 仕様の表 → 「遊んでみる」→ 遊び方の流れ → カード → 紙面 → 本文の続き → 関連作品
+  本文は <!-- after --> の行で前後に分けられる。前が紹介文、後ろが紙面のあとに出す部分（BGM・参考文献など）
+*/ -}}
+{{ define "main" }}
+{{- $planets := partialCached "planets.html" . -}}
+{{- $mine := slice -}}
+{{- range .Params.planets -}}{{- $id := . -}}{{- range where $planets "id" $id -}}{{- $mine = $mine | append . -}}{{- end -}}{{- end -}}
+{{- $primary := index $mine 0 | default dict -}}
+
+{{- /* 1. タイトル帯：惑星の色を薄めた背景。左に惑星のアイコン（クリックでその惑星の一覧へ） */ -}}
+<header class="title-band" style="--band: {{ $primary.band | default "#e6f5f2" | safeCSS }};">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    {{- with $primary }}
+    {{- $icon := partial "pixel-icon.html" (dict "color" .color "size" 32 "scale" 2 "label" (printf "%sの一覧へ" .name)) -}}
+    {{- if .visible }}<a class="title-band-icon" href="{{ .url | relURL }}">{{ $icon }}</a>{{ else }}<span class="title-band-icon">{{ $icon }}</span>{{ end }}
+    {{- end }}
+    <div>
+      <h1 class="title-band-title">{{ .Title }}</h1>
+      <p class="title-band-meta">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006" }}</time>
+        {{- range $mine }}
+        <span class="title-band-planet">{{ if .visible }}<a href="{{ .url | relURL }}">{{ .name }}</a>{{ else }}{{ .name }}{{ end }}</span>
+        {{- end }}
+      </p>
+    </div>
+  </div>
+</header>
+
+<article class="work{{ if .Params.gamebook }} is-gamebook{{ end }}">
+  {{- /* 2. メイン画像：白背景の中央、最大幅1100px。クリックで画面いっぱいに拡大。周りに装飾を置かない */ -}}
+  {{- $still := "" -}}{{- with .Params.cover_still }}{{ $still = $.Resources.Get . }}{{ end }}
+  {{- if .Params.variants }}
+  {{- /* 差分のある作品：メイン画像の代わりに、差分の切り替え（第6.2.3節） */ -}}
+  {{ partial "work/variants.html" . }}
+  {{- else }}
+  {{- with .Params.cover }}{{ with $.Resources.Get . }}
+  <figure class="work-main">
+    {{ partial "image/responsive.html" (dict "res" . "alt" $.Params.cover_alt "pixel" ($.Params.pixel | default false) "zoom" true "eager" true "still" $still) }}
+  </figure>
+  {{- end }}{{ end }}
+  {{- end }}
+
+  {{- $parts := split .Content "<!-- after -->" -}}
+  {{- $intro := index $parts 0 -}}
+  {{- $after := cond (gt (len $parts) 1) (index $parts 1) "" -}}
+
+  {{- if .Params.gamebook }}
+  {{- /* ゲームブック：実物の写真 → 紹介文 → 仕様の表 → 遊んでみる → 遊び方 → カード → 紙面 → 本文の続き */ -}}
+  {{ partial "work/photos.html" . }}
+  <div class="work-body work-body-head">
+    <div class="prose">{{ $intro | safeHTML }}</div>
+    {{ partial "work/info.html" . }}
+    {{- with .Params.play_url }}
+    <p class="play-button"><a class="button" href="{{ . }}" rel="noopener">{{ $.Params.play_label | default "遊んでみる" }}</a>{{ with $.Params.play_note }}<small>{{ . }}</small>{{ end }}</p>
+    {{- end }}
+    {{ partial "work/howto.html" . }}
+  </div>
+  {{ partial "work/cards.html" . }}
+  {{ partial "work/pages.html" . }}
+  <div class="work-body">
+    {{- with $after }}<div class="prose">{{ . | safeHTML }}</div>{{ end }}
+  {{- else }}
+  {{- /* 3. 作品情報（値がない項目は出さない） */ -}}
+  {{- if .Params.sketches }}
+  {{- /* らくがき帳：作品情報 → らくがきの一覧（新しい順。第6.2.2節）→ 本文の文章（あれば） */ -}}
+  <div class="work-body work-body-head">
+    {{ partial "work/info.html" . }}
+  </div>
+  {{ partial "work/sketches.html" . }}
+  <div class="work-body">
+  {{- else if .Params.gallery }}
+  {{- /* ギャラリーがあるときは、作品情報 → ギャラリー（本文の画像。横幅を広く取る） → 本文の文章 の順にする */ -}}
+  <div class="work-body work-body-head">
+    {{ partial "work/info.html" . }}
+  </div>
+  {{ partial "work/gallery.html" . }}
+  <div class="work-body">
+  {{- else }}
+  <div class="work-body">
+    {{ partial "work/info.html" . }}
+  {{- end }}
+
+    {{- /* 4. 本文 */ -}}
+    <div class="prose">
+      {{ $intro | safeHTML }}
+    </div>
+    {{ partial "work/photos.html" . }}
+
+    {{- /* 4.5 制作工程（process） */ -}}
+    {{ partial "work/process.html" . }}
+    {{- with $after }}<div class="prose">{{ . | safeHTML }}</div>{{ end }}
+  {{- end }}
+
+    {{- /* 4.8 関連作品（related） */ -}}
+    {{ partial "work/related.html" . }}
+
+    {{- /* 4.85 同じ卓のキャラクター（session が同じ作品。data/sessions.yaml。第7.1節） */ -}}
+    {{- with .Params.session }}
+    {{- $sid := . -}}
+    {{- $mates := slice -}}
+    {{- range (where (where site.RegularPages "Section" "works") "Params.session" $sid).ByDate.Reverse -}}
+      {{- if ne .RelPermalink $.RelPermalink }}{{ $mates = $mates | append . }}{{ end -}}
+    {{- end }}
+    {{- with $mates }}
+    <section class="work-session">
+      <h2>同じ卓のキャラクター{{ with index hugo.Data.sessions $sid }}<small>{{ .name }}</small>{{ else }}{{ warnf "卓が data/sessions.yaml にありません: %s（%s）" $sid $.RelPermalink }}{{ end }}</h2>
+      <ul class="work-grid">
+        {{- range . }}
+        {{ partial "work-card.html" (dict "page" .) }}
+        {{- end }}
+      </ul>
+    </section>
+    {{- end }}
+    {{- end }}
+
+    {{- /* 4.9 キャラクター（character: <ID> の作品は、キャラクターページへのカードを出す。第6.7節） */ -}}
+    {{- with .Params.character }}{{ with site.GetPage (printf "/characters/%s" .) }}
+    <section class="work-character">
+      <h2>このキャラクター</h2>
+      <ul class="character-cards">
+        {{ partial "character-card.html" . }}
+      </ul>
+    </section>
+    {{- else }}{{ warnf "キャラクターページが見つかりません: %s（%s）" . $.RelPermalink }}{{ end }}{{ end }}
+
+    {{- /* 5. この作品が属する惑星 */ -}}
+    {{- with where $mine "visible" true }}
+    <section class="work-planets-section">
+      <h2>この作品が属する惑星</h2>
+      <ul class="planet-cards">
+        {{- range . }}
+        <li><a href="{{ .url | relURL }}" style="--band: {{ .band | safeCSS }};">{{ partial "pixel-icon.html" (dict "color" .color "size" 32 "scale" 2) }}<span class="planet-card-name">{{ .name }}<small lang="en">{{ .name_en }}</small></span></a></li>
+        {{- end }}
+      </ul>
+    </section>
+    {{- end }}
+
+    {{- /* 6. 前後の作品（所属する最初の惑星の中で、新しい順に並べたときの前後） */ -}}
+    {{- with $primary.id }}
+    {{- $siblings := (where (where site.RegularPages "Section" "works") "Params.planets" "intersect" (slice .)).ByDate.Reverse -}}
+    {{- $newer := "" -}}{{- $older := "" -}}{{- $found := false -}}
+    {{- range $siblings -}}
+      {{- if $found -}}{{- if not $older -}}{{- $older = . -}}{{- end -}}
+      {{- else if eq .RelPermalink $.RelPermalink -}}{{- $found = true -}}
+      {{- else -}}{{- $newer = . -}}{{- end -}}
+    {{- end }}
+    {{- if or $newer $older }}
+    <nav class="work-pager" aria-label="同じ惑星の前後の作品">
+      {{- with $newer }}<a class="work-pager-newer" href="{{ .RelPermalink }}"><span>新しい作品</span>{{ .Title }}</a>{{ else }}<span></span>{{ end }}
+      {{- with $older }}<a class="work-pager-older" href="{{ .RelPermalink }}"><span>前の作品</span>{{ .Title }}</a>{{ end }}
+    </nav>
+    {{- end }}
+    {{- end }}
+
+    {{- /* 7. 依頼への導線は置かない（2026年11月24日に「このテイストで依頼する」を外した。お問い合わせへの入口はメニュー。第6.2節） */ -}}
+  </div>
+</article>
+
+{{- /* 拡大表示 */ -}}
+{{ partial "zoom-dialog.html" . }}
+{{ end }}
+
+{{ define "scripts" }}
+{{- with resources.Get "js/zoom.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- if .Params.variants }}
+{{- with resources.Get "js/variants.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- end }}
+{{- if .Params.cards }}
+{{- with resources.Get "js/cards.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- end }}
+{{- if .HasShortcode "youtube" }}
+{{- with resources.Get "js/youtube.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- end }}
+{{ end }}

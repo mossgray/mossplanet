@@ -1,0 +1,100 @@
+{{ define "bodyClass" }}page home{{ end }}
+
+{{ define "main" }}
+<h1 class="visually-hidden">{{ T "home_h1" }}</h1>
+{{ partial "home-planets.html" . }}
+
+{{- /* 紹介文（検索エンジンにサイトの内容を伝える） */ -}}
+<div class="home-intro">
+  <div class="home-intro-box">
+    {{- /* i18n の home_intro を、改行（\n）ごとに1行ずつ */}}
+    {{- range split (T "home_intro") "\n" }}
+    <p>{{ . }}</p>
+    {{- end }}
+  </div>
+</div>
+
+{{- /*
+  余白をクリック／タップすると小さな惑星が生まれる（第5.5節。assets/js/top-forge.js）
+  キャンバスは、はみ出しを切り取る枠に入れる。main より広く・高くなると、PCでスクロールバーが出入りして画面が左右にぶれるため
+*/}}
+<div class="sky-wrap" aria-hidden="true"><canvas class="sky"></canvas></div>
+<p class="sky-hint" aria-hidden="true">
+  <span class="sky-hint-mouse">{{ T "hint_click" }}</span>
+  <span class="sky-hint-touch">{{ T "hint_tap" }}</span>
+</p>
+
+{{- /*
+  吹き出しのバナー用の画像（第5.4節。assets/js/top-bubble.js）
+  惑星ごとに代表作（featured_in → 足りなければ新しい順で補う（featured_exclude の作品は除く）、最大3件）のメイン画像を横480pxに縮めたWebP。
+  どれを・どこを切り抜くかは top-bubble.js がランダムに決める。bubble_thumbs: false の惑星（ファンアート）は画像を出さない。
+  作品は日本語版にだけあるので、英語版のトップからも日本語版（最初のサイト）の作品を使う
+*/ -}}
+{{- /* 作品とキャラクターページ（キャラクターは thumb の画像を使う。第6.7節） */ -}}
+{{- $works := where (index hugo.Sites 0).RegularPages "Section" "in" (slice "works" "characters") -}}
+{{- $data := dict -}}
+{{- range where (partialCached "planets.html" .) "visible" true -}}
+  {{- $id := .id -}}
+  {{- $imgs := slice -}}
+  {{- if and .bubble_thumbs (ne $id "fanart") -}}
+    {{- $mine := (where $works "Params.planets" "intersect" (slice $id)).ByDate.Reverse -}}
+    {{- /* featured_in の作品（新しい順）→ 足りなければ新しい順で補う。featured_exclude: true の作品は補う対象にしない */ -}}
+    {{- $featured := where $mine "Params.featured_in" "intersect" (slice $id) -}}
+    {{- range $mine -}}
+      {{- if and (lt (len $featured) 3) (not (in $featured .)) (not .Params.featured_exclude) -}}{{- $featured = $featured | append . -}}{{- end -}}
+    {{- end -}}
+    {{- range first 3 $featured -}}
+      {{- $page := . -}}
+      {{- /* 動く画像（GIF）は、吹き出しでは静止画（cover_still）を使う */ -}}
+      {{- with .Resources.Get (.Params.cover_still | default (partial "work/cover-name.html" .) | default .Params.thumb) -}}
+        {{- $pixel := $page.Params.pixel | default false -}}
+        {{- $img := . -}}
+        {{- if not $pixel -}}{{- $img = .Resize "480x webp q80" -}}{{- end -}}
+        {{- $info := dict "src" $img.RelPermalink "w" $img.Width "h" $img.Height "pixel" $pixel -}}
+        {{- /* thumb_bg があれば、吹き出しでも画像の後ろに敷く（"grid" か色。第5.4節・第7.1節） */ -}}
+        {{- $bg := partial "work/thumb-bg.html" $page -}}
+        {{- if isset $bg "grid" }}{{ $info = merge $info (dict "bg" "ccfolia-grid") }}{{ else }}{{ with $bg.color }}{{ $info = merge $info (dict "bg" .) }}{{ end }}{{ end -}}
+        {{- $imgs = $imgs | append $info -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $data = merge $data (dict $id $imgs) -}}
+{{- end }}
+{{- /*
+  関連線（第5.1節）：結ぶ惑星の組み合わせ。assets/js/top-forge.js が点線で描く
+  - 複数の惑星に属する作品：その惑星どうし
+  - related（関連作品）でつながった作品どうし：それぞれの惑星どうし（同じ惑星は除く）
+  表示している惑星どうしだけを、重複なしで "idA|idB"（名前順）にまとめる
+*/ -}}
+{{- $visible := slice -}}
+{{- range where (partialCached "planets.html" .) "visible" true }}{{ $visible = $visible | append .id }}{{ end -}}
+{{- $rel := slice -}}
+{{- range $works -}}
+  {{- $a := .Params.planets | default slice -}}
+  {{- $groups := slice (dict "x" $a "y" $a) -}}
+  {{- range .Params.related -}}
+    {{- with site.GetPage (printf "/works/%s" .) }}{{ $groups = $groups | append (dict "x" $a "y" (.Params.planets | default slice)) }}{{ end -}}
+  {{- end -}}
+  {{- range $groups -}}
+    {{- $y := .y -}}
+    {{- range $p := .x -}}
+      {{- range $q := $y -}}
+        {{- if and (ne $p $q) (in $visible $p) (in $visible $q) -}}
+          {{- $key := delimit (sort (slice $p $q)) "|" -}}
+          {{- if not (in $rel $key) }}{{ $rel = $rel | append $key }}{{ end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end }}
+<script type="application/json" id="home-relations">{{ $rel | jsonify | safeJS }}</script>
+<script type="application/json" id="home-bubbles" data-count="{{ T "bubble_count" }}" data-pending="{{ T "bubble_pending" }}">{{ $data | jsonify | safeJS }}</script>
+{{ end }}
+
+{{ define "scripts" }}
+{{- range slice "js/planets.js" "js/top-forge.js" "js/top-bubble.js" }}
+{{- with resources.Get . | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
+{{- end }}
+{{ end }}

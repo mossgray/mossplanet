@@ -1,0 +1,27 @@
+{{- /*
+  YouTube 動画（Hugo 標準の youtube ショートコードを置き換える）
+  使い方：{{< youtube id="動画ID" title="動画の題名" >}}
+
+  ページを開いた時点では YouTube に一切接続しない（Cookie を使う外部スクリプトを読み込まないため）。
+  - サムネイル画像は、ビルド時に YouTube から取得してこのサイトの画像として配信する
+  - 再生ボタンを押したときに初めて、プライバシー強化モード（youtube-nocookie.com）のプレーヤーを読み込む（assets/js/youtube.js）
+  - JavaScript が動かない環境では、YouTube の動画ページへの普通のリンクになる
+*/ -}}
+{{- $id := .Get "id" | default (.Get 0) -}}
+{{- $title := .Get "title" | default "YouTube 動画" -}}
+{{- $thumb := "" -}}
+{{- with try (resources.GetRemote (printf "https://i.ytimg.com/vi/%s/hqdefault.jpg" $id)) -}}
+  {{- with .Err -}}
+    {{- warnf "YouTube のサムネイルを取得できませんでした（%s）: %s" $id . -}}
+  {{- else with .Value -}}
+    {{- $thumb = (.Fill "640x360 Center webp q78").RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+<div class="yt" data-yt="{{ $id }}" data-yt-title="{{ $title }}">
+  <a class="yt-link" href="https://www.youtube.com/watch?v={{ $id }}" rel="noopener">
+    {{- with $thumb }}<img src="{{ . }}" width="640" height="360" alt="" loading="lazy" decoding="async">{{ end }}
+    <span class="yt-play" aria-hidden="true"></span>
+    <span class="yt-title">{{ $title }}<small>クリックすると YouTube の動画を読み込みます</small></span>
+  </a>
+</div>
+{{- /* ページ側で youtube.js を読み込む（.HasShortcode "youtube"） */ -}}

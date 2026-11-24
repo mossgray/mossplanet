@@ -1,0 +1,33 @@
+{{- /*
+  紙面・冊子（ゲームブック）。docs/spec.md 第7.4節
+  pages に書いた順に並べる。クリックで拡大し、拡大表示の中で前後のページへ移れる（ボタン・←→キー・スワイプ）
+  pages_title: 冊子              ← 見出し（省略時は「紙面」）
+  pages:
+    - image: page-01.webp
+      label: "1（表紙）"
+      alt: ページの内容を文章で（紙面の文字は検索エンジンに読まれないため）
+      spread: true                ← 見開き（2ページ分の幅で表示）
+  1ページの表示の大きさはそろえる：見開きは2列分、1ページは1列分。見開きがあるときは、
+  最初の1ページ（表紙）を右側に置く（本を開いたときと同じ並び）
+*/ -}}
+{{- $p := . -}}
+{{- with $p.Params.pages }}
+{{- $spreads := where . "spread" true -}}
+<section class="work-pages">
+  <h2>{{ $p.Params.pages_title | default "紙面" }}{{ with $p.Params.pages_note }}<small>{{ . }}</small>{{ end }}</h2>
+  <ol class="pages-list{{ if $spreads }} has-spreads{{ end }}">
+    {{- range $i, $pg := . }}
+    {{- with $p.Resources.Get $pg.image }}
+    <li class="page-item{{ if $pg.spread }} is-spread{{ end }}">
+      <figure>
+        {{ partial "image/responsive.html" (dict "res" . "alt" ($pg.alt | default (printf "%s（%s）" $p.Title ($pg.label | default (add $i 1)))) "zoom" true "group" "pages" "w" (cond (eq $pg.spread true) 1100 560) "sizes" (cond $pg.spread "(min-width: 1132px) 1100px, calc(100vw - 32px)" (cond $spreads "(min-width: 1132px) 542px, calc(50vw - 24px)" "(min-width: 1132px) 263px, (min-width: 768px) calc(25vw - 20px), calc(50vw - 24px)"))) }}
+        {{- with $pg.label }}<figcaption>{{ . }}</figcaption>{{ end }}
+      </figure>
+    </li>
+    {{- else }}
+    {{- warnf "紙面の画像が見つかりません: %s（%s）" $pg.image $p.RelPermalink -}}
+    {{- end }}
+    {{- end }}
+  </ol>
+</section>
+{{- end }}

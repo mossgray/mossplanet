@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="{{ site.Language.Locale | default "ja" }}">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body class="{{ block "bodyClass" . }}page{{ end }}">
+  {{ partial "header.html" . }}
+  <main id="main">
+    {{ block "main" . }}{{ end }}
+  </main>
+  {{ partial "footer.html" . }}
+  {{ partial "tabbar.html" . }}
+  {{- with resources.Get "js/pixel-snap.js" | minify | fingerprint }}
+  <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+  {{- end }}
+  {{- /* モスの星のまばたき（トップの中心と、タブバーの About アイコン） */}}
+  {{- with resources.Get "js/moss-blink.js" | minify | fingerprint }}
+  <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+  {{- end }}
+  {{- with resources.Get "js/nav.js" | minify | fingerprint }}
+  <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+  {{- end }}
+  {{ block "scripts" . }}{{ end }}
+</body>
+</html>

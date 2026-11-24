@@ -1,0 +1,16 @@
+{{- /*
+  キャラクターのカード（作品ページの「このキャラクター」）。docs/spec.md 第6.7節
+  . はキャラクターページ（content/characters/<ID>/）。サムネイル（thumb）・名前・CHARACTER FILE 番号
+*/ -}}
+<li class="character-card">
+  <a href="{{ .RelPermalink }}">
+    {{- with .Params.thumb }}{{ with $.Resources.Get . }}
+    {{- $img := .Fill "160x160 Smart webp q85" }}
+    <img class="character-face" src="{{ $img.RelPermalink }}" width="80" height="80" alt="" loading="lazy" decoding="async">
+    {{- end }}{{ end }}
+    <span class="character-card-text">
+      <span class="character-card-name">{{ .Title }}</span>
+      <small lang="en">CHARACTER FILE {{ .Params.file_no | default "00" }}</small>
+    </span>
+  </a>
+</li>

@@ -1,0 +1,42 @@
+{{- /*
+  作品画像を、表示用に軽量化して <img> を出力する（メイン画像と本文中の画像で共用）
+  dict "res" 画像リソース "alt" 代替テキスト "pixel" ドット絵か "zoom" クリックで拡大するか "eager" 先に読み込むか "sizes" 表示幅（省略時は最大1100px） "group" 拡大表示で前後に移れる画像のまとまりの名前 "w" 表示用の画像の幅（省略時は1100px。その2倍も作る） "still" 動く画像（GIF）の静止画のリソース
+  - 通常：表示幅 1100px と、その2倍（高解像度の画面用）の WebP を作る。拡大表示用は長辺 2400px まで
+  - ドット絵：縮小・再圧縮せず元の画像を使い、最大幅 1100px に収まる整数倍で表示する（第5.3節・第6.2節）
+    表示する画面では、assets/js/pixel-snap.js が枠の幅と画面の高さ（85%）に収まる整数倍に合わせ直す（data-pixel-fit）
+  - GIF などの画像処理できない形式は、そのまま表示する
+*/ -}}
+{{- $r := .res -}}
+{{- $alt := .alt | default "" -}}
+{{- $loading := cond (.eager | default false) "eager" "lazy" -}}
+{{- $src := "" -}}{{- $srcset := "" -}}{{- $w := 0 -}}{{- $h := 0 -}}{{- $full := "" -}}
+{{- $pixel := .pixel | default false -}}
+{{- $base := .w | default 1100 -}}
+{{- if or $pixel (not (in (slice "jpeg" "png" "webp" "tiff" "bmp") $r.MediaType.SubType)) -}}
+  {{- $k := 1 -}}
+  {{- with $r.Width -}}{{- $k = math.Max 1 (math.Floor (div 1100.0 .)) | int -}}{{- end -}}
+  {{- $src = $r.RelPermalink -}}
+  {{- $w = mul ($r.Width | default 0) $k -}}{{- $h = mul ($r.Height | default 0) $k -}}
+  {{- $full = $r.RelPermalink -}}
+{{- else -}}
+  {{- /* cond は両方の値を計算してしまうので、画像処理の分岐は if で書く */ -}}
+  {{- $one := "" -}}
+  {{- if gt $r.Width $base }}{{ $one = $r.Resize (printf "%dx webp q82" $base) }}{{ else }}{{ $one = $r.Process "webp q82" }}{{ end -}}
+  {{- $src = $one.RelPermalink -}}
+  {{- $w = $one.Width -}}{{- $h = $one.Height -}}
+  {{- /* 表示幅より小さい画像は srcset を付けない（srcset と sizes があると、ブラウザが sizes の幅まで引き伸ばしてぼやけるため） */ -}}
+  {{- if gt $r.Width $base -}}
+    {{- $two := $r.Resize (printf "%dx webp q78" (math.Min (mul $base 2) $r.Width | int)) -}}
+    {{- $srcset = printf "%s %dw, %s %dw" $one.RelPermalink $one.Width $two.RelPermalink $two.Width -}}
+  {{- end -}}
+  {{- $big := "" -}}
+  {{- if gt $r.Width 2400 }}{{ $big = $r.Resize "2400x webp q85" }}{{ else }}{{ $big = $r.Process "webp q85" }}{{ end -}}
+  {{- $full = $big.RelPermalink -}}
+{{- end -}}
+{{- /* アニメーションGIFなどの動く画像は、動きを止める設定のときに静止画（still）を出す */ -}}
+{{- $still := "" -}}{{- with .still }}{{ $still = .RelPermalink }}{{ end -}}
+{{- if .zoom }}<a class="zoom" href="{{ $full }}" data-zoom{{ with .group }} data-zoom-group="{{ . }}"{{ end }}>{{ end -}}
+{{- with $still }}<picture><source media="(prefers-reduced-motion: reduce)" srcset="{{ . }}">{{ end -}}
+<img src="{{ $src }}"{{ with $srcset }} srcset="{{ . }}" sizes="{{ $.sizes | default "(min-width: 1132px) 1100px, calc(100vw - 32px)" }}"{{ end }} width="{{ $w }}" height="{{ $h }}" alt="{{ $alt }}" loading="{{ $loading }}" decoding="async"{{ if $pixel }} class="is-pixel" data-pixel-fit data-w="{{ $r.Width }}" data-h="{{ $r.Height }}"{{ end }}{{ with $still }} data-still="{{ . }}"{{ end }}>
+{{- if $still }}</picture>{{ end -}}
+{{- if .zoom }}</a>{{ end -}}

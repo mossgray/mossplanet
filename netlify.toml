@@ -3,11 +3,60 @@
   publish = "public"
 
 [build.environment]
-  HUGO_VERSION = "0.126.1"
-  HUGO_ENV = "production"
+  HUGO_VERSION = "0.170.0"
 
-# Redirects (optional): ensure pretty URLs
+# 確認用URL（ブランチ公開・デプロイプレビュー）は preview 環境でビルドし、noindex にする
+[context.branch-deploy]
+  command = "hugo --gc --minify --environment preview"
+
+[context.deploy-preview]
+  command = "hugo --gc --minify --environment preview"
+
+# ---------- 旧URLからの転送（301）。docs/spec.md 第3章・第9.4節 ----------
+# 旧サイトの作品ページ（日付で始まるURL）→ 新しい作品ID
 [[redirects]]
-  from = "/*"
-  to = "/:splat"
-  status = 200
+  from = "/works/20231012_montoro_live2d/"
+  to = "/works/montoro-live2d/"
+  status = 301
+
+[[redirects]]
+  from = "/works/20240629_midorikawa_live2d/"
+  to = "/works/midorikawa-live2d/"
+  status = 301
+
+[[redirects]]
+  from = "/works/20240110_yorumun/"
+  to = "/works/yorumun-stream-visual/"
+  status = 301
+
+[[redirects]]
+  from = "/works/20240526_huryakon/"
+  to = "/works/trpg-void-sui/"
+  status = 301
+
+[[redirects]]
+  from = "/works/20240531_kuicon/"
+  to = "/works/kuu-sns-icon/"
+  status = 301
+
+[[redirects]]
+  from = "/works/20250222_oisiigestalt/"
+  to = "/works/oishii-gestalt-mv/"
+  status = 301
+
+# 旧サイトのタグ・カテゴリーの一覧 → すべての惑星と作品
+[[redirects]]
+  from = "/tags/*"
+  to = "/works/"
+  status = 301
+
+[[redirects]]
+  from = "/categories/*"
+  to = "/works/"
+  status = 301
+
+# 英語版（/en/ 以下）の存在しない URL には、英語の 404 ページを返す。ほかの転送より後ろに置く（上から順に照らし合わせるため）
+[[redirects]]
+  from = "/en/*"
+  to = "/en/404.html"
+  status = 404

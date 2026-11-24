@@ -1,0 +1,17 @@
+<footer class="site-footer">
+  {{- /* SNS・頒布のリンク。アイコンは static/images/icons/ の16×16のドット絵を2倍（32px）で表示し、横にサービス名を並べる */}}
+  <ul class="sns" aria-label="{{ T "footer_sns" }}">
+    {{- range $s := slice (dict "url" site.Params.twitter "name" "X" "icon" "x") (dict "url" site.Params.youtube "name" "YouTube" "icon" "youtube") (dict "url" site.Params.skeb "name" "Skeb" "icon" "skeb") (dict "url" site.Params.booth "name" "BOOTH" "icon" "booth") }}
+    {{- with .url }}
+    <li><a href="{{ . }}" target="_blank" rel="noopener" aria-label="{{ $s.name }}{{ T "new_tab" }}"><img class="sns-icon" src="/images/icons/icon-{{ $s.icon }}.png" width="32" height="32" alt=""><span class="sns-name">{{ $s.name }}</span></a></li>
+    {{- end }}
+    {{- end }}
+  </ul>
+  <p class="footer-meta">
+    {{- /* プライバシーポリシーは日本語版と英語版がある（英語版は /en/privacy/。2026年11月24日） */}}
+    <a href="{{ "/privacy/" | relLangURL }}">{{ T "privacy" }}</a>
+    {{- /* 特定商取引法に基づく表記（日本語版だけ。英語版のリンクの文字には「(Japanese)」を添える。docs/spec.md 第9.3節） */}}
+    <a href="{{ "/legal/" | relURL }}"{{ if ne site.Language.Lang "ja" }} hreflang="ja"{{ end }}>{{ T "legal" }}</a>
+    <span class="copyright">© {{ now.Year }} mossplanet</span>
+  </p>
+</footer>

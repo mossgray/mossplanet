@@ -1,0 +1,77 @@
+{{- /*
+  ゲームブックのカード。docs/spec.md 第7.4節
+  front matter の cards: <名前> で data/cards/<名前>.yaml を読み、グループごとに並べる。
+  画像は作品フォルダの cards/<グループのid>-<カードのid>.webp（flip は -front / -back）。
+  紙面の画像として扱う（ドット絵の整数倍の規則は当てはめない）。WebP をそのまま、遅延読み込みで出す。
+  カードの文章は、代替テキストに加えて HTML の文章としても載せる（検索エンジンに読ませるため）
+  - flip：タップで表と裏が入れ替わる（assets/js/cards.js）。「視差効果を減らす」では回転せずに入れ替わるだけ
+  - event：得意属性の印と、イラストのページの同じ絵のシーンへのリンク
+  - simple：画像と文章
+*/ -}}
+{{- $p := . -}}
+{{- with $p.Params.cards }}
+{{- $data := index hugo.Data.cards . -}}
+{{- if not $data }}{{ errorf "カードのデータ data/cards/%s.yaml がありません（%s）" . $p.RelPermalink }}{{ end -}}
+{{- $attrs := $data.attributes | default dict -}}
+<section class="work-cards">
+  <h2>カード</h2>
+  {{- range $g := $data.groups }}
+  <section class="card-group card-group-{{ $g.type }}" id="cards-{{ $g.id }}">
+    <h3>{{ $g.title }}{{ with $g.heading }}<span class="card-group-heading">{{ . }}</span>{{ end }}<small>{{ len $g.cards }}枚</small></h3>
+    {{- with $g.lead }}<p class="card-group-lead">{{ . }}</p>{{ end }}
+    <ul class="card-list">
+      {{- range $c := $g.cards }}
+      {{- $name := $c.name | default $c.title -}}
+      {{- if eq $g.type "flip" }}
+      {{- $front := $p.Resources.Get (printf "cards/%s-%s-front.webp" $g.id $c.id) -}}
+      {{- $back := $p.Resources.Get (printf "cards/%s-%s-back.webp" $g.id $c.id) -}}
+      {{- if not (and $front $back) }}{{ warnf "カードの画像が見つかりません: %s-%s（%s）" $g.id $c.id $p.RelPermalink }}{{ end }}
+      <li class="card-item">
+        <button type="button" class="flip-card" aria-pressed="false" aria-label="{{ $name }}のカード（表と裏を入れ替える）">
+          <span class="flip-card-inner">
+            {{- with $front }}<img class="flip-card-front" src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $g.title }}（表）：{{ $name }}のドット絵" loading="lazy" decoding="async">{{ end }}
+            {{- with $back }}<img class="flip-card-back" src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $g.title }}（裏）：{{ $name }}。{{ $c.text }}" loading="lazy" decoding="async">{{ end }}
+          </span>
+        </button>
+        <div class="card-text">
+          <p class="card-name">{{ $name }}{{ with $c.name_en }}<span lang="en">{{ . }}</span>{{ end }}</p>
+          <p>{{ $c.text }}</p>
+        </div>
+      </li>
+      {{- else }}
+      {{- $img := $p.Resources.Get (printf "cards/%s-%s.webp" $g.id $c.id) -}}
+      {{- if not $img }}{{ warnf "カードの画像が見つかりません: %s-%s（%s）" $g.id $c.id $p.RelPermalink }}{{ end }}
+      {{- $goods := slice -}}
+      {{- range $c.good }}{{ $goods = $goods | append ((index $attrs .).name | default .) }}{{ end -}}
+      {{- $alt := printf "%s：%s。%s" $g.title $name $c.text -}}
+      {{- with $goods }}{{ $alt = printf "%s 得意属性：%s。" $alt (delimit . "・") }}{{ end -}}
+      {{- with $c.note }}{{ $alt = printf "%s %s" $alt . }}{{ end }}
+      <li class="card-item">
+        {{- with $img }}
+        <a class="zoom card-image" href="{{ .RelPermalink }}" data-zoom data-zoom-group="cards-{{ $g.id }}"><img src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="{{ $alt }}" loading="lazy" decoding="async"></a>
+        {{- end }}
+        <div class="card-text">
+          <p class="card-name">{{ $name }}
+            {{- with $c.good }}
+            <span class="card-attrs">
+              <span class="visually-hidden">得意属性：</span>
+              {{- range . }}{{ $a := index $attrs . }}<span class="attr-mark" style="--attr: {{ $a.color | default "#8aa" | safeCSS }};">{{ $a.name | default . }}</span>{{ end -}}
+            </span>
+            {{- end }}
+          </p>
+          <p>{{ $c.text }}</p>
+          {{- with $c.note }}<p class="card-note">{{ . }}</p>{{ end }}
+          {{- if and $c.scene $g.scene_page }}
+          {{- with site.GetPage (printf "/works/%s" $g.scene_page) }}
+          <p class="card-scene"><a href="{{ .RelPermalink }}#{{ $c.scene }}">このシーンのイラストを見る</a></p>
+          {{- else }}{{ warnf "シーンのリンク先の作品が見つかりません: %s" $g.scene_page }}{{ end }}
+          {{- end }}
+        </div>
+      </li>
+      {{- end }}
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+</section>
+{{- end }}

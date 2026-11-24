@@ -1,0 +1,90 @@
+{{- $pageTitle := cond (eq .Kind "404") (T "not_found_title") (.Params.seo_title | default .Title) -}}
+{{- $title := cond .IsHome site.Title (printf "%s | %s" $pageTitle site.Title) -}}
+{{- $desc := .Description | default .Params.description | default .Params.summary | default site.Params.description -}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ $title }}</title>
+{{- if or (not hugo.IsProduction) .Params.noindex }}
+<meta name="robots" content="noindex, nofollow">
+{{- end }}
+<meta name="description" content="{{ $desc }}">
+<link rel="canonical" href="{{ .Permalink }}">
+<meta property="og:title" content="{{ $title }}">
+<meta property="og:description" content="{{ $desc }}">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:site_name" content="{{ site.Title }}">
+<meta property="og:locale" content="{{ cond (eq site.Language.Lang "en") "en_US" "ja_JP" }}">
+{{- /*
+  OGP画像（第9.1節）：作品ページはその作品の画像（cover。動く画像は cover_still）から 1200×630 を作る。
+  ファンアートのページと、それ以外のページは共通画像（config.toml の ogp_image。static/images/ogp.png、1200×630）を使う
+*/ -}}
+{{- $ogp := "" -}}
+{{- if and .IsPage (eq .Section "works") -}}
+  {{- with .Resources.Get (.Params.cover_still | default (partial "work/cover-name.html" .)) -}}
+    {{- if in (slice "jpeg" "png" "webp") .MediaType.SubType -}}
+      {{- $filter := cond ($.Params.pixel | default false) "NearestNeighbor" "Lanczos" -}}
+      {{- $ogp = (.Fill (printf "1200x630 %s jpg q85 %s" (partial "work/thumb-anchor.html" $) $filter)).Permalink -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- /* キャラクターページ：サムネイル（thumb。480×480の正方形）をそのまま使い、カードは正方形用（summary）にする（第6.7節） */ -}}
+{{- $square := false -}}
+{{- if and .IsPage (eq .Section "characters") -}}
+  {{- with .Resources.Get (.Params.thumb | default "") -}}
+    {{- $ogp = (.Process "jpg q88").Permalink -}}{{- $square = true -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $ogp }}{{ with site.Params.ogp_image }}{{ $ogp = . | absURL }}{{ end }}{{ end -}}
+{{- with $ogp }}
+<meta property="og:image" content="{{ . }}">
+<meta name="twitter:image" content="{{ . }}">
+<meta name="twitter:card" content="{{ if $square }}summary{{ else }}summary_large_image{{ end }}">
+{{- else }}
+<meta name="twitter:card" content="summary">
+{{- end }}
+{{- /* ファビコン：ロゴマーク（横長）の上下に透明の余白を足して正方形にしてから縮める */ -}}
+{{- with resources.Get "images/logo/logo-mark.png" -}}
+  {{- $pad := div (sub .Width .Height) 2 -}}
+  {{- $square := .Filter (images.Padding $pad 0 $pad 0 "#00000000") -}}
+  {{- $ico := $square.Resize "32x32 png" -}}
+  {{- $touch := ($square.Filter (images.Padding 20 20 20 20 "#ffffff")).Resize "180x180 png" }}
+<link rel="icon" href="{{ $ico.RelPermalink }}" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="{{ $touch.RelPermalink }}">
+{{- end }}
+{{ partial "structured-data.html" . }}
+{{- /* 日本語版と英語版の対応を検索エンジンに伝える（hreflang）。訳があるページだけ */ -}}
+{{- if .IsTranslated }}
+{{- range .AllTranslations }}
+<link rel="alternate" hreflang="{{ .Language.Lang }}" href="{{ .Permalink }}">
+{{- end }}
+{{- range where .AllTranslations "Language.Lang" "ja" }}
+<link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
+{{- end }}
+{{- end }}
+{{- /*
+  動きの設定（docs/spec.md 第5.2節）。端末の「視差効果を減らす」と、フッターの「動きを止める」ボタンのどちらかで動きを止める。
+  window.mossReduceMotion は matchMedia と同じ形（matches と change の通知）なので、各スクリプトはこれを使う。
+  ボタンで止めたときは <html> に motion-off を付け、CSS でも reduced-motion と同じ扱いにする。描画の前に付けるため、ここに直接書く
+*/ -}}
+{{- with resources.Get "js/motion.js" | minify }}
+<script>{{ .Content | safeJS }}</script>
+{{- end }}
+{{- /* 変わらない画面の高さ（--stable-vh。第5.6節）。描画の前に値を入れるため、ここに直接書く */}}
+{{- with resources.Get "js/stable-vh.js" | minify }}
+<script>{{ .Content | safeJS }}</script>
+{{- end }}
+{{- if and .IsHome (eq site.Language.Lang "ja") }}
+<link rel="preload" href="/fonts/mossplanet-title-pixel.woff" as="font" type="font/woff" crossorigin>
+{{- end }}
+{{- /*
+  本文の Noto Sans JP と、見出しの Zen Maru Gothic を Google Fonts から読み込む（docs/spec.md 第7.3節）。
+  使う太さだけ（本文 400・700、見出し 700）。display=swap で、読み込み中も端末のフォントで文字を出す。
+  閲覧者の IP アドレスなどが Google に送られるため、プライバシーポリシーの「3. 外部サービスの利用」に記載している
+*/}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Zen+Maru+Gothic:wght@700&display=swap">
+{{- with resources.Get "css/main.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
+{{- end }}

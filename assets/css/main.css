@@ -1,0 +1,3050 @@
+/* mossplanet リニューアル 基本スタイル（docs/spec.md 第7.3節） */
+:root {
+  /* 変わらない画面の高さ（1% あたり）。assets/js/stable-vh.js が、開いたときの高さで上書きする（第5.6節）。
+     スクリプトが動かないときは、この初期値（svh に対応していれば 1svh、なければ 1vh）を使う */
+  --stable-vh: 1vh;
+  --text: #0b1b1a;
+  --brand: #54bdb2;
+  --brand-light: #e6f5f2;
+  --link: #2f7d76;
+  --bg: #ffffff;
+  /* ヘッダー・タブバーの区切り線 */
+  --line: #e3eaee;
+  --radius: 14px;
+  /* サムネイルの背景 thumb_bg: ccfolia-grid の方眼（第7.1節）。作品カード（.thumb-bg-ccfolia-grid）とトップの吹き出し（top-bubble.js）で共用 */
+  --ccfolia-grid-bg: #2a2a2a;
+  --ccfolia-grid-line: #464646;
+  --ccfolia-grid-size: 15px 15px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* ページ内リンクの行き先が、固定ヘッダー（60px）の下に隠れないように */
+  scroll-padding-top: 72px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+  background: var(--bg);
+  font-family: "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  line-height: 1.8;
+}
+
+main {
+  flex: 1;
+}
+
+a {
+  color: var(--link);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ドット絵の位置を整数ピクセルに揃える（assets/js/pixel-snap.js が端数を入れる） */
+[data-pixel-snap] {
+  translate: var(--snap-x, 0px) var(--snap-y, 0px);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: 2px;
+}
+
+/* 見出しはロゴの丸みに合わせた丸ゴシック体（Google Fonts。docs/spec.md 第7.3節） */
+h1,
+h2,
+h3 {
+  font-family: "Zen Maru Gothic", "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  line-height: 1.4;
+}
+
+.section-title {
+  margin: 40px 0 16px;
+  font-size: 1.25rem;
+}
+
+/* ドット絵のアイコン（_partials/pixel-icon.html）。SVG を整数倍で表示 */
+.pixel-icon {
+  display: inline-block;
+  flex: none;
+  vertical-align: middle;
+  image-rendering: pixelated;
+}
+
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -100px;
+  z-index: 100;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+}
+
+.skip-link:focus {
+  top: 8px;
+}
+
+/* 仮の文章（todo）。本人があとで書き換える箇所 */
+.todo {
+  position: relative;
+  margin: 16px 0;
+  padding: 28px 16px 12px;
+  border: 2px dashed #c9a400;
+  border-radius: 8px;
+  background: #fff8cc;
+}
+
+.todo > :last-child {
+  margin-bottom: 0;
+}
+
+.todo-label {
+  position: absolute;
+  top: 4px;
+  left: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.todo-inline {
+  padding: 0 4px;
+  border: 1px dashed #c9a400;
+  border-radius: 4px;
+  background: #fff8cc;
+}
+
+.pending-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  line-height: 1.6;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* ---------- ヘッダー（docs/spec.md 第4章） ----------
+   トップ以外：白の背景と、下に1pxの薄い区切り線。
+   スクロールして中身の上に重なったときだけ、ごく薄い影を付ける（is-scrolled は assets/js/nav.js が付ける） */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 60px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+  transition: box-shadow 160ms ease;
+}
+
+.site-header.is-scrolled {
+  box-shadow: 0 2px 8px rgb(11 27 26 / 0.06);
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+}
+
+.site-logo img {
+  display: block;
+  width: auto;
+  height: 36px;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.9375rem;
+}
+
+.site-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 4px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.nav-works {
+  position: relative;
+}
+
+.caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 6px;
+  border-top: 5px solid currentColor;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+  vertical-align: middle;
+}
+
+.works-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: -16px;
+  width: 280px;
+  padding: 8px;
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: 0 8px 24px rgb(11 27 26 / 0.16);
+}
+
+.planet-menu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.planet-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.planet-menu a:hover {
+  background: var(--brand-light);
+  text-decoration: none;
+}
+
+.planet-menu-all {
+  display: block;
+  margin-top: 4px;
+  padding: 8px;
+  border-top: 1px solid var(--brand-light);
+  color: var(--link);
+  font-size: 0.875rem;
+}
+
+.lang-switch {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  font-size: 0.8125rem;
+  list-style: none;
+}
+
+/* 押せる範囲を縦横 24px 以上に（WCAG 2.5.8） */
+.lang-switch a,
+.lang-switch span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0 4px;
+}
+
+.lang-switch span[aria-current] {
+  font-weight: 700;
+}
+
+/* ---------- パンくずリスト ----------
+   白い帯にはせず、タイトル帯（.title-band）の中の上部に小さく置く。文字は帯の色の上でも読める濃い色 */
+.breadcrumbs {
+  padding: 12px 0 0;
+  font-size: 0.75rem;
+}
+
+.title-band .breadcrumbs + .title-band-inner {
+  padding-top: 12px;
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+  list-style: none;
+}
+
+.breadcrumbs li {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumbs li + li::before {
+  content: "›";
+  margin: 0 8px;
+}
+
+.breadcrumbs a,
+.breadcrumbs span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.breadcrumbs a {
+  color: var(--text);
+  text-underline-offset: 3px;
+}
+
+/* ---------- フッター ---------- */
+.site-footer {
+  padding: 24px 16px;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.site-footer .sns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 20px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer .sns a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* 16×16 のドット絵を2倍で */
+.sns-icon {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
+.site-footer .sns a:hover .sns-name {
+  text-decoration: underline;
+}
+
+.site-footer .sns a:hover {
+  color: var(--link);
+}
+
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 16px;
+  margin: 0;
+}
+
+.footer-meta a {
+  color: var(--text);
+}
+
+/* 「動きを止める」ボタン（assets/js/motion.js） */
+.motion-toggle {
+  flex: none;
+  padding: 2px 10px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  border: 1px solid #c9d6d4;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.motion-toggle:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+/* 色の付いた背景の上のリンクは、白の背景より少し濃い色にする（コントラスト 4.5 以上） */
+.about-page main a:not(.button),
+.pending-note a,
+.fanart-notice a {
+  color: #1f5f59;
+}
+
+/* ---------- スマートフォンのタブバー（600px未満） ---------- */
+.tabbar,
+.works-sheet {
+  display: none;
+}
+
+@media (max-width: 599px) {
+  body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+
+  .site-header {
+    height: 52px;
+  }
+
+  .site-logo img {
+    height: 32px;
+  }
+
+  /* ナビゲーションはタブバーへ移す。言語切替えだけヘッダーに残す */
+  .site-nav-list {
+    display: none;
+  }
+
+  .tabbar {
+    display: block;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 30;
+    padding-bottom: env(safe-area-inset-bottom);
+    border-top: 1px solid var(--line);
+    background: #fff;
+  }
+
+  .tabbar ul {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tabbar a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    height: 64px;
+    padding-top: 8px;
+    color: var(--text);
+    font-size: 0.6875rem;
+    text-decoration: none;
+  }
+
+  /* アイコン：本人のドット絵（16×16px）を2倍の32×32px で、ぼかさずに（第4章） */
+  .tab-icon {
+    display: block;
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+  }
+
+  /* プロフィールのアイコン：輪のある星の顔。目を開いた絵と目を閉じた絵（どちらも 16×16px を2倍）の2枚の img を重ねる（まばたきは .moss-star-shut の指定）。
+     絵が半ドット上に寄っている（絵のある行が1〜13）ので、下へ1px ずらす（top は配置に影響しないので、ラベルの位置は変わらない） */
+  .tab-about {
+    position: relative;
+    top: 1px;
+    display: block;
+    width: 32px;
+    height: 32px;
+  }
+
+  /* 作品のアイコン：絵が半ドット下に寄っている（絵のある行が1〜15）ので、上へ1px ずらす（2026年11月24日） */
+  .tab-works .tab-icon {
+    position: relative;
+    top: -1px;
+  }
+
+  .tabbar a[aria-current="page"] > span:last-child {
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .works-sheet:not([hidden]) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgb(11 27 26 / 0.35);
+  }
+
+  .works-sheet-panel {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-height: 80vh;
+    max-height: 80dvh; /* 見えている範囲に合わせる（第5.6節） */
+    overflow-y: auto;
+    padding: 8px 12px calc(16px + env(safe-area-inset-bottom));
+    border-radius: 16px 16px 0 0;
+    background: #fff;
+    animation: sheet-up 0.2s ease-out;
+  }
+
+  .works-sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px 8px;
+    font-weight: 700;
+  }
+
+  .works-sheet-close {
+    padding: 6px 12px;
+    border: 1px solid var(--brand);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 400;
+  }
+
+  .sheet-open body {
+    overflow: hidden;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+/* ---------- /works/（すべての惑星と作品） ---------- */
+.planet-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.planet-cards a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--band);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.planet-card-name {
+  flex: 1;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.planet-card-name small {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.planet-card-count {
+  font-size: 0.8125rem;
+}
+
+/* 作品のグリッド（新しい順）。PC 3〜4列、スマートフォン 2列（第6.1節） */
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 600px) {
+  .work-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .work-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.work-card a {
+  display: block;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.work-thumb {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f2f5f5;
+}
+
+/* サムネイルの背景 thumb_bg: ccfolia-grid（第7.1節）。ココフォリアの盤面に似せた方眼：#2a2a2a の地に #464646 の 1px の線、間隔 15px（色と間隔は :root の --ccfolia-grid-*） */
+.work-thumb.thumb-bg-ccfolia-grid {
+  background-color: var(--ccfolia-grid-bg);
+  background-image:
+    linear-gradient(to right, var(--ccfolia-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--ccfolia-grid-line) 1px, transparent 1px);
+  background-size: var(--ccfolia-grid-size);
+}
+
+.work-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.work-thumb.is-pixel img {
+  image-rendering: pixelated;
+}
+
+.work-title {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.work-card a:hover .work-title {
+  text-decoration: underline;
+}
+
+.work-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+}
+
+.work-planets {
+  display: inline-flex;
+  gap: 4px;
+}
+
+/* ---------- トップ（宇宙） docs/spec.md 第5章 ---------- */
+
+/* ドット絵の倍率（必ず整数倍）。第5.3節の表のとおり */
+:root {
+  --scale: 2;
+}
+
+@media (min-width: 600px) {
+  :root {
+    --scale: 3;
+  }
+}
+
+@media (min-width: 1024px) and (min-height: 900px) {
+  :root {
+    --scale: 4;
+  }
+}
+
+.home {
+  --space: #e6f5f2;
+  /* 惑星の大きさ（ドット）。planets.js もこの値で描く。スマートフォンは下で44にする */
+  --planet-dots: 64;
+  background-color: var(--space);
+  background-image: var(--starfield, none);
+  background-size: calc(128px * var(--scale)) calc(128px * var(--scale));
+  image-rendering: pixelated;
+}
+
+/* トップのヘッダーは透明にして、星空の背景を見せる（区切り線と影も付けない） */
+.home .site-header {
+  border-bottom-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.space {
+  display: flex;
+  justify-content: center;
+  padding: 16px 16px 32px;
+}
+
+/* 列幅は惑星の幅で固定（長い名前は折り返す）。段の間隔は上下のずらし量（最大6ドット）より広い8ドット */
+.planets {
+  display: grid;
+  grid-template-columns: repeat(2, calc(var(--planet-dots) * var(--scale) * 1px + 8px));
+  gap: calc(8px * var(--scale)) 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 600px) {
+  .planets {
+    grid-template-columns: repeat(3, calc(var(--planet-dots) * var(--scale) * 1px + 8px));
+    column-gap: calc(8px * var(--scale));
+  }
+}
+
+/* 少しずつ上下にずらす（惑星1ドット単位なので整数倍を保つ） */
+.planet {
+  transform: translateY(calc(var(--dy, 0) * var(--scale) * 1px));
+}
+
+.planet-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.planet-link:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: 2px;
+}
+
+.planet-body {
+  position: relative;
+  display: block;
+  width: calc(var(--planet-dots, 64) * var(--scale) * 1px);
+  height: calc(var(--planet-dots, 64) * var(--scale) * 1px);
+}
+
+/* スマートフォン：惑星を小さく（直径44ドット×2倍＝88px）描き、左右の列の高さを大きくずらす。
+   惑星の間に余白を作り、余白のタップ（小さな惑星が生まれる）と惑星のタップを取り違えにくくする */
+@media (max-width: 599px) {
+  .home {
+    --planet-dots: 44;
+  }
+
+  .home .planets {
+    /* 列は惑星より40px広く（惑星名が折り返しにくいように） */
+    grid-template-columns: repeat(2, calc(var(--planet-dots) * var(--scale) * 1px + 40px));
+    column-gap: calc(14px * var(--scale));
+    row-gap: calc(8px * var(--scale));
+    /* 右の列を下げた分、下に余白を足す（transform は高さに数えられないため） */
+    padding-bottom: calc(26px * var(--scale));
+  }
+
+  .home .planet:nth-child(even) {
+    transform: translateY(calc((var(--dy, 0) + 26) * var(--scale) * 1px));
+  }
+}
+
+/* PC のトップ（幅1024px以上。第5.3節）
+   - 倍率：惑星とモスの星は3倍、前面のタイトルは2倍。画面の高さが800px未満なら、惑星とモスの星は2倍、タイトルは1倍
+   - 並び：惑星を六角形の軌道に並べ、中心にモスの星を置く。位置は惑星の ID ごとに決める（本番で出ない惑星があっても、ほかの位置は変わらない）
+     上段：イラスト・ピクセルアート・ゲームブック／下段：Live2D・オリジナル・ファンアート。真ん中の列（ピクセルアートとオリジナル）を上下にずらす
+   - モスの星は惑星より1段小さい倍率（タイトルと同じ）で、下に「About」の文字を添える
+   - 座標はすべてドット単位（--scale の整数倍）
+   スマートフォン・タブレットは今までどおり（タイトルは惑星と同じ倍率） */
+.home {
+  --title-scale: var(--scale);
+}
+
+@media (min-width: 1024px) {
+  .home {
+    --scale: 3;
+    --title-scale: 2;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 799px) {
+  .home {
+    --scale: 2;
+    --title-scale: 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home .planets {
+    /* 中心からの距離（惑星のドット）。V1：真ん中の列（ピクセルアート・オリジナル）の上下、V2：左右の列の上下、X：左右の列の横
+       中心のモスの星が小さいので、上下を詰めて少し縦につぶれた六角形にし、そのぶん左右へ広げる（正六角形なら V1＝2×V2） */
+    --V1: 68;
+    --V2: 42;
+    --X: 84;
+    position: relative;
+    display: block;
+    width: calc((2 * var(--X) + 64) * var(--scale) * 1px);
+    /* いちばん下の惑星の名前の分（28px）を足す */
+    height: calc(((2 * var(--V1) + 64) * var(--scale) + 28) * 1px);
+  }
+
+  .home .planet {
+    position: absolute;
+    left: calc(var(--cx) * var(--scale) * 1px);
+    top: calc(var(--cy) * var(--scale) * 1px);
+    width: calc(64 * var(--scale) * 1px);
+    transform: none;
+  }
+
+  .home .planet-link {
+    padding: 0;
+  }
+
+  /* 惑星の左上の位置（ドット）＝中心−32。六角形の中心は（32＋X, 32＋V1） */
+  .home .planet[data-id="illustration"] { --cx: 0; --cy: calc(var(--V1) - var(--V2)); }
+  .home .planet[data-id="pixel-art"] { --cx: var(--X); --cy: 0; }
+  .home .planet[data-id="gamebook"] { --cx: calc(2 * var(--X)); --cy: calc(var(--V1) - var(--V2)); }
+  .home .planet[data-id="live2d"] { --cx: 0; --cy: calc(var(--V1) + var(--V2)); }
+  .home .planet[data-id="original"] { --cx: var(--X); --cy: calc(2 * var(--V1)); }
+  .home .planet[data-id="fanart"] { --cx: calc(2 * var(--X)); --cy: calc(var(--V1) + var(--V2)); }
+
+  /* モスの星：惑星より1段小さい倍率（--title-scale。惑星3倍なら2倍、2倍なら1倍）で、絵の中心を六角形の中心に置く。
+     --scale をこの中だけ星の倍率に置き換えるので、大きさ・跳ねる動き・現れる動きも星の1ドット単位になる */
+  .home .planet[data-id="moss"] {
+    --scale: var(--title-scale);
+    left: calc(((32 + var(--X)) * var(--home-scale) - 32 * var(--title-scale)) * 1px);
+    top: calc(((32 + var(--V1)) * var(--home-scale) - 32 * var(--title-scale)) * 1px);
+  }
+
+  .home .planets {
+    --home-scale: var(--scale);
+  }
+}
+
+/* モスの星（第5.1節）。PC のトップだけに出す。絵は回転させない。背後の丸（JavaScript が動かないときの代わり）は付けない */
+.moss-star {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .home .moss-star {
+    display: block;
+  }
+}
+
+.planet-body.moss-star-body::before {
+  content: none;
+}
+
+/* 星の下の「About」の文字。リンクの名前は画像の代替テキスト（About（モスについて））なので、読み上げでは重ねない */
+/* 文字の大きさは、惑星の下の英語名（.planet-name-en）とそろえる。
+   絵の下の10ドットは透明なので、8ドット分（星の倍率で）上に寄せる */
+.planet-name.moss-star-name {
+  margin-top: calc(-8px * var(--scale));
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.moss-star-img,
+.moss-star-shut {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* まばたき（トップのモスの星・タブバーのプロフィールのアイコン）：目を開いた絵（.moss-star-img）に目を閉じた絵（.moss-star-shut）の img を重ね、
+   moss-blink.js が .is-blinking を付けている間だけ目を閉じた絵を見せる。背景画像の2コマ方式はにじむことがあるので使わない（2026年11月24日）。
+   目を開けた絵は opacity で隠す（visibility だと代替テキストが読み上げられなくなるため） */
+.moss-star-shut {
+  visibility: hidden;
+}
+
+.moss-blink.is-blinking .moss-star-img {
+  opacity: 0;
+}
+
+.moss-blink.is-blinking .moss-star-shut {
+  visibility: visible;
+}
+
+.planet-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* JavaScript が動かないときの代わり：惑星の色の丸（止まった状態） */
+.planet-body::before {
+  content: "";
+  position: absolute;
+  inset: calc(1px * var(--scale));
+  border: calc(1px * var(--scale)) solid var(--text);
+  border-radius: 50%;
+  background: var(--planet);
+}
+
+.planet-body.is-drawn::before {
+  content: none;
+}
+
+.planet-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .planet-name {
+    font-size: 1rem;
+  }
+}
+
+.planet-link:hover .planet-name {
+  text-decoration: underline;
+}
+
+/* 惑星の前面のタイトル（ドット絵フォント x8y12pxDenkiChip。static/fonts/ に OFL.txt）。
+   planets.js が拡大前の大きさで描き、--scale の整数倍に拡大して、整数の座標に置く */
+@font-face {
+  font-family: "mossplanet title";
+  src: url("/fonts/mossplanet-title-pixel.woff") format("woff");
+  font-display: block;
+}
+
+.planet-title {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.planet-title[hidden] {
+  display: none;
+}
+
+.planet-name-main,
+.planet-name-en {
+  display: block;
+}
+
+/* タイトルを描けたら、日本語名は見えなくして（読み上げと検索には残す）、英語名を小さく添える */
+.has-title .planet-name-main {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.planet-name-en {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.planet-name:has(.planet-name-en) .pending-badge {
+  margin: 2px 0 0;
+}
+
+/* 開いたときに惑星が順にふわっと現れる */
+@keyframes planet-appear {
+  from {
+    opacity: 0;
+    translate: 0 calc(4px * var(--scale));
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.planet-link {
+  animation: planet-appear 0.6s ease-out both;
+  animation-delay: calc(var(--i, 0) * 0.12s);
+}
+
+/* 「視差効果を減らす」がオンなら、すべての動きを止める。フッターの「動きを止める」ボタン（html.motion-off）も同じ扱い */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.motion-off *,
+.motion-off *::before,
+.motion-off *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ---------- トップのインタラクション（第5.5節）：余白をクリック／タップすると小さな惑星が生まれる ---------- */
+
+/* 小さな惑星を描くキャンバス。大きな惑星の後ろに置き、クリックは通す
+   枠（.sky-wrap）ではみ出しを切り取る。はみ出すとPCではスクロールバーが出入りし、
+   幅が変わる → キャンバスを作り直す → またはみ出す、をくり返して画面が左右にぶれる */
+.sky-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  image-rendering: pixelated;
+}
+
+.home main {
+  position: relative;
+  touch-action: manipulation;
+}
+
+.home .space,
+.home .planets {
+  position: relative;
+  z-index: 1;
+}
+
+/* 惑星のまわりの余白はクリックを通し、惑星（リンク）だけ受け取る */
+.home .space,
+.home .planets,
+.home .planet {
+  pointer-events: none;
+}
+
+.home .planet-link {
+  pointer-events: auto;
+}
+
+/* 最初の案内（PCは宇宙の下端、スマートフォンは画面の下・タブバーのすぐ上に固定） */
+.sky-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 2;
+  margin: 0;
+  padding: 6px 14px;
+  border: 1px solid var(--text);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: opacity 200ms var(--ease-out);
+}
+
+.sky-hint.is-hidden {
+  opacity: 0;
+}
+
+.sky-hint-touch {
+  display: none;
+}
+
+@media (hover: none) {
+  .sky-hint-mouse {
+    display: none;
+  }
+
+  .sky-hint-touch {
+    display: inline;
+  }
+}
+
+/* 大きな惑星にカーソルを乗せると小さく跳ねる（top-forge.js が .is-hopping を付け、終わったら外す）
+   - 乗せた瞬間に1ドット上がり（すぐ反応が返る）、2ドットの頂点で少し止まって、戻る。合計240ミリ秒
+   - 1ドット単位でしか動かさない（steps）ので、ドット絵の整数倍が崩れない
+   - クラスで動かすので、途中でカーソルが離れても最後まで跳ね終わる（:hover だと途中でぷつっと戻る） */
+@keyframes planet-hop {
+  0% { transform: translateY(calc(-1px * var(--scale))); }
+  21% { transform: translateY(calc(-2px * var(--scale))); }
+  63% { transform: translateY(calc(-1px * var(--scale))); }
+  88%,
+  100% { transform: translateY(0); }
+}
+
+.home .planet-body.is-hopping {
+  animation: planet-hop 240ms steps(1, end);
+}
+
+/* ---------- トップの吹き出し（第5.4節） ---------- */
+.home .planet-link {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 枠としっぽは、top-bubble.js が吹き出しの大きさに合わせて1枚のドット絵として描き（.bubble-bg）、
+   --scale の整数倍に拡大する。吹き出しの幅と高さも JS がドットの倍数に揃える */
+.bubble {
+  --dot: calc(1px * var(--scale));
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  isolation: isolate;
+  min-width: 112px;
+  box-sizing: border-box;
+  padding: calc(6px + var(--dot));
+  color: var(--text);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  /* 閉じるとき：速く（100ms）、動かさずに消える */
+  transition:
+    opacity 100ms var(--ease-out),
+    visibility 0s linear 100ms;
+}
+
+.bubble-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  image-rendering: pixelated;
+}
+
+.bubble.is-below .bubble-bg {
+  top: calc(-3 * var(--dot));
+}
+
+/* 開くとき：1ドットずれた位置から、ポンと1ドット動いて止まる（ドット単位のまま）＋140msで濃くなる */
+.bubble.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition:
+    opacity 140ms var(--ease-out),
+    transform 70ms steps(1, end),
+    visibility 0s;
+}
+
+.bubble.is-entering {
+  transform: translateY(var(--dot));
+}
+
+.bubble.is-below.is-entering {
+  transform: translateY(calc(-1 * var(--dot)));
+}
+
+/* 隣の惑星へ移ったときは、待たずに・動かさずに中身だけ替える */
+.bubble.is-instant {
+  transition: none;
+}
+
+/* 作品画像の一部を切り抜いた横長の小さなバナー */
+.bubble-banner {
+  width: 144px;
+  height: 40px;
+  margin-bottom: 4px;
+  background-color: #f1f5f4;
+  background-repeat: no-repeat;
+}
+
+.bubble-banner.is-pixel {
+  image-rendering: pixelated;
+}
+
+.bubble-banner[hidden] {
+  display: none;
+}
+
+.bubble-count {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* モスの星の吹き出し：「About」の文字だけ */
+.bubble.is-label {
+  min-width: 0;
+}
+
+.bubble-label {
+  margin: 0;
+  padding: 0 4px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.bubble-count strong {
+  margin: 0 2px;
+  font-size: 1.125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 599px) {
+  .sky-hint {
+    position: fixed;
+    bottom: calc(64px + env(safe-area-inset-bottom) + 12px);
+    z-index: 31;
+  }
+}
+
+/* ---------- タイトル帯（惑星の一覧・作品ページ）。帯だけ惑星の色、その下は白 ---------- */
+.title-band {
+  background: var(--band, var(--brand-light));
+}
+
+.title-band-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+.title-band-icon {
+  display: block;
+  flex: none;
+  line-height: 0;
+}
+
+.title-band-icon img {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.title-band-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+@media (min-width: 600px) {
+  .title-band-title {
+    font-size: 1.75rem;
+  }
+}
+
+.title-band-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 4px 0 0;
+  font-size: 0.875rem;
+}
+
+.title-band-planet a {
+  color: var(--text);
+}
+
+/* ---------- 作品ページ（第6.2節） ---------- */
+.work-main {
+  margin: 32px auto 0;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.work-main img,
+.work-figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* 縦長の画像が画面を大きくはみ出さないよう、高さも抑える（ドット絵は整数倍を保つため除く） */
+.work-main img:not(.is-pixel) {
+  max-height: 85vh;
+  width: auto;
+}
+
+img.is-pixel {
+  image-rendering: pixelated;
+}
+
+.zoom {
+  display: inline-block;
+  cursor: zoom-in;
+}
+
+.work-body {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 16px 56px;
+}
+
+.work-info {
+  display: grid;
+  gap: 0;
+  margin: 0 0 32px;
+  border-top: 1px solid #dfe9e7;
+  font-size: 0.875rem;
+}
+
+/* 見出しの列は、いちばん長い見出し「キャラクターデザイン」（全角10文字）が1行に入る 10.5em（全作品共通。第7.1節）。
+   スマートフォン（幅480px未満）では値の列が狭くなりすぎるので、見出しを値の上に置く */
+.work-info > div {
+  display: grid;
+  grid-template-columns: 10.5em 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #dfe9e7;
+}
+
+@media (max-width: 479px) {
+  .work-info > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
+
+.work-info dt {
+  font-weight: 700;
+}
+
+.work-info dd {
+  margin: 0;
+}
+
+.work-info ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose p {
+  margin: 0 0 1.2em;
+}
+
+.work-figure {
+  margin: 32px 0;
+}
+
+.work-figure figcaption {
+  margin-top: 8px;
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+/* YouTube 動画（layouts/_shortcodes/youtube.html）。押すまで YouTube に接続しない */
+.yt {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  margin: 24px 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #dfe9e7;
+}
+
+.yt-link,
+.yt iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.yt-link {
+  display: block;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.yt-link img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 再生ボタン：白い丸に濃い色の三角（色の付いた背景に白文字を載せない） */
+.yt-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 68px;
+  height: 68px;
+  margin: -34px 0 0 -34px;
+  border: 2px solid var(--text);
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 160ms var(--ease-out);
+}
+
+.yt-play::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -12px 0 0 -7px;
+  border-style: solid;
+  border-width: 12px 0 12px 20px;
+  border-color: transparent transparent transparent var(--text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .yt-link:hover .yt-play {
+    transform: scale(1.06);
+  }
+}
+
+.yt-link:active .yt-play {
+  transform: scale(0.97);
+}
+
+.yt-title {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.yt-title small {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.yt-link:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: -3px;
+}
+
+/* 制作工程（process）。2列で並べ、書いた順にラベルを付ける */
+.work-process h2 {
+  margin: 40px 0 16px;
+  font-size: 1.125rem;
+}
+
+.process-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.process-list figure {
+  margin: 0;
+}
+
+.process-list img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.process-list figcaption {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ギャラリー（gallery）。番号順に並べ、タイトルとひとことを添える。
+   本文より広い幅（最大1100px）を取り、PC は2列、スマートフォンは1列。ドット絵は枠に収まる整数倍（pixel-snap.js） */
+.work-body-head {
+  padding-bottom: 0;
+}
+
+.work-gallery {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.work-gallery h2 {
+  margin: 40px 0 16px;
+  font-size: 1.125rem;
+}
+
+.gallery-list {
+  display: grid;
+  gap: 32px 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .gallery-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 図は画像の幅に縮めて中央に置き、説明文を画像の幅に収める（表の見出しの仕組みで、文章が長くても図を広げない） */
+.gallery-list figure {
+  display: table;
+  margin: 0 auto;
+}
+
+.gallery-list .zoom {
+  display: block;
+}
+
+.gallery-list img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.gallery-list figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  padding-top: 8px;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.gallery-title {
+  display: block;
+  font-weight: 700;
+}
+
+.gallery-no {
+  margin-right: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gallery-caption {
+  display: block;
+  margin-top: 2px;
+}
+
+/* 工程の動画は1列分の幅を取り、縦長でも画面に収まる高さに */
+.process-list .process-video {
+  grid-column: 1 / -1;
+}
+
+/* 動画の枠は縦横比（--ar。幅÷高さ。process.html がポスターから渡す）で決め、再生の前後で大きさを変えない（第7.1節）。
+   幅は「横幅いっぱい」と「高さの上限 × 縦横比」の小さいほう。高さの上限は PC は 80vh、スマートフォン・タブレットは
+   変わらない画面の高さ（--stable-vh。第5.6節）の80。動画は object-fit: contain で枠の中に収める */
+.process-list video {
+  display: block;
+  width: min(100%, calc(80vh * var(--ar, 1.7778)));
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: var(--ar, 1.7778);
+  object-fit: contain;
+  margin: 0 auto;
+  background: #f1f5f4;
+}
+
+@media (max-width: 767px) {
+  .process-list video {
+    width: min(100%, calc(80svh * var(--ar, 1.7778)));
+    width: min(100%, calc(var(--stable-vh) * 80 * var(--ar, 1.7778)));
+  }
+}
+
+/* ファンアートの一覧ページの注意書き */
+.fanart-notice {
+  margin: 24px 0 0;
+  padding: 10px 14px;
+  border-left: 4px solid #c9b8f0;
+  background: #f6f2fd;
+  font-size: 0.875rem;
+}
+
+.work-planets-section h2 {
+  margin: 48px 0 16px;
+  font-size: 1.125rem;
+}
+
+.work-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 40px;
+}
+
+.work-pager a {
+  display: block;
+  padding: 12px 16px;
+  border: 2px solid #dfe9e7;
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+.work-pager a:hover {
+  border-color: var(--brand);
+}
+
+.work-pager span {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--link);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.work-pager-older {
+  grid-column: 2;
+  text-align: right;
+}
+
+/* 拡大表示 */
+.zoom-dialog {
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  height: 100dvh; /* 見えている範囲いっぱいに出す（アドレスバーが出ているときも下が隠れない。第5.6節） */
+  max-height: none;
+  margin: 0;
+  padding: 48px 16px 16px;
+  border: 0;
+  background: rgb(11 27 26 / 0.92);
+}
+
+.zoom-dialog::backdrop {
+  background: transparent;
+}
+
+.zoom-dialog img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0 auto;
+  object-fit: contain;
+  cursor: zoom-out;
+}
+
+.zoom-dialog img.is-pixel {
+  max-width: none;
+  max-height: none;
+}
+
+.zoom-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+/* ---------- 惑星の一覧ページ（第6.1節） ---------- */
+.planet-band .title-band-inner {
+  align-items: flex-start;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+/* 回る惑星。帯の中では2倍（128px）、PC では3倍（192px）。整数倍を保つ */
+.planet-band-body {
+  --band-scale: 2;
+  display: block;
+  flex: none;
+  width: calc(64px * var(--band-scale));
+  height: calc(64px * var(--band-scale));
+}
+
+@media (min-width: 1024px) {
+  .planet-band-body {
+    --band-scale: 3;
+  }
+}
+
+.planet-band .title-band-title small {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.planet-band .todo {
+  margin-bottom: 0;
+}
+
+.planet-intro {
+  margin: 8px 0 0;
+}
+
+/* 「惑星（ページ）」のルビを親の文字のすぐ上に置く。説明文の行の高さが大きいと、ルビが行の上端の近くに離れて置かれるため（2026年11月24日） */
+.planet-intro rt {
+  line-height: 1;
+}
+
+.section-title small {
+  margin-left: 8px;
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.pending-note {
+  margin: 0 0 24px;
+  padding: 16px;
+  border: 2px dashed #b8c9c6;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+}
+
+.pending-note p {
+  margin: 0;
+}
+
+.pending-note p + p {
+  margin-top: 8px;
+}
+
+.pending-note a {
+  margin-right: 12px;
+}
+
+/* 代表作は大きめに（PC 3列、スマートフォン 1列） */
+.featured-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 600px) {
+  .featured-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .featured-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---------- ボタン ---------- */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: #6fcabf;
+}
+
+/* ---------- About（第6.3節）：ロゴの色のページ ---------- */
+.about-page main {
+  background: var(--brand-light);
+}
+
+/* パンくずリストは、ページの色の部分（.about）の先頭に置く。左右の余白は .about 側で取る */
+.about .breadcrumbs ol {
+  padding: 0;
+}
+
+.about {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px 16px 56px;
+}
+
+.about-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 32px;
+  padding: 16px 0 32px;
+  border-bottom: 3px solid var(--brand);
+  border-radius: 0 0 2px 2px;
+}
+
+.about-star {
+  display: block;
+  width: 192px;
+  height: 192px;
+}
+
+@media (max-width: 599px) {
+  .about-star {
+    width: 128px;
+    height: 128px;
+  }
+}
+
+.about-star canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.about-logo {
+  margin: 0;
+  line-height: 0;
+}
+
+.about-logo img {
+  width: auto;
+  height: 60px;
+}
+
+.about-name {
+  margin: 12px 0 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.about-name span {
+  margin-left: 8px;
+  font-size: 0.9375rem;
+  font-weight: 400;
+}
+
+.about-copy {
+  margin: 4px 0 0;
+}
+
+.about-body h2 {
+  margin: 40px 0 16px;
+  font-size: 1.25rem;
+}
+
+.about-body a:not(.button) {
+  color: var(--link);
+}
+
+.about-planets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-planets li {
+  padding: 12px;
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.about-planets a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.about-sns {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-sns li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #c9e6e1;
+}
+
+.about-sns a {
+  min-width: 6em;
+  font-weight: 700;
+}
+
+.about-cta {
+  margin: 48px 0 0;
+  text-align: center;
+}
+
+/* ボタンの中の人工衛星（ティールの地用の tab-contact-on-brand.png。16×16px を2倍で） */
+.button-icon {
+  display: block;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
+/* ---------- 人工衛星（第6.4節） ---------- */
+.contact-band {
+  --band: var(--brand-light);
+}
+
+.status-sign {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 4px 14px;
+  border: 2px solid var(--text);
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 700;
+}
+
+.status-sign.is-open {
+  border-color: var(--link);
+}
+
+.status-sign span {
+  font-size: 0.8125rem;
+}
+
+.contact-body {
+  max-width: 760px;
+}
+
+/* 依頼の窓口の表：右の列（窓口の名前）を折り返さない。360px で「フォーム」が「フォー／ム」と割れるため（2026年11月24日） */
+.contact-body .prose th:last-child,
+.contact-body .prose td:last-child {
+  white-space: nowrap;
+}
+
+.contact-body .prose h2,
+.contact-form-section h2 {
+  margin: 40px 0 12px;
+  font-size: 1.25rem;
+}
+
+.contact-form .field {
+  margin-bottom: 20px;
+}
+
+.contact-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.contact-form .required {
+  margin-left: 8px;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #c9dcd9;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+}
+
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+  border-color: var(--link);
+  outline: none;
+}
+
+.form-privacy {
+  font-size: 0.8125rem;
+}
+
+.thanks {
+  max-width: 640px;
+  text-align: center;
+}
+
+.thanks-art {
+  margin: 24px 0 0;
+  line-height: 0;
+}
+
+.thanks-art img {
+  image-rendering: pixelated;
+}
+
+.thanks .todo {
+  text-align: left;
+}
+
+/* ---------- ファンアート ---------- */
+.fanart-copyright {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #dfe9e7;
+  font-size: 0.8125rem;
+}
+
+.process-list img.is-pixel {
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto;
+  image-rendering: pixelated;
+}
+
+/* ---------- ゲームブック（第6.2.1節・第7.4節） ---------- */
+
+/* 実物の写真：PC は2列、スマートフォンは1列 */
+.work-photos {
+  max-width: 1100px;
+  margin: 24px auto 0;
+  padding: 0 16px;
+}
+
+.photo-list {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 600px) {
+  .photo-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.photo-list .zoom {
+  display: block;
+}
+
+.photo-list img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* 「遊んでみる」ボタン */
+.play-button {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 24px 0 0;
+}
+
+.play-button small {
+  font-size: 0.8125rem;
+}
+
+/* 遊び方の流れ */
+.work-howto h2,
+.work-cards > h2,
+.work-pages h2,
+.work-related h2 {
+  margin: 40px 0 16px;
+  font-size: 1.125rem;
+}
+
+.howto-list {
+  margin: 0;
+  padding: 0 0 0 1.5em;
+}
+
+.howto-list li + li {
+  margin-top: 12px;
+}
+
+.howto-list strong {
+  display: block;
+}
+
+.howto-list span p {
+  margin: 2px 0 0;
+}
+
+/* カード */
+.work-cards,
+.work-pages {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.card-group h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 32px 0 8px;
+  font-size: 1rem;
+}
+
+.card-group h3 small {
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.card-group-heading {
+  padding: 0 10px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+}
+
+.card-group-lead {
+  margin: 0 0 16px;
+  font-size: 0.875rem;
+}
+
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 横長のカード（イベント・成長）は、PC 2列・スマートフォン1列 */
+.card-group-event .card-list,
+.card-group-simple .card-list {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 768px) {
+  .card-group-flip .card-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .card-group-event .card-list,
+  .card-group-simple .card-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.card-image {
+  display: block;
+}
+
+.card-list img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.card-text {
+  margin-top: 8px;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+
+.card-text p {
+  margin: 0;
+}
+
+.card-text .card-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-bottom: 2px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.card-name span[lang] {
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.card-note {
+  margin-top: 2px;
+  color: #3d5250;
+}
+
+.card-scene {
+  margin-top: 4px !important;
+}
+
+.card-scene a {
+  color: var(--link);
+}
+
+/* 得意属性の印：文字は濃い色のまま、属性の色は縁と薄い背景に */
+.card-attrs {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.attr-mark {
+  display: inline-block;
+  min-width: 1.9em;
+  padding: 0 6px;
+  border: 2px solid var(--attr);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--attr) 18%, #fff);
+  color: var(--text);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* 表と裏が入れ替わるカード。回転は transform だけ（「視差効果を減らす」では transition が消え、入れ替わるだけになる） */
+.flip-card {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 450ms var(--ease-in-out, cubic-bezier(0.77, 0, 0.175, 1));
+}
+
+.flip-card[aria-pressed="true"] .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+.flip-card:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* マウスを乗せたときは、カードの縁に薄い影を付ける。
+   filter を回転する要素（.flip-card-inner）に付けると立体の表示が平らになり、裏返していても表が見えてしまうため使わない */
+@media (hover: hover) and (pointer: fine) {
+  .flip-card:hover img {
+    box-shadow: 0 2px 10px rgb(11 27 26 / 0.16);
+  }
+}
+
+/* 紙面・冊子：見開きがないときは PC 4列・スマートフォン2列。見開きがあるときは2列で、見開きは2列分 */
+.pages-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .pages-list:not(.has-spreads) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.pages-list.has-spreads {
+  gap: 24px 0;
+}
+
+.pages-list .is-spread {
+  grid-column: 1 / -1;
+}
+
+/* 最初の1ページ（表紙）は右側に置く。本を開いたときと同じ並び */
+.pages-list.has-spreads > .page-item:first-child:not(.is-spread) {
+  grid-column: 2;
+}
+
+.page-item figure {
+  margin: 0;
+}
+
+.page-item .zoom {
+  display: block;
+}
+
+.page-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  box-shadow: 0 0 0 1px #e3eaee;
+}
+
+.page-item figcaption {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+/* 関連作品 */
+.work-related {
+  margin-top: 8px;
+}
+
+/* 拡大表示の前後の移動 */
+.zoom-dialog.has-nav {
+  padding-bottom: 72px;
+}
+
+.zoom-nav:not([hidden]) {
+  position: absolute;
+  right: 0;
+  bottom: 16px;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.zoom-nav button {
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.zoom-nav button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.zoom-count {
+  min-width: 4em;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+/* ファンアート：原作シリーズごとの節 */
+.fanart-group + .fanart-group {
+  margin-top: 8px;
+}
+
+/* ゲームブックの表紙：PCで画面を埋めないよう、横640px・高さ70%までにする（写真や紹介文が最初の画面に入るように） */
+.is-gamebook .work-main img:not(.is-pixel) {
+  max-width: min(100%, 640px);
+  max-height: 70vh;
+}
+
+/* 成長カードなど（画像と同じ文章のカード）は、説明文を小さく・控えめに。文章は検索エンジンとスクリーンリーダーのために残す */
+.card-group-simple .card-text {
+  margin-top: 4px;
+  color: #3d5250;
+  font-size: 0.75rem;
+}
+
+.card-group-simple .card-text .card-name {
+  font-size: 0.75rem;
+}
+
+/* トップの紹介文 */
+.home-intro {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 16px 24px;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.home-intro-box {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  background: rgb(255 255 255 / 0.88);
+  pointer-events: auto;
+}
+
+/* PC では最初の案内（.sky-hint、宇宙の下端）と重ならないよう、下に余白を取る */
+@media (min-width: 600px) {
+  .home-intro {
+    padding-bottom: 72px;
+  }
+}
+
+.home-intro p {
+  margin: 0;
+}
+
+/* PC では1行目（「…作品ポートフォリオです。」）が1行に収まる幅にする */
+@media (min-width: 1024px) {
+  .home-intro {
+    max-width: 760px;
+  }
+}
+
+
+.home-intro a {
+  color: var(--text);
+  text-underline-offset: 3px;
+}
+
+/* 404：惑星から探す */
+.not-found-planets {
+  margin-top: 24px;
+}
+
+/* About の末尾：フォントのクレジット */
+.about-credit {
+  margin-top: 32px;
+  color: #3d5250;
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- キャラクターページ（第6.7節。/original/<ID>/。1キャラクター1ページ・設定資料集風） ----------
+   設定資料集らしさは、番号付きの見出しと、プロフィールの表の背景の細い方眼で出す。作品画像のまわりには飾りを置かない */
+.character-file {
+  margin: 0 0 2px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.character {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 16px 56px;
+}
+
+/* メインビジュアルとプロフィール：PCは左右、スマートフォンは縦 */
+.character-intro {
+  display: grid;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .character-intro {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 48px;
+  }
+}
+
+.character-visual {
+  margin: 0;
+  text-align: center;
+}
+
+.character-visual img {
+  display: block;
+  max-width: 100%;
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* 番号付きの見出し（01 PROFILE など） */
+.file-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--text);
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
+}
+
+.file-no {
+  color: var(--link);
+  font-variant-numeric: tabular-nums;
+}
+
+.file-heading small {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* プロフィールの表。背景に細い方眼（8pxの目）。外枠は濃く、内側の線（方眼・行の区切り）は薄く（依頼 003）
+   方眼は行ごとに、行の下端（区切り線）から8pxおきに引く。区切り線がそのまま方眼の1本になり、
+   行の高さが8の倍数でなくても、区切り線のすぐそばに方眼の線が来て二重線に見えることがない */
+.character-profile {
+  margin: 0;
+  border: 1px solid #cfdcd9;
+  background-color: #fff;
+  font-size: 0.9375rem;
+}
+
+.character-profile > div {
+  display: grid;
+  grid-template-columns: 7em 1fr;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #dfe8e6;
+  background-image:
+    linear-gradient(transparent 7px, #f0f5f4 7px),
+    linear-gradient(90deg, #f0f5f4 1px, transparent 1px);
+  background-size: 8px 8px;
+  background-origin: border-box;
+  background-position: 0 100%;
+}
+
+.character-profile > div:last-child {
+  border-bottom: 0;
+}
+
+.character-profile dt {
+  font-weight: 700;
+}
+
+.character-profile dd {
+  margin: 0;
+}
+
+.character-body {
+  max-width: 760px;
+  margin: 32px auto 0;
+}
+
+.character-section {
+  margin-top: 56px;
+}
+
+/* 02 LOOKS（すがた）と 03 HISTORY（デザインの変遷） */
+.character-looks,
+.character-history {
+  display: grid;
+  gap: 32px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.character-history {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px 16px;
+}
+
+@media (min-width: 768px) {
+  .character-looks {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: end;
+  }
+
+  .character-history {
+    grid-template-columns: repeat(5, 1fr);
+    align-items: end;
+  }
+}
+
+/* ページ内リンク（#ti03 など）で飛んだとき、固定のヘッダーに隠れないように */
+.character-looks > li,
+.character-history > li {
+  scroll-margin-top: 80px;
+}
+
+.character-looks figure,
+.character-history figure {
+  margin: 0;
+  text-align: center;
+}
+
+.character-looks img,
+.character-history img {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+}
+
+.character-looks img {
+  max-height: 70vh;
+}
+
+.character-history img {
+  max-height: 320px;
+}
+
+.character-looks figcaption,
+.character-history figcaption {
+  margin-top: 10px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.character-looks figcaption > *,
+.character-history figcaption > * {
+  display: block;
+}
+
+.character-looks time,
+.character-history time {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.character-looks figcaption span {
+  font-size: 0.8125rem;
+}
+
+/* キャラクターのカード（作品ページの「このキャラクター」） */
+.character-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.character-card a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px 10px 10px;
+  border: 1px solid #dfe9e7;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.character-card a:hover .character-card-name {
+  text-decoration: underline;
+}
+
+.character-face {
+  flex: none;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+}
+
+.character-card-name {
+  display: block;
+  font-weight: 700;
+}
+
+.character-card-text small {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+}
+
+.work-character h2 {
+  margin: 48px 0 16px;
+  font-size: 1.125rem;
+}
+
+/* ---------- らくがき帳（第6.2.2節。sketches の項目がある作品） ----------
+   1列で新しい順。画像は本文の幅（最大760px）・画面の高さの80%に収め、題・日付・短い説明を下に添える */
+.work-sketches {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 8px 16px 0;
+}
+
+.sketch-list {
+  display: grid;
+  gap: 48px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sketch-list > li {
+  scroll-margin-top: 80px;
+}
+
+.sketch-list figure {
+  margin: 0;
+}
+
+.sketch-list img {
+  display: block;
+  max-width: 100%;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+}
+
+.sketch-list figcaption {
+  margin-top: 12px;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.sketch-list figcaption > * {
+  display: block;
+}
+
+.sketch-list time {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.sketch-title {
+  font-weight: 700;
+}
+
+/* ---------- 差分の切り替え（第6.2.3節。variants の項目がある作品。assets/js/variants.js） ----------
+   JavaScript が動かないとき：全部の差分を題付きで並べる。動くとき（.is-js）：表示中の1枚だけを見せ、下にボタンの列 */
+.variants {
+  max-width: 1100px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+.variant-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.variant figure {
+  margin: 0;
+  text-align: center;
+}
+
+.variant img {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+}
+
+.variant-caption {
+  margin-top: 8px;
+  font-size: 0.8125rem;
+}
+
+.variant-caption span + span::before {
+  content: "／";
+}
+
+/* JavaScript が動くとき：スマートフォンはボタン → 絵の縦並び、PC（幅768px以上）は絵を左・ボタンを右（第6.2.3節） */
+.variants.is-js {
+  display: grid;
+  gap: 24px;
+}
+
+.variants.is-js .variant-list {
+  display: block;
+}
+
+.variants.is-js .variant {
+  display: none;
+}
+
+.variants.is-js .variant.is-current {
+  display: block;
+  animation: variant-in 0.2s ease-out;
+}
+
+.variants.is-js .variant img {
+  max-height: 85vh;
+}
+
+/* スマートフォン：頭からつま先までが画面に収まる高さ。アドレスバーの出入りで大きさが変わらないよう svh（アドレスバーが出ている状態の画面の高さ）で決める。
+   svh に対応していないブラウザ向けに vh を先に書く。固定のヘッダーとタブバーの高さ、上下の余白（16px）を引く（第6.2.3節） */
+@media (max-width: 599px) {
+  .variants.is-js .variant img {
+    max-height: calc(100vh - 52px - 64px - 16px);
+    max-height: calc(100svh - 52px - 64px - env(safe-area-inset-bottom) - 16px);
+    max-height: calc(var(--stable-vh) * 100 - 52px - 64px - env(safe-area-inset-bottom) - 16px);
+  }
+}
+
+@media (min-width: 600px) and (max-width: 767px) {
+  .variants.is-js .variant img {
+    max-height: calc(100vh - 60px - 16px);
+    max-height: calc(100svh - 60px - 16px);
+    max-height: calc(var(--stable-vh) * 100 - 60px - 16px);
+  }
+}
+
+@media (min-width: 768px) {
+  .variants.is-js {
+    grid-template-columns: auto minmax(200px, 300px);
+    justify-content: center;
+    align-items: start;
+    gap: 40px;
+  }
+
+  .variants.is-js .variant-list {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .variants.is-js .variant-controls {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    gap: 20px;
+  }
+
+  /* 全身とボタンが一度に見えるよう、絵は画面の高さからヘッダー（60px）と上下の余白を引いた高さに収める */
+  .variants.is-js .variant img {
+    max-height: calc(100vh - 92px);
+  }
+
+  /* 見出しごとに縦に並べる（見出しの下にボタン） */
+  .variants.is-js .variant-axis {
+    grid-template-columns: 1fr;
+  }
+
+  /* 選択肢のボタンは縦1列に並べる（2026年11月24日。5つ以上で「4つ＋1つ」のように折り返さないように） */
+  .variants.is-js .variant-buttons {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.variants.is-js .variant-caption {
+  display: none;
+}
+
+@keyframes variant-in {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+/* 「視差効果を減らす」設定・「動きを止める」ボタンのときは、切り替えのフェードを付けない */
+@media (prefers-reduced-motion: reduce) {
+  .variants.is-js .variant.is-current {
+    animation: none;
+  }
+}
+
+.motion-off .variants.is-js .variant.is-current {
+  animation: none;
+}
+
+.variant-controls {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.variant-controls[hidden] {
+  display: none;
+}
+
+.variant-axis {
+  display: grid;
+  grid-template-columns: 6em 1fr;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.variant-axis-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.variant-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.variant-button {
+  min-height: 40px;
+  padding: 6px 14px;
+  border: 1px solid #b9cbc7;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.variant-button:hover {
+  border-color: var(--text);
+}
+
+/* 押されているボタン：濃い枠と薄い色の背景、太字（白文字は使わない） */
+.variant-button[aria-pressed="true"] {
+  border: 2px solid var(--text);
+  padding: 5px 13px;
+  background: #d9f0ec;
+  font-weight: 700;
+}
+
+.variant-button:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: 2px;
+}
+
+@media (max-width: 479px) {
+  .variant-axis {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 同じ卓のキャラクター（session） */
+.work-session h2 {
+  margin: 40px 0 16px;
+  font-size: 1.125rem;
+}
+
+.work-session h2 small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+/* ---------- 惑星の下に置く一覧への入口（第6.8節。TRPG立ち絵など） ---------- */
+.sublist-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.sublist-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border: 1px solid #dfe9e7;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.sublist-links a:hover .sublist-name {
+  text-decoration: underline;
+}
+
+/* ---------- 変わらない画面の高さ（第5.6節） ----------
+   svh に対応していれば、スクリプトが動かないときの初期値を 1svh にする（JavaScript が動けば stable-vh.js の値で上書き） */
+@supports (height: 1svh) {
+  :root {
+    --stable-vh: 1svh;
+  }
+}
+
+/* スマートフォン・タブレット（幅767px以下）の作品画像の高さ。アドレスバーの出入りでスクロール中に大きさが変わらないよう、
+   変わらない画面の高さ（--stable-vh）で決める。vh → svh → --stable-vh の順に書き、対応していないブラウザは前の指定を使う。
+   PC（幅768px以上）は今までどおり vh */
+@media (max-width: 767px) {
+  .work-main img:not(.is-pixel),
+  .character-visual img {
+    max-height: 85vh;
+    max-height: 85svh;
+    max-height: calc(var(--stable-vh) * 85);
+  }
+
+  .is-gamebook .work-main img:not(.is-pixel),
+  .character-looks img {
+    max-height: 70vh;
+    max-height: 70svh;
+    max-height: calc(var(--stable-vh) * 70);
+  }
+
+  .sketch-list img {
+    max-height: 80vh;
+    max-height: 80svh;
+    max-height: calc(var(--stable-vh) * 80);
+  }
+}

@@ -1,0 +1,60 @@
+{{- /*
+  パンくずリスト（ページ上部の現在地表示）。トップ以外の全ページ。docs/spec.md 第4章
+  白い帯としては置かず、各ページのタイトル帯（.title-band）の中の上部に小さく置く。
+  タイトル帯のないページ（About）は、そのページの色の付いた部分の先頭に置く
+  - 作品ページ：トップ › 所属する最初の惑星 › 作品
+  - ファンアートのページ：トップ › ファンアート › 作品
+  - キャラクターページ：トップ › 所属する最初の惑星 › キャラクター
+  - 惑星の一覧：トップ › 惑星
+  - それ以外：トップ › 親ページ › ページ
+*/ -}}
+{{- if not .IsHome -}}
+{{- $planets := partialCached "planets.html" . -}}
+{{- $items := slice -}}
+{{- $planetId := "" -}}
+{{- if and (eq .Section "works") .IsPage -}}
+  {{- with .Params.planets -}}{{- $planetId = index . 0 -}}{{- end -}}
+{{- else if and (eq .Section "characters") .IsPage -}}
+  {{- with .Params.planets -}}{{- $planetId = index . 0 -}}{{- end -}}
+{{- else if and (eq .Section "fanart") .IsPage -}}
+  {{- $planetId = "fanart" -}}
+{{- else if .Params.parent_planet -}}
+  {{- /* 惑星の下に置く一覧（TRPG立ち絵など。第6.8節）：トップ › 惑星 › 一覧 */ -}}
+  {{- $planetId = .Params.parent_planet -}}
+{{- end -}}
+{{- if $planetId -}}
+  {{- range where $planets "id" $planetId -}}
+    {{- $items = $items | append (dict "title" (cond (eq site.Language.Lang "en") .name_en .name) "url" (.url | relURL) "color" .color "link" .visible) -}}
+  {{- end -}}
+{{- else if not (isset .Params "planet") -}}
+  {{- range .Ancestors.Reverse -}}
+    {{- if not .IsHome -}}{{- $items = $items | append (dict "title" .LinkTitle "url" .RelPermalink "link" true) -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- /* 今のページの名前。404 は Hugo の既定の題名（英語）ではなく i18n の文言にする */ -}}
+{{- $current := cond (eq .Kind "404") (T "not_found_title") .LinkTitle -}}
+<nav class="breadcrumbs" aria-label="{{ T "breadcrumb" }}">
+  <ol>
+    <li><a href="{{ "/" | relLangURL }}">{{ T "home" }}</a></li>
+    {{- range $items }}
+    <li>
+      {{- $icon := "" -}}
+      {{- with .color }}{{ $icon = partial "pixel-icon.html" (dict "color" . "size" 16 "scale" 1) }}{{ end -}}
+      {{- if .link -}}
+      <a href="{{ .url }}">{{ $icon }}{{ .title }}</a>
+      {{- else -}}
+      <span>{{ $icon }}{{ .title }}</span>
+      {{- end -}}
+    </li>
+    {{- end }}
+    <li><span aria-current="page">{{ with .Params.color }}{{ partial "pixel-icon.html" (dict "color" . "size" 16 "scale" 1) }}{{ end }}{{ $current }}</span></li>
+  </ol>
+</nav>
+{{- /* 検索結果に現在地を出すための構造化データ（BreadcrumbList） */ -}}
+{{- $ld := slice (dict "@type" "ListItem" "position" 1 "name" (T "home") "item" ("/" | absLangURL)) -}}
+{{- range $i, $it := $items -}}
+  {{- $ld = $ld | append (dict "@type" "ListItem" "position" (add $i 2) "name" $it.title "item" (absURL $it.url)) -}}
+{{- end -}}
+{{- $ld = $ld | append (dict "@type" "ListItem" "position" (add (len $items) 2) "name" $current "item" .Permalink) }}
+<script type="application/ld+json">{{ dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $ld | jsonify | safeJS }}</script>
+{{- end -}}

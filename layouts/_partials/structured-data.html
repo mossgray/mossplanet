@@ -1,0 +1,47 @@
+{{- /*
+  構造化データ（JSON-LD）。docs/spec.md 第9.1節
+  - トップ：WebSite と Person（モス／moss。SNS などのアカウント）
+  - 作品ページ・ファンアートのページ：作品（ゲームブックは Game、それ以外は CreativeWork）
+  - パンくずリスト（BreadcrumbList）は _partials/breadcrumbs.html が出す
+*/ -}}
+{{- $person := dict
+  "@type" "Person"
+  "name" "モス"
+  "alternateName" "moss"
+  "url" ("/about/" | absURL)
+  "sameAs" (slice site.Params.twitter site.Params.youtube site.Params.skeb site.Params.booth)
+-}}
+{{- if .IsHome }}
+{{- $data := dict
+  "@context" "https://schema.org"
+  "@graph" (slice
+    (dict "@type" "WebSite" "name" site.Title "url" site.Home.Permalink "inLanguage" site.Language.Locale "description" site.Params.description)
+    $person
+  )
+-}}
+<script type="application/ld+json">{{ $data | jsonify | safeJS }}</script>
+{{- else if and .IsPage (in (slice "works" "fanart") .Section) }}
+{{- $type := cond (isset .Params "gamebook") "Game" "CreativeWork" -}}
+{{- $work := dict
+  "@context" "https://schema.org"
+  "@type" $type
+  "name" .Title
+  "url" .Permalink
+  "datePublished" (.Date.Format "2006-01-02")
+  "description" (.Params.summary | default .Description)
+  "author" $person
+  "inLanguage" "ja"
+-}}
+{{- /* 画像は元画像ではなく、長い辺を1200pxまでに縮めた版（ドット絵はぼかさない）。縮められない形式（GIF など）は元のまま */ -}}
+{{- with .Resources.Get (.Params.cover_still | default (partial "work/cover-name.html" .)) }}
+  {{- $img := . -}}
+  {{- if and (in (slice "jpeg" "png" "webp") .MediaType.SubType) (gt (math.Max .Width .Height) 1200) -}}
+    {{- $filter := cond ($.Params.pixel | default false) "NearestNeighbor" "Lanczos" -}}
+    {{- $img = .Fit (printf "1200x1200 webp q85 %s" $filter) -}}
+  {{- end -}}
+  {{- $work = merge $work (dict "image" $img.Permalink) -}}
+{{- end -}}
+{{- with .Params.gamebook }}{{ with .genre }}{{ $work = merge $work (dict "genre" .) }}{{ end }}{{ end -}}
+{{- with .Params.fanart }}{{ with .source }}{{ $work = merge $work (dict "isBasedOn" (dict "@type" "CreativeWork" "name" .)) }}{{ end }}{{ end -}}
+<script type="application/ld+json">{{ $work | jsonify | safeJS }}</script>
+{{- end }}

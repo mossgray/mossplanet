@@ -1,0 +1,15 @@
+{{- /*
+  作品のサムネイル（正方形・WebP）を返す。. は作品ページ。画像がなければ何も返さない。
+  - thumb（任意。正方形の切り抜きを自分で用意した画像）があればそれを、なければ cover から作る
+  - ドット絵（pixel: true）は、ぼかさないよう NearestNeighbor で縮小する
+  - らくがき帳は、いちばん新しいらくがきから作る（work/cover-name.html）
+  - thumb_anchor（任意）：切り抜く位置。top なら上寄り（縦長の絵で顔が切れないように）。省略時は Hugo の Smart（自動）
+*/ -}}
+{{- $img := "" -}}
+{{- with .Params.thumb | default (partial "work/cover-name.html" .) -}}
+  {{- with $.Resources.Get . -}}
+    {{- $filter := cond ($.Params.pixel | default false) "NearestNeighbor" "Lanczos" -}}
+    {{- $img = .Fill (printf "480x480 %s webp q80 %s" (partial "work/thumb-anchor.html" $) $filter) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $img -}}

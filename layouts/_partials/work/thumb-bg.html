@@ -1,0 +1,13 @@
+{{- /*
+  サムネイルの背景（thumb_bg。docs/spec.md 第7.1節）を読んで返す。. は作品ページ
+  返す値：dict "grid" true（ccfolia-grid の方眼）／"color" "#rrggbb"（ベタ塗り）。thumb_bg が無いか読めないときは空の dict
+  作品カード（work-card.html）とトップの吹き出し（home.html → top-bubble.js）で使う
+*/ -}}
+{{- $r := dict -}}
+{{- with .Params.thumb_bg -}}
+  {{- if eq . "ccfolia-grid" }}{{ $r = dict "grid" true -}}
+  {{- else if findRE `^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$` . }}{{ $r = dict "color" . -}}
+  {{- else }}{{ warnf "thumb_bg の値が読めません: %q（%s）" . $.RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+{{- return $r -}}

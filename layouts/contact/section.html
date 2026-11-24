@@ -1,0 +1,35 @@
+{{- /*
+  人工衛星（依頼・問い合わせ）。docs/spec.md 第6.4節
+  1. 受付状況の看板（config.toml の contact_open の1行で切り替え）
+  2〜5. できること・依頼の窓口・進め方・規約（content/contact/_index.md に書く）
+  6. 問い合わせフォーム（Netlify Forms）
+*/ -}}
+{{ define "bodyClass" }}page contact-page{{ end }}
+
+{{ define "main" }}
+{{- $open := site.Params.contact_open | default false -}}
+<header class="title-band contact-band">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    <span class="title-band-icon">{{- /* 人工衛星（tab-contact.png、16×16px を4倍）。タブバーと同じ絵 */ -}}<img src="/images/icons/tab-contact.png" width="64" height="64" alt=""></span>
+    <div>
+      <h1 class="title-band-title">{{ .Title }}</h1>
+      <p class="status-sign {{ if $open }}is-open{{ else }}is-closed{{ end }}">
+        {{- if eq site.Language.Lang "en" }}{{ if $open }}OPEN<span>{{ T "contact_open" }}</span>{{ else }}CLOSED<span>{{ T "contact_closed" }}</span>{{ end }}
+        {{- else }}{{ if $open }}{{ T "contact_open" }}<span lang="en">OPEN</span>{{ else }}{{ T "contact_closed" }}<span lang="en">CLOSED</span>{{ end }}{{ end -}}
+      </p>
+    </div>
+  </div>
+</header>
+
+<div class="container contact-body">
+  <div class="prose">
+    {{ .Content }}
+  </div>
+
+  <section class="contact-form-section" id="form">
+    <h2>{{ T "form_heading" }}</h2>
+    {{ partial "contact-form.html" . }}
+  </section>
+</div>
+{{ end }}

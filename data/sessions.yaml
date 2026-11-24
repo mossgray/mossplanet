@@ -1,0 +1,4 @@
+# TRPG の卓（docs/spec.md 第7.1節 session）。作品の front matter の session に、ここのキーを書く
+# 同じ卓の作品どうしで「同じ卓のキャラクター」として、相手の作品カードを出す
+void:
+  name: "クトゥルフ神話TRPG『VOID』"

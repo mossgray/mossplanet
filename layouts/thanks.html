@@ -1,0 +1,17 @@
+{{- /* 問い合わせの送信完了ページ。衛星のイラストを添える（第6.4節）。検索結果には出さない（noindex） */ -}}
+{{ define "bodyClass" }}page thanks-page{{ end }}
+
+{{ define "main" }}
+<header class="title-band page-band">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="title-band-inner">
+    <h1 class="title-band-title">{{ .Title }}</h1>
+  </div>
+</header>
+<div class="container thanks">
+  {{- /* 人工衛星（tab-contact.png、16×16px を8倍）。タブバーと同じ絵 */ -}}
+  <p class="thanks-art"><img src="/images/icons/tab-contact.png" width="128" height="128" alt=""></p>
+  <div class="prose">{{ .Content }}</div>
+  <p><a class="button" href="{{ "/" | relLangURL }}">{{ T "back_to_top" }}</a></p>
+</div>
+{{ end }}
