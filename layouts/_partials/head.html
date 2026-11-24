@@ -1,4 +1,4 @@
-{{- $pageTitle := cond (eq .Kind "404") "ページが見つかりません" (.Params.seo_title | default .Title) -}}
+{{- $pageTitle := cond (eq .Kind "404") (T "not_found_title") (.Params.seo_title | default .Title) -}}
 {{- $title := cond .IsHome site.Title (printf "%s | %s" $pageTitle site.Title) -}}
 {{- $desc := .Description | default .Params.description | default .Params.summary | default site.Params.description -}}
 <meta charset="utf-8">
@@ -17,7 +17,7 @@
 <meta property="og:locale" content="{{ cond (eq site.Language.Lang "en") "en_US" "ja_JP" }}">
 {{- /*
   OGP画像（第9.1節）：作品ページはその作品の画像（cover。動く画像は cover_still）から 1200×630 を作る。
-  ファンアートのページと、それ以外のページは共通画像を使う（共通画像は未作成。用意できたら site.Params.ogp_image に書く）
+  ファンアートのページと、それ以外のページは共通画像（config.toml の ogp_image。static/images/ogp.png、1200×630）を使う
 */ -}}
 {{- $ogp := "" -}}
 {{- if and .IsPage (eq .Section "works") -}}
@@ -35,9 +35,10 @@
     {{- $ogp = (.Process "jpg q88").Permalink -}}{{- $square = true -}}
   {{- end -}}
 {{- end -}}
-{{- if not $ogp }}{{ with site.Params.ogp_image }}{{ with resources.Get . }}{{ $ogp = .Permalink }}{{ end }}{{ end }}{{ end -}}
+{{- if not $ogp }}{{ with site.Params.ogp_image }}{{ $ogp = . | absURL }}{{ end }}{{ end -}}
 {{- with $ogp }}
 <meta property="og:image" content="{{ . }}">
+<meta name="twitter:image" content="{{ . }}">
 <meta name="twitter:card" content="{{ if $square }}summary{{ else }}summary_large_image{{ end }}">
 {{- else }}
 <meta name="twitter:card" content="summary">

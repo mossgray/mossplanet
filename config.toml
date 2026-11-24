@@ -14,6 +14,9 @@ disableKinds = ["taxonomy", "term"]
   skeb = "https://skeb.jp/@mossgray_"
   booth = "https://mossplanet.booth.pm/"
 
+  # 共通の OGP 画像（作品ページ・キャラクターページ以外。static/ からのパス。docs/spec.md 第9.1節）
+  ogp_image = "images/ogp.png"
+
   # 作品に tools（使用ツール）の指定がないときに表示する初期値（docs/spec.md 第7.1節）
   default_tools = "ラフ：Procreate／作画・仕上げ：CLIP STUDIO PAINT"
 

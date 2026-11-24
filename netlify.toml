@@ -54,3 +54,9 @@
   from = "/categories/*"
   to = "/works/"
   status = 301
+
+# 英語版（/en/ 以下）の存在しない URL には、英語の 404 ページを返す。ほかの転送より後ろに置く（上から順に照らし合わせるため）
+[[redirects]]
+  from = "/en/*"
+  to = "/en/404.html"
+  status = 404

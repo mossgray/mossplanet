@@ -1974,6 +1974,12 @@ img.is-pixel {
   max-width: 760px;
 }
 
+/* 依頼の窓口の表：右の列（窓口の名前）を折り返さない。360px で「フォーム」が「フォー／ム」と割れるため（2026年11月24日） */
+.contact-body .prose th:last-child,
+.contact-body .prose td:last-child {
+  white-space: nowrap;
+}
+
 .contact-body .prose h2,
 .contact-form-section h2 {
   margin: 40px 0 12px;

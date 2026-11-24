@@ -31,6 +31,7 @@
 - 差分のある作品（TRPG の立ち絵など）は、画像を同じフォルダに置き、front matter の variants に axes（ボタンの列）と items（各差分の values・image・alt）を書く。cover は最初に表示する差分の画像にする（docs/spec.md 第6.2.3節）。
 - らくがき帳に落書きを足すときは、画像を content/works/sketchbook/ に置き、index.md の sketches に1項目（id・title・date・image・text・alt）を足して、date をいちばん新しいらくがきの日付にする（docs/spec.md 第6.2.2節）。
 - キャラクターは content/characters/<キャラクターID>/index.md を作り、画像を同じフォルダに置く（1キャラクター1ページ。項目は docs/spec.md の第6.7節に従う）。
+- リポジトリは公開なので、front matter の `permission` には、名前や事情を書かず、「確認済み」「自作」などの短い言葉だけを書く。依頼者とのやりとりの中身や、伏せている情報の手がかり（元のファイル名など）は、コメントも含めて Git の対象のファイルに書かない。
 
 ## 仮の文章
 - 本人があとで書く文章は、Markdown では `{{< todo >}}…{{< /todo >}}` で囲む。テンプレートやデータの文章は `_partials/todo-text.html` を使う。

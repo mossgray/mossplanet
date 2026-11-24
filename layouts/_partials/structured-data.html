@@ -32,7 +32,15 @@
   "author" $person
   "inLanguage" "ja"
 -}}
-{{- with .Resources.Get (.Params.cover_still | default (partial "work/cover-name.html" .)) }}{{ $work = merge $work (dict "image" .Permalink) }}{{ end -}}
+{{- /* 画像は元画像ではなく、長い辺を1200pxまでに縮めた版（ドット絵はぼかさない）。縮められない形式（GIF など）は元のまま */ -}}
+{{- with .Resources.Get (.Params.cover_still | default (partial "work/cover-name.html" .)) }}
+  {{- $img := . -}}
+  {{- if and (in (slice "jpeg" "png" "webp") .MediaType.SubType) (gt (math.Max .Width .Height) 1200) -}}
+    {{- $filter := cond ($.Params.pixel | default false) "NearestNeighbor" "Lanczos" -}}
+    {{- $img = .Fit (printf "1200x1200 webp q85 %s" $filter) -}}
+  {{- end -}}
+  {{- $work = merge $work (dict "image" $img.Permalink) -}}
+{{- end -}}
 {{- with .Params.gamebook }}{{ with .genre }}{{ $work = merge $work (dict "genre" .) }}{{ end }}{{ end -}}
 {{- with .Params.fanart }}{{ with .source }}{{ $work = merge $work (dict "isBasedOn" (dict "@type" "CreativeWork" "name" .)) }}{{ end }}{{ end -}}
 <script type="application/ld+json">{{ $work | jsonify | safeJS }}</script>

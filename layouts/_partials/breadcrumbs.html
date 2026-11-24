@@ -31,6 +31,8 @@
     {{- if not .IsHome -}}{{- $items = $items | append (dict "title" .LinkTitle "url" .RelPermalink "link" true) -}}{{- end -}}
   {{- end -}}
 {{- end -}}
+{{- /* 今のページの名前。404 は Hugo の既定の題名（英語）ではなく i18n の文言にする */ -}}
+{{- $current := cond (eq .Kind "404") (T "not_found_title") .LinkTitle -}}
 <nav class="breadcrumbs" aria-label="{{ T "breadcrumb" }}">
   <ol>
     <li><a href="{{ "/" | relLangURL }}">{{ T "home" }}</a></li>
@@ -45,7 +47,7 @@
       {{- end -}}
     </li>
     {{- end }}
-    <li><span aria-current="page">{{ with .Params.color }}{{ partial "pixel-icon.html" (dict "color" . "size" 16 "scale" 1) }}{{ end }}{{ .LinkTitle }}</span></li>
+    <li><span aria-current="page">{{ with .Params.color }}{{ partial "pixel-icon.html" (dict "color" . "size" 16 "scale" 1) }}{{ end }}{{ $current }}</span></li>
   </ol>
 </nav>
 {{- /* 検索結果に現在地を出すための構造化データ（BreadcrumbList） */ -}}
@@ -53,6 +55,6 @@
 {{- range $i, $it := $items -}}
   {{- $ld = $ld | append (dict "@type" "ListItem" "position" (add $i 2) "name" $it.title "item" (absURL $it.url)) -}}
 {{- end -}}
-{{- $ld = $ld | append (dict "@type" "ListItem" "position" (add (len $items) 2) "name" .LinkTitle "item" .Permalink) }}
+{{- $ld = $ld | append (dict "@type" "ListItem" "position" (add (len $items) 2) "name" $current "item" .Permalink) }}
 <script type="application/ld+json">{{ dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $ld | jsonify | safeJS }}</script>
 {{- end -}}

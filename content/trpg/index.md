@@ -1,6 +1,8 @@
 ---
 # TRPG立ち絵の一覧（第6.8節）。system の項目がある作品を新しい順に並べる。テンプレートは layouts/trpg/page.html
 title: "TRPG立ち絵"
+# ブラウザのタブ・検索結果・OGP の題名（第7.1節）
+seo_title: "TRPG立ち絵の一覧"
 url: "/illustration/trpg/"
 # パンくずリストと、入口を置く惑星（イラストの惑星の一覧の冒頭に、このページへの入口が出る）
 parent_planet: illustration

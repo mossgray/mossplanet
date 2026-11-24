@@ -1,5 +1,7 @@
 ---
 title: "TRPG立ち絵"
+# ブラウザのタブ・検索結果・OGP の題名（第7.1節）。一覧と見出しは title のまま
+seo_title: "TRPG立ち絵（モチーフ：タロット「月」）"
 date: 2026-09-17
 planets: [illustration]
 # 公開の方針：依頼者名・シナリオ名・キャラクター名は書かない（client・scenario・session も書かない）
