@@ -2025,6 +2025,24 @@ img.is-pixel {
   font-size: 0.8125rem;
 }
 
+/* 送信に失敗したときの文（assets/js/contact-form.js）。色の付いた背景に白文字は使わない */
+.form-error {
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  border: 2px solid #c0392b;
+  border-radius: var(--radius);
+  background: #fdecea;
+  color: var(--text);
+  font-size: 0.875rem;
+  /* フォーカスで画面に入れるとき、スマートフォンの下のタブバーに隠れないように */
+  scroll-margin: 24px 0 120px;
+}
+
+.contact-form button[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
 .thanks {
   max-width: 640px;
   text-align: center;

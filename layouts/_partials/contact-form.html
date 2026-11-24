@@ -2,14 +2,16 @@
   問い合わせフォーム（Netlify Forms）。docs/spec.md 第6.4節
   - 項目は名前、メールアドレス、依頼の種類（選択式）、本文の4つだけ（返信はメールで行う。2026年11月17日、XのIDの受付をやめた）
   - スパム対策は人間には見えない入力欄（ハニーポット：bot-field）だけ。reCAPTCHA は使わない
-  - 送信後は完了ページ（/contact/thanks/、英語版は /en/contact/thanks/）へ移動する
-  - Netlify は公開時の HTML からこのフォームを見つけて受け付ける。名前は日本語版 contact、英語版 contact-en
-    （同じ名前だと Netlify が1つのフォームとして扱い、英語版から送っても日本語の完了ページへ移ったため、別の名前にする。2026年11月25日）
+  - 送信後は、そのページの言語の完了ページ（/contact/thanks/、英語版は /en/contact/thanks/。form の action）へ移動する
+  - Netlify は公開時の HTML からこのフォームを見つけて受け付ける。名前は日本語版・英語版とも「contact」1つ（一覧と通知を1か所にまとめるため）。
+    どちらの言語から届いたかは、隠し項目 lang（ja／en）で分かる
+  - 同じ名前のフォームをふつうに送ると、移動先が片方の完了ページにそろってしまう（英語版から送っても日本語の完了ページが出た）。
+    そのため assets/js/contact-form.js が JavaScript で送信し、終わったら action の完了ページへ移る（2026年11月25日）。
+    JavaScript が動かないときは、ふつうの送信になる（届くが、完了ページは日本語になることがある）
 */ -}}
 {{- $thanks := "/contact/thanks/" | relLangURL -}}
-{{- $formName := cond (eq site.Language.Lang "en") "contact-en" "contact" -}}
-<form class="contact-form" name="{{ $formName }}" method="POST" action="{{ $thanks }}" data-netlify="true" netlify-honeypot="bot-field">
-  <input type="hidden" name="form-name" value="{{ $formName }}">
+<form class="contact-form" name="contact" method="POST" action="{{ $thanks }}" data-netlify="true" netlify-honeypot="bot-field">
+  <input type="hidden" name="form-name" value="contact">
   <input type="hidden" name="lang" value="{{ site.Language.Lang }}">
   <p class="visually-hidden" aria-hidden="true">
     <label>{{ T "form_honeypot" }} <input name="bot-field" tabindex="-1" autocomplete="off"></label>
@@ -38,4 +40,9 @@
   </div>
   <p class="form-privacy">{{ T "form_privacy" (dict "url" ("/privacy/" | relLangURL)) | safeHTML }}</p>
   <button class="button" type="submit">{{ T "form_submit" }}</button>
+  {{- /* 送信に失敗したときの文（contact-form.js が出す） */}}
+  <p class="form-error" role="alert" tabindex="-1" hidden>{{ T "form_error" }}</p>
 </form>
+{{- with resources.Get "js/contact-form.js" | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" defer></script>
+{{- end }}
