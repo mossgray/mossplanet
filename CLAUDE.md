@@ -7,9 +7,13 @@
 - 作業は renewal ブランチで行う。main への統合と push は、本人の明示的な指示があるときだけ行う。
 - main は本番（mossplanet.com。2026年11月25日にリニューアルを公開）。公開の流れは次のとおり。
   - renewal で作業して push し、確認用URL（https://renewal--mossplanet.netlify.app/ ）で本人が確かめる。
-  - main に入れる前に、本番と同じ条件（`CONTEXT=production hugo --gc --minify`）でビルドが通ることを確かめる（仮の文章が残っていると本番のビルドが止まる）。
-  - 本人の指示があったら、`git log renewal..origin/main` で main 側に新しいコミットが無いことを確かめてから、`git merge --no-ff renewal` で main に入れて push する。Claude Code の権限で止められたときは、本人が `!` を付けてコマンドを実行する（または GitHub の画面でプルリクエストを merge する）。
-  - 公開後は、本番の URL で表示・転送・noindex が無いことを確かめる。終わったら手元のブランチを renewal に戻す。
+  - 本番に入れるのは本人だけ。本人が Claude Code の入力欄で、先頭に `!` を付けて `scripts/publish.sh` を実行する（Claude Code は本番まで実行しない。試しの `--dry-run` だけ実行してよい。main への push を許可する設定は足さない）。
+    - 本番に入れる：`! bash scripts/publish.sh "変更の内容"`（省くと merge のメッセージは「サイトを更新（日付）」）
+    - 試し：`! bash scripts/publish.sh --dry-run`（確認と本番条件のビルドだけ。main には何もしない）
+    - スクリプトは、ブランチが renewal か、コミットしていない変更が無いか、renewal と GitHub が同じか、main 側にだけあるコミットが無いか、本番と同じ条件（`CONTEXT=production`）のビルドが通るかを確かめてから、main に `--no-ff` で merge して push し、renewal に戻る。
+    - 止まったときは「■ 止めました（段階：…）」の理由と「本番：変わっていません／push は終わっています」を見る。確認で止まったら、理由のとおり renewal で直して（コミット・push して）からもう一度実行する。merge や push で止まったら、Claude Code に表示を見せて相談する。
+    - スクリプトが使えないときの予備：`! git checkout main` → `! git pull --ff-only origin main` → `! git merge --no-ff renewal -m "変更の内容"` → `! git push origin main` → `! git checkout renewal`（または GitHub の画面でプルリクエストを merge する）。
+  - 公開後は、本番の URL で表示・転送・noindex が無いことを確かめる。
 - renewal ブランチへの push（`git push origin renewal`）は、確認用URLに反映するため、毎回の確認なしで行ってよい（.claude/settings.json の許可リストに登録済み）。main への push と、それ以外の push は、これまでどおり毎回本人に確認する。
 - 強制 push（--force）や履歴の書き換えはしない。
 - Hugo のバージョンは 0.170.0。netlify.toml の HUGO_VERSION は手元の hugo version と揃える。

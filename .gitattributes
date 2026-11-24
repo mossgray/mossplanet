@@ -1,0 +1,2 @@
+# シェルのスクリプトは改行を LF に固定する（Windows で CRLF になると bash が読めないため）
+*.sh text eol=lf
