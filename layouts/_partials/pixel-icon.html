@@ -5,7 +5,7 @@
   - 惑星の外枠：data/planets.yaml の outline（color が同じ惑星のもの）。影は基本色と外枠を45%混ぜた色。
     outline のない色（モスの星など）は、今までどおり黒（#0b1b1a）の外枠と、黒を30%混ぜた影（2026年11月24日）
   - dots（任意）：丸の直径（16マス基準のドット数）。省略時は枠いっぱい（16）。枠の大きさ（size×scale）は変えずに丸だけ小さくする。
-    作品のメニュー（planet-menu.html）は 13
+    作品のメニュー（planet-menu.html）は 12（真ん中に置ける偶数）
   - SVG を整数倍で表示し、shape-rendering="crispEdges" でドットをぼかさない
 */ -}}
 {{- $size := .size | default 16 -}}
@@ -27,7 +27,7 @@
 {{- $rects := slice -}}
 
 {{- if or (eq $kind "planet") (eq $kind "moss") -}}
-  {{- /* 丸の直径（dots。16マス基準）。左上の余白は整数のドットにする（13なら左上1ドット・右下2ドット） */ -}}
+  {{- /* 丸の直径（dots。16マス基準）。左上の余白は整数のドットにする（12なら上下左右に2ドット） */ -}}
   {{- $dots := .dots | default 16 -}}
   {{- $k := div (float $dots) 16 -}}
   {{- $o := mul (math.Floor (div (sub 16 $dots) 2.0)) $px -}}

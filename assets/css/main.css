@@ -488,27 +488,20 @@ h3 {
     image-rendering: pixelated;
   }
 
-  /* プロフィールのアイコン：輪のある星の顔。目を開いた絵と目を閉じた絵（どちらも 16×16px を2倍）の2枚の img を重ねる。
-     .is-blinking の間だけ目を閉じた絵を見せる（目を開いた絵は .moss-blink.is-blinking .moss-star-img で隠れる） */
+  /* プロフィールのアイコン：輪のある星の顔。目を開いた絵と目を閉じた絵（どちらも 16×16px を2倍）の2枚の img を重ねる（まばたきは .moss-star-shut の指定）。
+     絵が半ドット上に寄っている（絵のある行が1〜13）ので、下へ1px ずらす（top は配置に影響しないので、ラベルの位置は変わらない） */
   .tab-about {
     position: relative;
+    top: 1px;
     display: block;
     width: 32px;
     height: 32px;
   }
 
-  .tab-about .tab-about-shut {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 32px;
-    height: 32px;
-    image-rendering: pixelated;
-    visibility: hidden;
-  }
-
-  .tab-about.is-blinking .tab-about-shut {
-    visibility: visible;
+  /* 作品のアイコン：絵が半ドット下に寄っている（絵のある行が1〜15）ので、上へ1px ずらす（2026年11月24日） */
+  .tab-works .tab-icon {
+    position: relative;
+    top: -1px;
   }
 
   .tabbar a[aria-current="page"] > span:last-child {
@@ -894,7 +887,7 @@ h3 {
 }
 
 .moss-star-img,
-.moss-star-blink {
+.moss-star-shut {
   position: absolute;
   inset: 0;
   display: block;
@@ -903,23 +896,18 @@ h3 {
   image-rendering: pixelated;
 }
 
-/* まばたき：2コマの絵（左：目を開けた絵、右：目を閉じた絵）の右のコマを、moss-blink.js が .is-blinking の間だけ出す。
-   目を開けた絵は opacity で隠す（visibility だと代替テキストが読み上げられなくなるため）。
-   2コマの絵は --blink-sheet（トップは64×64の、タブバーは32×32の）。2コマ分の幅で読み込むので整数倍のまま */
-.moss-blink {
-  --blink-sheet: url("/images/moss-star-sheet.png");
-}
-
-.moss-star-blink {
+/* まばたき（トップのモスの星・タブバーのプロフィールのアイコン）：目を開いた絵（.moss-star-img）に目を閉じた絵（.moss-star-shut）の img を重ね、
+   moss-blink.js が .is-blinking を付けている間だけ目を閉じた絵を見せる。背景画像の2コマ方式はにじむことがあるので使わない（2026年11月24日）。
+   目を開けた絵は opacity で隠す（visibility だと代替テキストが読み上げられなくなるため） */
+.moss-star-shut {
   visibility: hidden;
-  background: var(--blink-sheet) 100% 0 / 200% 100% no-repeat;
 }
 
 .moss-blink.is-blinking .moss-star-img {
   opacity: 0;
 }
 
-.moss-blink.is-blinking .moss-star-blink {
+.moss-blink.is-blinking .moss-star-shut {
   visibility: visible;
 }
 
@@ -1748,6 +1736,11 @@ img.is-pixel {
 
 .planet-intro {
   margin: 8px 0 0;
+}
+
+/* 「惑星（ページ）」のルビを親の文字のすぐ上に置く。説明文の行の高さが大きいと、ルビが行の上端の近くに離れて置かれるため（2026年11月24日） */
+.planet-intro rt {
+  line-height: 1;
 }
 
 .section-title small {
