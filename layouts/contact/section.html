@@ -11,7 +11,7 @@
 <header class="title-band contact-band">
   {{ partial "breadcrumbs.html" . }}
   <div class="title-band-inner">
-    <span class="title-band-icon">{{ partial "pixel-icon.html" (dict "kind" "satellite" "color" "#5b8def" "size" 16 "scale" 4) }}</span>
+    <span class="title-band-icon">{{- /* 人工衛星（tab-contact.png、16×16px を4倍）。タブバーと同じ絵 */ -}}<img src="/images/icons/tab-contact.png" width="64" height="64" alt=""></span>
     <div>
       <h1 class="title-band-title">{{ .Title }}</h1>
       <p class="status-sign {{ if $open }}is-open{{ else }}is-closed{{ end }}">

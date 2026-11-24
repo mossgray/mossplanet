@@ -62,7 +62,7 @@
     {{- end }}
 
     {{- /* 依頼への導線 */ -}}
-    <p class="about-cta"><a class="button" href="{{ "/contact/" | relLangURL }}">{{ partial "pixel-icon.html" (dict "kind" "satellite" "color" "#5b8def" "size" 16 "scale" 2) }}{{ T "nav_contact" }}</a></p>
+    <p class="about-cta"><a class="button" href="{{ "/contact/" | relLangURL }}"><img class="button-icon" src="/images/icons/tab-contact-on-brand.png" width="32" height="32" alt="">{{ T "nav_contact" }}</a></p>
     {{- /* フォントのクレジット（トップの惑星のタイトル。SIL Open Font License 1.1） */}}
     <p class="about-credit">{{ T "about_font_credit" | safeHTML }}</p>
   </div>

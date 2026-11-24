@@ -7,8 +7,9 @@
   <ul>
     <li><a href="{{ "/" | relLangURL }}"{{ if .IsHome }} aria-current="page"{{ end }}><img class="tab-icon" src="/images/icons/tab-home.png" width="32" height="32" alt="" aria-hidden="true"><span>{{ T "tab_space" }}</span></a></li>
     <li><a class="tab-works" href="{{ "/works/" | relURL }}" aria-haspopup="true" aria-expanded="false" aria-controls="works-sheet"{{ if $isWorks }} aria-current="page"{{ end }}><img class="tab-icon" src="/images/icons/tab-works.png" width="32" height="32" alt="" aria-hidden="true"><span>{{ T "tab_works" }}</span></a></li>
-    <li><a href="{{ "/about/" | relLangURL }}"{{ if hasPrefix .RelPermalink ("/about/" | relLangURL) }} aria-current="page"{{ end }}>{{- /* 輪のある星の顔（tab-about-open.png）。まばたきは moss-blink.js が2コマの絵（tab-about-sheet.png。左：開き、右：閉じ）の右のコマを出す */ -}}
-      <span class="tab-about moss-blink" aria-hidden="true"><img class="moss-star-img" src="/images/icons/tab-about-open.png" width="32" height="32" alt=""><span class="moss-star-blink"></span></span><span>{{ T "tab_about" }}</span></a></li>
+    <li><a href="{{ "/about/" | relLangURL }}"{{ if hasPrefix .RelPermalink ("/about/" | relLangURL) }} aria-current="page"{{ end }}>{{- /* 輪のある星の顔。目を開いた絵（tab-about-open.png）と目を閉じた絵（tab-about-blink.png）の2枚の img を重ね、
+         moss-blink.js が .is-blinking を付けている間だけ目を閉じた絵を見せる（背景画像の2コマ方式だと、にじむことがあるため。2026年11月24日） */ -}}
+      <span class="tab-about moss-blink" aria-hidden="true"><img class="moss-star-img" src="/images/icons/tab-about-open.png" width="32" height="32" alt=""><img class="tab-about-shut" src="/images/icons/tab-about-blink.png" width="32" height="32" alt=""></span><span>{{ T "tab_about" }}</span></a></li>
     <li><a href="{{ "/contact/" | relLangURL }}"{{ if hasPrefix .RelPermalink ("/contact/" | relLangURL) }} aria-current="page"{{ end }}><img class="tab-icon" src="/images/icons/tab-contact.png" width="32" height="32" alt="" aria-hidden="true"><span>{{ T "tab_contact" }}</span></a></li>
   </ul>
 </nav>

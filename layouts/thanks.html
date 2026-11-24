@@ -9,8 +9,8 @@
   </div>
 </header>
 <div class="container thanks">
-  {{- /* 仮素材：衛星のアイコンを大きく表示。本番のドット絵（satellite.png）ができたら差し替える */ -}}
-  <p class="thanks-art">{{ partial "pixel-icon.html" (dict "kind" "satellite" "color" "#5b8def" "size" 16 "scale" 8) }}</p>
+  {{- /* 人工衛星（tab-contact.png、16×16px を8倍）。タブバーと同じ絵 */ -}}
+  <p class="thanks-art"><img src="/images/icons/tab-contact.png" width="128" height="128" alt=""></p>
   <div class="prose">{{ .Content }}</div>
   <p><a class="button" href="{{ "/" | relLangURL }}">{{ T "back_to_top" }}</a></p>
 </div>

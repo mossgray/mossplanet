@@ -488,17 +488,27 @@ h3 {
     image-rendering: pixelated;
   }
 
-  /* About のアイコン：輪のある星の顔。まばたきの2コマの絵（32×16px）は、2コマ分の幅（64×32px）で読み込むので2倍のまま。
-     .moss-blink（トップのモスの星の絵）より後ろの指定に負けないよう、.tab-about.moss-blink で指定する */
-  .tab-about.moss-blink {
-    --blink-sheet: url("/images/icons/tab-about-sheet.png");
-  }
-
+  /* プロフィールのアイコン：輪のある星の顔。目を開いた絵と目を閉じた絵（どちらも 16×16px を2倍）の2枚の img を重ねる。
+     .is-blinking の間だけ目を閉じた絵を見せる（目を開いた絵は .moss-blink.is-blinking .moss-star-img で隠れる） */
   .tab-about {
     position: relative;
     display: block;
     width: 32px;
     height: 32px;
+  }
+
+  .tab-about .tab-about-shut {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+    visibility: hidden;
+  }
+
+  .tab-about.is-blinking .tab-about-shut {
+    visibility: visible;
   }
 
   .tabbar a[aria-current="page"] > span:last-child {
@@ -1271,6 +1281,11 @@ h3 {
   line-height: 0;
 }
 
+.title-band-icon img {
+  display: block;
+  image-rendering: pixelated;
+}
+
 .title-band-title {
   margin: 0;
   font-size: 1.5rem;
@@ -1934,6 +1949,15 @@ img.is-pixel {
   text-align: center;
 }
 
+/* ボタンの中の人工衛星（ティールの地用の tab-contact-on-brand.png。16×16px を2倍で） */
+.button-icon {
+  display: block;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
 /* ---------- 人工衛星（第6.4節） ---------- */
 .contact-band {
   --band: var(--brand-light);
@@ -2016,6 +2040,10 @@ img.is-pixel {
 .thanks-art {
   margin: 24px 0 0;
   line-height: 0;
+}
+
+.thanks-art img {
+  image-rendering: pixelated;
 }
 
 .thanks .todo {
