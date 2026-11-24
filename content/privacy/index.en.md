@@ -45,4 +45,4 @@ This policy may be revised as needed. Any revised version takes effect when it i
 
 This policy is a translation of the Japanese version. If there is any difference between the two, the Japanese version prevails.
 
-Established: {{< todo inline=true >}}launch date{{< /todo >}}
+Established: November 25, 2026
