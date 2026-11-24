@@ -480,9 +480,21 @@ h3 {
     text-decoration: none;
   }
 
-  /* About のアイコン：モスの星を32×32に縮めた絵を1倍で（ほかのアイコンと同じ32pxの枠） */
-  .tab-moss {
-    --blink-sheet: url("/images/moss-star-32-sheet.png");
+  /* アイコン：本人のドット絵（16×16px）を2倍の32×32px で、ぼかさずに（第4章） */
+  .tab-icon {
+    display: block;
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+  }
+
+  /* About のアイコン：輪のある星の顔。まばたきの2コマの絵（32×16px）は、2コマ分の幅（64×32px）で読み込むので2倍のまま。
+     .moss-blink（トップのモスの星の絵）より後ろの指定に負けないよう、.tab-about.moss-blink で指定する */
+  .tab-about.moss-blink {
+    --blink-sheet: url("/images/icons/tab-about-sheet.png");
+  }
+
+  .tab-about {
     position: relative;
     display: block;
     width: 32px;

@@ -1,13 +1,15 @@
-{{- /* スマートフォンの下部タブバー（画面幅600px未満）。docs/spec.md 第4章 */ -}}
+{{- /* スマートフォンの下部タブバー（画面幅600px未満）。docs/spec.md 第4章
+  アイコンは本人のドット絵（static/images/icons/tab-*.png、16×16px）を2倍の32×32px で、ぼかさずに出す。飾りなので alt="" と aria-hidden（意味はラベルの文字で伝わる） */ -}}
 {{- $section := .Section -}}
+{{- /* 選ばれているタブ：About と Contact はヘッダー（header.html）と同じく、URL の先頭で判定する */ -}}
 {{- $isWorks := or (eq $section "works") (eq $section "fanart") (eq $section "characters") (isset .Params "planet") -}}
 <nav class="tabbar" aria-label="{{ T "nav_main" }}">
   <ul>
-    <li><a href="{{ "/" | relLangURL }}"{{ if .IsHome }} aria-current="page"{{ end }}>{{ partial "pixel-icon.html" (dict "kind" "space" "color" "#f3c94f" "size" 16 "scale" 2) }}<span>{{ T "tab_space" }}</span></a></li>
-    <li><a class="tab-works" href="{{ "/works/" | relURL }}" aria-haspopup="true" aria-expanded="false" aria-controls="works-sheet"{{ if $isWorks }} aria-current="page"{{ end }}>{{ partial "pixel-icon.html" (dict "color" "#f08cb4" "size" 16 "scale" 2) }}<span>{{ T "tab_works" }}</span></a></li>
-    <li><a href="{{ "/about/" | relLangURL }}"{{ if eq $section "about" }} aria-current="page"{{ end }}>{{- /* モスの星（static/images/moss-star-32.png。64×64 の絵を半分にした32×32を1倍で）。まばたきは moss-blink.js */ -}}
-      <span class="tab-moss moss-blink" aria-hidden="true"><img class="moss-star-img" src="/images/moss-star-32.png" width="32" height="32" alt=""><span class="moss-star-blink"></span></span><span>{{ T "tab_about" }}</span></a></li>
-    <li><a href="{{ "/contact/" | relLangURL }}"{{ if eq $section "contact" }} aria-current="page"{{ end }}>{{ partial "pixel-icon.html" (dict "kind" "satellite" "color" "#5b8def" "size" 16 "scale" 2) }}<span>{{ T "tab_contact" }}</span></a></li>
+    <li><a href="{{ "/" | relLangURL }}"{{ if .IsHome }} aria-current="page"{{ end }}><img class="tab-icon" src="/images/icons/tab-home.png" width="32" height="32" alt="" aria-hidden="true"><span>{{ T "tab_space" }}</span></a></li>
+    <li><a class="tab-works" href="{{ "/works/" | relURL }}" aria-haspopup="true" aria-expanded="false" aria-controls="works-sheet"{{ if $isWorks }} aria-current="page"{{ end }}><img class="tab-icon" src="/images/icons/tab-works.png" width="32" height="32" alt="" aria-hidden="true"><span>{{ T "tab_works" }}</span></a></li>
+    <li><a href="{{ "/about/" | relLangURL }}"{{ if hasPrefix .RelPermalink ("/about/" | relLangURL) }} aria-current="page"{{ end }}>{{- /* 輪のある星の顔（tab-about-open.png）。まばたきは moss-blink.js が2コマの絵（tab-about-sheet.png。左：開き、右：閉じ）の右のコマを出す */ -}}
+      <span class="tab-about moss-blink" aria-hidden="true"><img class="moss-star-img" src="/images/icons/tab-about-open.png" width="32" height="32" alt=""><span class="moss-star-blink"></span></span><span>{{ T "tab_about" }}</span></a></li>
+    <li><a href="{{ "/contact/" | relLangURL }}"{{ if hasPrefix .RelPermalink ("/contact/" | relLangURL) }} aria-current="page"{{ end }}><img class="tab-icon" src="/images/icons/tab-contact.png" width="32" height="32" alt="" aria-hidden="true"><span>{{ T "tab_contact" }}</span></a></li>
   </ul>
 </nav>
 <div class="works-sheet" id="works-sheet" hidden>
