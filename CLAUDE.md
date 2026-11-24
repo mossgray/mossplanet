@@ -10,7 +10,7 @@
   - 本番に入れるのは本人だけ。本人が Claude Code の入力欄で、先頭に `!` を付けて `scripts/publish.sh` を実行する（Claude Code は本番まで実行しない。試しの `--dry-run` だけ実行してよい。main への push を許可する設定は足さない）。
     - 本番に入れる：`! bash scripts/publish.sh "変更の内容"`（省くと merge のメッセージは「サイトを更新（日付）」）
     - 試し：`! bash scripts/publish.sh --dry-run`（確認と本番条件のビルドだけ。main には何もしない）
-    - スクリプトは、ブランチが renewal か、コミットしていない変更が無いか、renewal と GitHub が同じか、main 側にだけあるコミットが無いか、本番と同じ条件（`CONTEXT=production`）のビルドが通るかを確かめてから、main に `--no-ff` で merge して push し、renewal に戻る。
+    - スクリプトは、ブランチが renewal か、コミットしていない変更が無いか、renewal と GitHub が同じか、main に直接入った変更（公開の merge のコミット以外）が無いか、本番と同じ条件（`CONTEXT=production`）のビルドが通るかを確かめてから、main に `--no-ff` で merge して push し、renewal に戻る。
     - 止まったときは「■ 止めました（段階：…）」の理由と「本番：変わっていません／push は終わっています」を見る。確認で止まったら、理由のとおり renewal で直して（コミット・push して）からもう一度実行する。merge や push で止まったら、Claude Code に表示を見せて相談する。
     - スクリプトが使えないときの予備：`! git checkout main` → `! git pull --ff-only origin main` → `! git merge --no-ff renewal -m "変更の内容"` → `! git push origin main` → `! git checkout renewal`（または GitHub の画面でプルリクエストを merge する）。
   - 公開後は、本番の URL で表示・転送・noindex が無いことを確かめる。

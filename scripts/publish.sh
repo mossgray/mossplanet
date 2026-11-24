@@ -7,6 +7,7 @@
 #
 # 順番
 #   1. 確認：ブランチが renewal か／コミットしていない変更が無いか／renewal と GitHub（origin/renewal）が同じか／
+#      main に直接入った変更（公開の merge 以外のコミット）が無いか／
 #      本番と同じ条件（CONTEXT=production）の hugo --gc --minify が通るか（出力はリポジトリの外の一時フォルダ）
 #   2. 本番に入れる：checkout main → pull --ff-only → merge --no-ff renewal → push origin main
 #   3. 後始末：成功しても失敗しても、できる限り renewal に戻る
@@ -77,9 +78,10 @@ if [ "$LOCAL" != "$REMOTE" ]; then
 fi
 say "  renewal と GitHub：同じ（$(git rev-parse --short renewal)）"
 
-MAIN_ONLY="$(git rev-list --count renewal..origin/main)"
-[ "$MAIN_ONLY" -gt 0 ] && stop "GitHub の main に、renewal に無いコミットが ${MAIN_ONLY} 件あります。Claude Code に相談してください（このスクリプトでは入れません）。"
-say "  main 側にだけあるコミット：なし"
+# main には、公開のたびの merge のコミットが renewal に無い形で残る。それは数えず、main に直接入った変更（merge 以外のコミット）だけを見る
+MAIN_ONLY="$(git rev-list --count --no-merges renewal..origin/main)"
+[ "$MAIN_ONLY" -gt 0 ] && stop "GitHub の main に、renewal に無い変更（merge 以外のコミット）が ${MAIN_ONLY} 件あります。Claude Code に相談してください（このスクリプトでは入れません）。"
+say "  main にだけある変更：なし（公開の merge のコミットは除く）"
 
 say "  本番と同じ条件でビルドしています（少し時間がかかります）…"
 TMP="$(mktemp -d 2>/dev/null || echo "${TMPDIR:-/tmp}/mossplanet-publish-$$")"
