@@ -88,8 +88,9 @@ TMP="$(mktemp -d 2>/dev/null || echo "${TMPDIR:-/tmp}/mossplanet-publish-$$")"
 mkdir -p "$TMP"
 # 画像の処理の結果（resources/）は、一時フォルダに写してから使う（リポジトリの resources/ と public/ は変えない）
 [ -d resources ] && cp -r resources "$TMP/resources" 2>/dev/null
-if ! CONTEXT=production hugo --gc --minify --environment production \
-      --destination "$TMP/public" --resourceDir "$TMP/resources" --quiet > "$TMP/build.log" 2>&1; then
+# 画像の処理の結果の置き場所（設定の resourceDir）は、環境変数 HUGO_RESOURCEDIR で一時フォルダに向ける
+if ! CONTEXT=production HUGO_RESOURCEDIR="$TMP/resources" hugo --gc --minify --environment production \
+      --destination "$TMP/public" --quiet > "$TMP/build.log" 2>&1; then
   sed 's/^/    /' "$TMP/build.log" | tail -20
   rm -rf "$TMP"
   stop "本番と同じ条件のビルドが通りません（上のエラー。仮の文章 todo が残っている、など）。renewal で直してから実行してください。"
