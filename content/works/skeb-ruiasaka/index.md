@@ -1,5 +1,5 @@
 ---
-title: "Rui Asaka様 イラスト"
+title: "Rui Asaka イラスト"
 # 納品日
 date: 2025-08-31
 planets: [illustration]

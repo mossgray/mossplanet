@@ -38,7 +38,10 @@
   {{- $n := .name | htmlEscape }}{{ with .url }}{{ $n = printf "<a href=\"%s\" rel=\"noopener\">%s</a>" . $n }}{{ end -}}
   {{- $rows = $rows | append (dict "dt" (.role | htmlEscape) "dd" $n) -}}
 {{- end -}}
-{{- with $p.Params.usage }}{{ $rows = $rows | append (dict "dt" "用途・掲載先" "dd" (. | htmlEscape)) }}{{ end -}}
+{{- /* 用途（usage）・納品物（deliverables）・納品形式（delivery_format）。第7.1節 */ -}}
+{{- with $p.Params.usage }}{{ $rows = $rows | append (dict "dt" "用途" "dd" (. | htmlEscape)) }}{{ end -}}
+{{- with $p.Params.deliverables }}{{ $rows = $rows | append (dict "dt" "納品物" "dd" (. | htmlEscape)) }}{{ end -}}
+{{- with $p.Params.delivery_format }}{{ $rows = $rows | append (dict "dt" "納品形式" "dd" (. | htmlEscape)) }}{{ end -}}
 {{- with $tools }}{{ $t := . }}{{ if reflect.IsSlice . }}{{ $t = delimit . "／" }}{{ end }}{{ $rows = $rows | append (dict "dt" "使用ツール" "dd" ($t | htmlEscape)) }}{{ end -}}
 {{- with $p.Params.duration }}{{ $rows = $rows | append (dict "dt" "作業時間" "dd" (. | htmlEscape)) }}{{ end -}}
 {{- with $p.Params.canvas }}{{ $rows = $rows | append (dict "dt" "キャンバス" "dd" (. | htmlEscape)) }}{{ end -}}
