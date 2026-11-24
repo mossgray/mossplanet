@@ -3,11 +3,13 @@
   - 項目は名前、メールアドレス、依頼の種類（選択式）、本文の4つだけ（返信はメールで行う。2026年11月17日、XのIDの受付をやめた）
   - スパム対策は人間には見えない入力欄（ハニーポット：bot-field）だけ。reCAPTCHA は使わない
   - 送信後は完了ページ（/contact/thanks/、英語版は /en/contact/thanks/）へ移動する
-  - Netlify は公開時の HTML からこのフォーム（name="contact"）を見つけて受け付ける
+  - Netlify は公開時の HTML からこのフォームを見つけて受け付ける。名前は日本語版 contact、英語版 contact-en
+    （同じ名前だと Netlify が1つのフォームとして扱い、英語版から送っても日本語の完了ページへ移ったため、別の名前にする。2026年11月25日）
 */ -}}
 {{- $thanks := "/contact/thanks/" | relLangURL -}}
-<form class="contact-form" name="contact" method="POST" action="{{ $thanks }}" data-netlify="true" netlify-honeypot="bot-field">
-  <input type="hidden" name="form-name" value="contact">
+{{- $formName := cond (eq site.Language.Lang "en") "contact-en" "contact" -}}
+<form class="contact-form" name="{{ $formName }}" method="POST" action="{{ $thanks }}" data-netlify="true" netlify-honeypot="bot-field">
+  <input type="hidden" name="form-name" value="{{ $formName }}">
   <input type="hidden" name="lang" value="{{ site.Language.Lang }}">
   <p class="visually-hidden" aria-hidden="true">
     <label>{{ T "form_honeypot" }} <input name="bot-field" tabindex="-1" autocomplete="off"></label>
